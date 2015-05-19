@@ -30,13 +30,19 @@ namespace re
 
 			/*Sets the Font of the Label and compiles the text to match the new Font.*/
 			void setFont(const strong_handle<Font> &font);
+			const strong_handle<Font> &getFont() const;
 			/*Sets he text of the Label and compiles it.*/
 			void setText(const u32string &text);
+			const u32string &getText() const;
+
+
 
 			const strong_handle<graphics::VertexData> &getVertexData() const;
 
 			FontSettings &fontSettings();
 			const FontSettings &fontSettings() const;
+
+			void update();
 
 			math::fvec2 getSize() const;
 			math::fvec2 getMinPosition() const;

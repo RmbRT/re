@@ -21,13 +21,22 @@ namespace re
 		void Label::setFont(const strong_handle<Font> &font)
 		{
 			this->font = font;
-			if(!text.empty())
-				vertexData = font->compile(text, settings, pen_position);
 		}
-
+		const strong_handle<Font> &Label::getFont() const
+		{
+			return font;
+		}
 		void Label::setText(const u32string &text)
 		{
 			this->text = text;
+		}
+		const u32string &Label::getText() const
+		{
+			return text;
+		}
+
+		void Label::update()
+		{
 			if(font)
 				vertexData = font->compile(text, settings, pen_position);
 		}

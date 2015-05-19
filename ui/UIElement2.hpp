@@ -12,6 +12,12 @@ namespace re
 {
 	namespace ui
 	{
+		/*The base class for all UI elements.
+		Contains a Box Model representation, similar to the one found in HTML / CSS.
+		Contains a Label for text.
+		Contains a list of UIElements as children.
+		@usage:
+			Deriving classes should override the method @[updateModels] to create a custom look.*/
 		class UIElement
 		{
 		protected:
@@ -41,9 +47,18 @@ namespace re
 
 			mutable bool invalid_background_model;
 			mutable bool invalid_border_model;
+			mutable bool invalid_children;
+
+			// invalidates the calculated width and height, and the border and background models, and the children.
+			void contentChanged() const;
+
+			// called by @[update].
+			virtual void updateModels();
+
 		private:
-			mutable float temp_last_absolutecontentwidth,
-				temp_last_absolutecontentheight;
+			// Used to prevent an infinite recursion when resolving percentage based size values.
+			mutable float temp_last_absolute_content_width, temp_last_absolute_content_height;
+			// Indicates that the size values should be updated.
 			mutable bool invalid_width, invalid_height;
 		public:
 			UIElement();
@@ -53,19 +68,50 @@ namespace re
 			UIElement &operator=(const UIElement &) = delete;
 			UIElement &operator=(UIElement && move);
 
-			Label &getLabel();
-			const Label &getLabel() const;
 
+			// updates this UIElement and its children, if flagged invalid.
+			void update();
+
+
+			/// Label
+
+			const Label &getLabel() const;
+			/*Sets the text of the Label. Call @[updateLabel] to make changes visible.*/
+			void setText(const u32string &text);
+			const u32string &getText() const;
+
+			/*Sets the font of the Label. Call @[updateLabel] to make changes visible.*/
+			void setFont(const strong_handle<Font> &font);
+			const strong_handle<Font> &getFont() const;
+
+			// calls @[Label::update] and @[contentChanged].
+			void updateLabel();
+
+
+			/// Content
+
+
+
+
+
+			/// Box Model
+
+			// returns the border of the UiElement.
 			const layout::Box<layout::Border> &getBorder() const;
 			// invalidates the border model.
 			void setBorder(const layout::Box<layout::Border> &border);
 
 			const layout::Image &getBackground() const;
+			// sets the background image and invalidates the background model.
 			void setBackground(const layout::Image &background);
 
+			// resolves the minimal width of this UIElement.
 			float absoluteMinWidth() const;
+			// resolves the minimal height of this UIElement.
 			float absoluteMinHeight() const;
+			// resolves the maximal width of this UIElement.
 			float absoluteMaxWidth() const;
+			// resolves the maximal height of this UIElement.
 			float absoluteMaxHeight() const;
 
 			// the width of the area containing all children. unaffected by min / max width.
@@ -83,23 +129,39 @@ namespace re
 			// the height of the content area, reduced by the width of the horizontal scroll bars.
 			float contentAreaDisplayHeight() const;
 			
+			// checks whether the horizontal scroll bar is visible.
 			bool visibleScrollBarH() const;
+			// checks whether the vertical scroll bar is visible.
 			bool visibleScrollBarV() const;
 
+			// resolves the offset on the horizontal axis.
 			float absoluteLeft() const;
+			// resolves the offset on the vertical axis.
 			float absoluteTop() const;
 
+			// resolves the left margin.
 			float absoluteMarginLeft() const;
+			// resolves the top margin.
 			float absoluteMarginTop() const;
+			// resolves the right margin.
 			float absoluteMarginRight() const;
+			// resolves the bottom margin.
 			float absoluteMarginBottom() const;
 
+			// resolves the left padding.
 			float absolutePaddingLeft() const;
+			// resolves the top padding.
 			float absolutePaddingTop() const;
+			// resolves the right padding.
 			float absolutePaddingRight() const;
+			// resolves the bottom padding.
 			float absolutePaddingBottom() const;
 
+			/*Resolves the width of the whole box.
+			This contains the border, margin, padding, and content area.*/
 			float absoluteBoxWidth() const;
+			/*Resolves the height of the whole box.
+			This contains the border, margin, padding, and content area.*/
 			float absoluteBoxHeight() const;
 
 		};

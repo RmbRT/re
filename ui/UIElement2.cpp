@@ -6,7 +6,25 @@ namespace re
 	namespace ui
 	{
 
-		UIElement::UIElement(): parent(nullptr) { }
+		void UIElement::contentChanged() const
+		{
+			invalid_width = true;
+			invalid_height = true;
+			invalid_background_model = true;
+			invalid_border_model = true; 
+			invalid_children = true;
+		}
+
+
+		UIElement::UIElement(): parent(nullptr),
+			invalid_width(true),
+			invalid_height(true),
+			temp_last_absolute_content_height(0),
+			temp_last_absolute_content_width(0),
+			invalid_background_model(true),
+			invalid_border_model(true),
+			invalid_children(true)
+		{ }
 		UIElement::UIElement(UIElement && move):
 			parent(move.parent),
 			children(std::move(move.children)),
@@ -24,7 +42,13 @@ namespace re
 			background_model(std::move(move.background_model)),
 			border_model(std::move(move.border_model)),
 			invalid_background_model(move.invalid_background_model),
-			invalid_border_model(move.invalid_border_model)
+			invalid_border_model(move.invalid_border_model),
+			invalid_width(move.invalid_width),
+			invalid_height(move.invalid_height),
+			temp_last_absolute_content_height(move.temp_last_absolute_content_height),
+			temp_last_absolute_content_width(move.temp_last_absolute_content_width),
+			invalid_children(move.invalid_children)
+
 		{
 			for(const auto &child : children)
 				child->parent = this;
@@ -52,6 +76,11 @@ namespace re
 			border_model = std::move(move.border_model);
 			invalid_background_model = move.invalid_background_model;
 			invalid_border_model = move.invalid_border_model;
+			invalid_width = move.invalid_width;
+			invalid_height = move.invalid_height;
+			temp_last_absolute_content_height = move.temp_last_absolute_content_height;
+			temp_last_absolute_content_width = move.temp_last_absolute_content_width;
+			invalid_children = move.invalid_children;
 
 			for(const auto &child : children)
 				child->parent = this;
@@ -61,8 +90,39 @@ namespace re
 
 
 
-		Label &UIElement::getLabel() { return label; }
-		const Label &UIElement::getLabel() const { return label; }
+		const Label &UIElement::getLabel() const
+		{
+			return label;
+		}
+
+		void UIElement::setText(const u32string &text)
+		{
+			label.setText(text);
+		}
+
+		const u32string &UIElement::getText() const
+		{
+			return label.getText();
+		}
+
+		void UIElement::setFont(const strong_handle<Font> &font)
+		{
+			label.setFont(font);
+		}
+
+		const strong_handle<Font> &UIElement::getFont() const
+		{
+			return label.getFont();
+		}
+		
+		void UIElement::updateLabel()
+		{
+			label.update();
+			contentChanged();
+		}
+
+
+
 		
 		const layout::Box<layout::Border> &UIElement::getBorder() const
 		{
@@ -71,12 +131,16 @@ namespace re
 
 		void UIElement::setBorder(const layout::Box<layout::Border> &border)
 		{
-			invalid_border_model = true;
+			contentChanged();
 			this->border = border;
 		}
 		
 		const layout::Image &UIElement::getBackground() const { return background; }
-		void UIElement::setBackground(const layout::Image &background) { this->background = background; }
+		void UIElement::setBackground(const layout::Image &background)
+		{
+			this->background = background;
+			invalid_background_model = true;
+		}
 
 		inline bool imply(bool a, bool implication) { return a? a&&implication : true; }
 
@@ -111,9 +175,9 @@ namespace re
 
 				for(const auto &child: children)
 					w = math::max(w, child->absoluteBoxWidth());
-				temp_last_absolutecontentwidth = w;
+				temp_last_absolute_content_width = w;
 			}
-			return temp_last_absolutecontentwidth;
+			return temp_last_absolute_content_width;
 		}
 
 		float UIElement::absoluteContentHeight() const
@@ -125,9 +189,9 @@ namespace re
 
 				for(const auto &child: children)
 					h = math::max(h, child->absoluteBoxWidth());
-				temp_last_absolutecontentwidth = h;
+				temp_last_absolute_content_height = h;
 			}
-			return temp_last_absolutecontentheight;
+			return temp_last_absolute_content_height;
 		}
 
 
