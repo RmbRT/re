@@ -57,7 +57,7 @@ namespace re
 								return false;
 							}
 							else
-								addAsset(asset);
+								addText(std::move(asset));
 						} break;
 					case AssetType::AT_BITMAP:
 						{
@@ -69,7 +69,19 @@ namespace re
 								return false;
 							}
 							else
-								addAsset(asset);
+								addBitmap(std::move(asset));
+						} break;
+					case AssetType::AT_MODEL:
+						{
+							ModelAsset asset(header.name);
+							if(!asset.loadFromFile(file))
+							{
+								LogFile::GetInst()->writefln("Resource::load: corrupt Asset section of type MODEL %i in %s", index, filename.c_str());
+								file.close();
+								return false;
+							}
+							else
+								addModel(std::move(asset));
 						} break;
 					default:
 						{
@@ -96,11 +108,11 @@ namespace re
 		std::ofstream file(filename.c_str(), std::ios::binary | std::ios::out);
 		
 		for(auto &text: texts)
-			text.writeToFile(file);
+			text->readLock()->writeToFile(file);
 		for(auto &model: models)
-			model.writeToFile(file);
+			model->readLock()->writeToFile(file);
 		for(auto &bitmap: bitmaps)
-			bitmap.writeToFile(file);
+			bitmap->readLock()->writeToFile(file);
 
 		file.close();
 	}
@@ -109,49 +121,25 @@ namespace re
 	{
 		return filename;
 	}
-	unsafe<const AssetBase> Resource::getAsset(const string &name) const
-	{
-		RE_ASSERT(!name.empty());
-
-		for (auto &asset : models)
-			if (asset.getName() == name.c_str())
-				return cast<const ModelAsset>(&asset);
-		return nullptr;
-	}
-	unsafe<AssetBase> Resource::getAsset(const string &name)
-	{
-		RE_ASSERT(!name.empty());
-
-		for (auto &asset : models)
-			if (asset.getName() == name.c_str())
-				return cast<ModelAsset>(&asset);
-		return nullptr;
-	}
-
 
 	bool Resource::isLoaded() const
 	{
 		return loaded;
 	}
 
-	notnull<AssetBase> Resource::addAsset(notnull<AssetBase> asset)
+	strong_handle<ThreadSafe<ModelAsset>> Resource::addModel(ModelAsset &&asset)
 	{
-		switch(asset->getType())
-		{
-		case AssetType::AT_MODEL:
-			models.push_back(cast<ModelAsset>(asset));
-			return models.back();
-			break;
-		case AssetType::AT_TEXT:
-			texts.push_back(cast<TextAsset>(asset));
-			return texts.back();
-			break;
-		case AssetType::AT_BITMAP:
-			bitmaps.push_back(cast<BitmapAsset>(asset));
-			return bitmaps.back();
-			break;
-		default:
-			RE_ASSERTION_FAILURE("INVALID/UNIMPLEMENTED ASSET TYPE");
-		}
+		models.push_back(alloc<ThreadSafe<ModelAsset>>(std::forward<ModelAsset>(asset)));
+		return models.back();
+	}
+	strong_handle<ThreadSafe<TextAsset>> Resource::addText(TextAsset &&asset)
+	{
+		texts.push_back(alloc<ThreadSafe<TextAsset>>(std::forward<TextAsset>(asset)));
+		return texts.back();
+	}
+	strong_handle<ThreadSafe<BitmapAsset>> Resource::addBitmap(BitmapAsset &&asset)
+	{
+		bitmaps.push_back(alloc<ThreadSafe<BitmapAsset>>(std::forward<BitmapAsset>(asset)));
+		return bitmaps.back();
 	}
 }

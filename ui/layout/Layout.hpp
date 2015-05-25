@@ -40,6 +40,11 @@ namespace re
 				Fit
 			};
 
+			RE_ENUM (Display)
+			{
+				Block,
+				Inline
+			};
 
 			struct Image
 			{
@@ -77,6 +82,7 @@ namespace re
 			{
 				float width;
 				Image image;
+				strong_handle<graphics::VertexData> model;
 			};
 
 			RE_ENUM (ScrollBarVisibility)

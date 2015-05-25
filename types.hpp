@@ -9,7 +9,7 @@
 #include "util/NotNull.hpp"
 #include "util/MemoryPool.hpp"
 #include "util/Delegate.hpp"
-
+#include "util/Lock/Lock.hpp"
 namespace re
 {
 	using re::util::lazy;
@@ -21,6 +21,11 @@ namespace re
 	using re::util::unique_handle;
 	
 	using re::util::Delegate;
+
+	namespace lock
+	{
+		using namespace re::util::lock;
+	}
 
 	using re::util::alloc;
 

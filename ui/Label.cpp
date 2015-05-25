@@ -55,7 +55,9 @@ namespace re
 		}
 		math::fvec2 Label::getMinPosition() const
 		{
-			return math::fvec2(vertexData->getAABB().min());
+			if(vertexData)
+				return math::fvec2(vertexData->getAABB().min());
+			else return math::fvec2(0,0);
 		}
 
 		void Label::draw() const
