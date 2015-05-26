@@ -298,16 +298,18 @@ namespace re
 			strong_handle<U> static_handle_cast() const
 			{
 				static_assert(std::is_convertible<T*,U*>::value, "Bad static cast.");
-				if(pool)
-					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool), byte_offset);
+				if(U* ptr = static_cast<U*>(get()))
+					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
+					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data());
 				else return nullptr;
 			}
 
 			template<class U>
 			strong_handle<U> dynamic_handle_cast() const
 			{
-				if(dynamic_cast<U*>(get()))
-					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool), byte_offset);
+				if(U* ptr = dynamic_cast<U*>(get()))
+					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
+					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data());
 				else
 					return nullptr;
 			}
@@ -398,16 +400,20 @@ namespace re
 			weak_handle<U> static_handle_cast() const
 			{
 				static_assert(std::is_convertible<T*,U*>::value, "Bad static cast.");
-				if(pool)
-					return weak_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool), byte_offset);
+				if(U* ptr = static_cast<U*>(get()))
+					return weak_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
+					// offset.
+					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
 				else return nullptr;
 			}
 
 			template<class U>
 			weak_handle<U> dynamic_handle_cast() const
 			{
-				if(dynamic_cast<U*>(get()))
-					return weak_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool), byte_offset);
+				if(U* ptr = dynamic_cast<U*>(get()))
+					return weak_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
+					// offset.
+					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
 				else
 					return nullptr;
 			}
