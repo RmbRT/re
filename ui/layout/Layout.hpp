@@ -105,13 +105,6 @@ namespace re
 				Image knob;
 
 			};
-
-			RE_ENUM (Positioning)
-			{
-				Dynamic,
-				Absolute,
-				Fixed
-			};
 		}
 	}
 }

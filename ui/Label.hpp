@@ -21,7 +21,6 @@ namespace re
 			// The last pen position of this Label. Used to append Labels.
 			math::fvec2 pen_position;
 
-
 		public:
 			Label();
 			Label(const Label &copy);
@@ -33,6 +32,9 @@ namespace re
 			const strong_handle<Font> &getFont() const;
 			/*Sets he text of the Label and compiles it.*/
 			void setText(const u32string &text);
+			/*Sets the X offset for inline appending labels.*/
+			void setXOffset(float xOffset);
+
 			const u32string &getText() const;
 
 

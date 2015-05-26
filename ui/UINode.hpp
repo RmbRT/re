@@ -22,14 +22,15 @@ namespace re
 		{
 		protected:
 			UINode *parent;
+			
+			strong_handle<UINode> prev_sibling;
+			strong_handle<UINode> next_sibling;
+
 			std::vector<strong_handle<UINode>> children;
 
 			string name;
 			
 			strong_handle<Font> font;
-
-			// used to determine the starting position of the next inline element, if this element was inline too.
-			math::fvec2 inline_pen_position;
 
 			math::vec2<layout::Align> align;
 			

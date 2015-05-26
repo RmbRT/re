@@ -300,7 +300,7 @@ namespace re
 				static_assert(std::is_convertible<T*,U*>::value, "Bad static cast.");
 				if(U* ptr = static_cast<U*>(get()))
 					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
-					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data());
+					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
 				else return nullptr;
 			}
 
@@ -309,7 +309,7 @@ namespace re
 			{
 				if(U* ptr = dynamic_cast<U*>(get()))
 					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
-					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data());
+					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
 				else
 					return nullptr;
 			}

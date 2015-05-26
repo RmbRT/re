@@ -293,7 +293,10 @@ namespace re
 			invalid_background_model(true),
 			invalid_border_model(true),
 			invalid_children(true),
-			font(nullptr) { }
+			font(nullptr),
+			prev_sibling(nullptr),
+			next_sibling(nullptr)
+		{ }
 
 		UINode::UINode(UINode && move):
 			parent(move.parent),
@@ -323,7 +326,9 @@ namespace re
 			border_corner_bottom_left(move.border_corner_bottom_left),
 			border_corner_bottom_right(move.border_corner_bottom_right),
 			border_corner_model(std::move(move.border_corner_model)),
-			font(std::move(move.font))
+			font(std::move(move.font)),
+			prev_sibling(std::move(move.prev_sibling)),
+			next_sibling(std::move(move.next_sibling))
 		{
 			for(const auto &child : children)
 				child->parent = this;
@@ -362,6 +367,8 @@ namespace re
 			border_corner_bottom_right = move.border_corner_bottom_right;
 			border_corner_model = std::move(move.border_corner_model);
 			font = std::move(move.font);
+			prev_sibling = std::move(move.prev_sibling);
+			next_sibling = std::move(move.next_sibling);
 
 			for(const auto &child : children)
 				child->parent = this;
@@ -809,6 +816,16 @@ namespace re
 		{
 			RE_ASSERT(node);
 			RE_ASSERT(node->parent == nullptr);
+
+			if(!children.empty())
+			{
+				children.back()->next_sibling = node;
+				node->prev_sibling = children.back();
+			}
+			else
+				node->prev_sibling = nullptr;
+			
+			node->next_sibling = nullptr;
 
 			children.push_back(node);
 			node->parent = this;
