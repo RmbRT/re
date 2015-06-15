@@ -1,5 +1,8 @@
 #include "IniFile.hpp"
 
+#include <fstream>
+#include <vector>
+
 namespace re
 {
 	namespace file
@@ -162,6 +165,51 @@ namespace re
 					return line+1-current_line;
 				}
 			}
+
+			bool IniFile::load(const string &filename)
+			{
+				std::vector<string> lines;
+				std::ifstream file(filename, std::ios::in);
+				
+				string line;
+
+				while(std::getline(file, line))
+					lines.push_back(line);
+
+				int current_line = 0;
+				Entry entry;
+				while(current_line != (current_line += this->entry(lines, current_line, entry)))
+					Unnamed._entries.push_back(entry);
+				Section section;
+				while(current_line != (current_line += this->section(lines, current_line, section)))
+					sections.push_back(section);
+
+				return current_line == lines.size();
+			}
+
+			const Section * IniFile::findSection(const string &name) const
+			{
+				if(name.empty())
+					return &Unnamed;
+				for(const Section &section : sections)
+					if(section._name == name)
+						return &section;
+				return nullptr;
+			}
+			const Section * IniFile::operator[](const string &name) const
+			{
+				if(name.empty())
+					return &Unnamed;
+				for(const Section &section : sections)
+					if(section._name == name)
+						return &section;
+				return nullptr;
+			}
+			const Section * IniFile::unnamedSection() const
+			{
+				return &Unnamed;
+			}
+
 		}
 
 		IniFile::IniFile loadIniFile(const string &filename)
