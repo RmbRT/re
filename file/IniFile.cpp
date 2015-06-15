@@ -92,6 +92,8 @@ namespace re
 			int IniFile::comment(const std::vector<string> &lines, const int current_line, string &out)
 			{
 				int line = current_line;
+				if(line == lines.size())
+					return 0;
 				char buf[2048] = { 0 };
 				
 				while(lines[line].empty())
@@ -109,6 +111,8 @@ namespace re
 				int line = current_line;
 				char buf[2048] = { 0 };
 				out = Section();
+				if(line == lines.size())
+					return 0;
 				while(lines[line].empty())
 					line++;
 				string _comment;
@@ -130,6 +134,8 @@ namespace re
 			{
 				int line = current_line;
 				out = Entry();
+				if(line == lines.size())
+					return 0;
 				while(lines[line].empty())
 					line++;
 
