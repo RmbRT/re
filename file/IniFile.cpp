@@ -98,7 +98,9 @@ namespace re
 				
 				while(lines[line].empty())
 					line++;
-
+				
+				if(line == lines.size())
+					return 0;
 				if(sscanf_s(lines[line].c_str(), ";%s", buf))
 				{
 					out = buf;
@@ -118,7 +120,9 @@ namespace re
 				string _comment;
 				out._comment.clear();
 				while(line != (line+=comment(lines, line, _comment))) out._comment+=_comment;
-
+				
+				if(line == lines.size())
+					return 0;
 				if(!sscanf_s(lines[line].c_str(), "[%s]", buf))
 					return 0;
 				else
@@ -146,7 +150,9 @@ namespace re
 
 
 				char name[2048] = { 0 }, value[2048] = { 0 };
-
+				
+				if(line == lines.size())
+					return 0;
 				if(2 != sscanf_s(lines[line].c_str(), "%s=%s", name, value))
 					return 0;
 				else
