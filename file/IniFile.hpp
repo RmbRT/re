@@ -69,10 +69,10 @@ namespace re
 
 			public:
 				/*pass "" for the unnamed section.*/
-				Section * findSection(const string &name) const;
+				const Section * findSection(const string &name) const;
 				/*pass "" for the unnamed section.*/
-				Section * operator[](const string &name) const;
-				Section * unnamedSection() const;
+				const Section * operator[](const string &name) const;
+				const Section * unnamedSection() const;
 
 				bool load(const string &filename);
 			};
