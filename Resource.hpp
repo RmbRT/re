@@ -4,7 +4,6 @@
 #include "types.hpp"
 #include "defines.hpp"
 #include <vector>
-#include "util/Lock/Lock.hpp"
 
 #include "BitmapAsset.hpp"
 #include "ModelAsset.hpp"
@@ -17,9 +16,9 @@ namespace re
 		string filename;
 		bool loaded;
 		
-		std::vector<strong_handle<ThreadSafe<ModelAsset>>> models;
-		std::vector<strong_handle<ThreadSafe<TextAsset>>> texts;
-		std::vector<strong_handle<ThreadSafe<BitmapAsset>>> bitmaps;
+		std::vector<strong_handle<lock::ThreadSafe<ModelAsset>>> models;
+		std::vector<strong_handle<lock::ThreadSafe<TextAsset>>> texts;
+		std::vector<strong_handle<lock::ThreadSafe<BitmapAsset>>> bitmaps;
 		
 		explicit Resource(const string &filename);
 	public:
@@ -35,9 +34,9 @@ namespace re
 		bool isLoaded() const;
 
 		/*Used for constructing Resources before writing them to a file.*/
-		strong_handle<ThreadSafe<ModelAsset>> addModel(ModelAsset &&asset);
-		strong_handle<ThreadSafe<TextAsset>> addText(TextAsset &&asset);
-		strong_handle<ThreadSafe<BitmapAsset>> addBitmap(BitmapAsset &&asset);
+		strong_handle<lock::ThreadSafe<ModelAsset>> addModel(ModelAsset &&asset);
+		strong_handle<lock::ThreadSafe<TextAsset>> addText(TextAsset &&asset);
+		strong_handle<lock::ThreadSafe<BitmapAsset>> addBitmap(BitmapAsset &&asset);
 	};
 }
 #endif

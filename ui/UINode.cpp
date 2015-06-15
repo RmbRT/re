@@ -474,18 +474,6 @@ namespace re
 			return border;
 		}
 
-		void UINode::setBorder(const layout::Box<layout::Border> &border)
-		{
-			contentChanged();
-			this->border = border;
-		}
-		
-		const layout::Image &UINode::getBackground() const { return background; }
-		void UINode::setBackground(const layout::Image &background)
-		{
-			this->background = background;
-			invalid_background_model = true;
-		}
 
 		inline bool imply(bool a, bool implication) { return a? a&&implication : true; }
 
@@ -653,6 +641,20 @@ namespace re
 						+ absolutePaddingBottom()
 					+ border.bottom.width
 				+ absoluteMarginBottom();
+		}
+
+		math::fvec2 UINode::absolutePosition() const
+		{
+			math::fvec2 pos;
+			const UINode * node = this;
+
+			while(node)
+			{
+				pos.x += node->absoluteLeft() + node->absoluteBoxWidth();
+				pos.y += node->absoluteTop() + node->absoluteBoxHeight();
+				node = node->prev_sibling;
+			}
+			return pos;
 		}
 
 		void UINode::setMinWidth(const layout::Size &min_w)

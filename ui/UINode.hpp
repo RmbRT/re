@@ -85,7 +85,8 @@ namespace re
 			UINode(const UINode &) = delete;
 			UINode(UINode && move);
 
-			virtual void UINode() {}
+			virtual ~UINode() {}
+
 
 			UINode &operator=(const UINode &) = delete;
 			UINode &operator=(UINode && move);
@@ -176,6 +177,9 @@ namespace re
 			This contains the border, margin, padding, and content area.*/
 			float absoluteBoxHeight() const;
 
+			// calculates the position of this UINode relative to its parents origin.
+			math::fvec2 absolutePosition() const;
+
 			void setMinWidth(const layout::Size &min_w);
 			void setMinHeight(const layout::Size &min_h);
 			void setMaxWidth(const layout::Size &max_w);
@@ -197,9 +201,6 @@ namespace re
 			void setPaddingRight(const layout::Size &padding);
 			void setPaddingBottom(const layout::Size &padding);
 
-			void setBackground(const layout::Image &background);
-
-			void setBorder(const layout::Box<layout::Border> &border);
 			void setBorderLeft(const layout::Border &border);
 			void setBorderTop(const layout::Border &border);
 			void setBorderRight(const layout::Border &border);

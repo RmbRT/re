@@ -6,7 +6,7 @@
 #include "base_types.hpp"
 
 #define RE_LOG(X,...) re::LogFile::GetInst()->writefln(__FUNCTION__": "X, __VA_ARGS__)
-#define RE_ASSERTION_FAILURE(X) re::LogFile::GetInst()->assert(X, __FILE__, __LINE__, __FUNCTION__)
+#define RE_ASSERTION_FAILURE(X) re::LogFile::GetInst()->assertion_failure(X, __FILE__, __LINE__, __FUNCTION__)
 #define RE_ASSERT(X) void((!(X))?(RE_ASSERTION_FAILURE(#X),0):0)
 #define RE_TEST(X) re::LogFile::GetInst()->test((X), #X, __FILE__, __LINE__)
 
@@ -37,7 +37,7 @@ namespace re
 		void setName(const char* name);
 
 		void test(bool op, const char* expr, const char* file, int line);
-		void assert(const char* expr, const char* file, int line, const char *function);
+		void assertion_failure(const char* expr, const char* file, int line, const char *function);
 
 	private:
 		LogFile &operator=(const LogFile &rval);

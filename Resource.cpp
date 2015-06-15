@@ -127,19 +127,19 @@ namespace re
 		return loaded;
 	}
 
-	strong_handle<ThreadSafe<ModelAsset>> Resource::addModel(ModelAsset &&asset)
+	strong_handle<lock::ThreadSafe<ModelAsset>> Resource::addModel(ModelAsset &&asset)
 	{
-		models.push_back(alloc<ThreadSafe<ModelAsset>>(std::forward<ModelAsset>(asset)));
+		models.push_back(alloc<lock::ThreadSafe<ModelAsset>>(std::forward<ModelAsset>(asset)));
 		return models.back();
 	}
-	strong_handle<ThreadSafe<TextAsset>> Resource::addText(TextAsset &&asset)
+	strong_handle<lock::ThreadSafe<TextAsset>> Resource::addText(TextAsset &&asset)
 	{
-		texts.push_back(alloc<ThreadSafe<TextAsset>>(std::forward<TextAsset>(asset)));
+		texts.push_back(alloc<lock::ThreadSafe<TextAsset>>(std::forward<TextAsset>(asset)));
 		return texts.back();
 	}
-	strong_handle<ThreadSafe<BitmapAsset>> Resource::addBitmap(BitmapAsset &&asset)
+	strong_handle<lock::ThreadSafe<BitmapAsset>> Resource::addBitmap(BitmapAsset &&asset)
 	{
-		bitmaps.push_back(alloc<ThreadSafe<BitmapAsset>>(std::forward<BitmapAsset>(asset)));
+		bitmaps.push_back(alloc<lock::ThreadSafe<BitmapAsset>>(std::forward<BitmapAsset>(asset)));
 		return bitmaps.back();
 	}
 }

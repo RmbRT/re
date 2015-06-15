@@ -110,7 +110,7 @@ namespace re
 		this->name = name;
 	}
 
-	void LogFile::assert(const char* expr, const char* file, int line, const char* function)
+	void LogFile::assertion_failure(const char* expr, const char* file, int line, const char* function)
 	{
 		writefln(
 			"***ASSERTION FAILURE***\n"

@@ -130,7 +130,7 @@ namespace re
 			void (*destructor)(T*);
 			const size_t type_size;
 
-			T* get(size_t byte_offset)
+			inline T* get(size_t byte_offset)
 			{
 				// checks whether addressed object starts at a valid T[] index
 				RE_ASSERT(byte_offset/type_size<data.size());
@@ -149,7 +149,7 @@ namespace re
 				data.clear();
 			}
 
-			size_t use_count(size_t offset)
+			inline size_t use_count(size_t offset)
 			{
 				RE_ASSERT(offset % type_size == 0);
 				RE_ASSERT(offset / type_size < data.size());
