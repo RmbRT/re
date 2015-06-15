@@ -92,14 +92,14 @@ namespace re
 			int IniFile::comment(const std::vector<string> &lines, const int current_line, string &out)
 			{
 				int line = current_line;
-				if(line == lines.size())
+				if(line >= lines.size())
 					return 0;
 				char buf[2048] = { 0 };
 				
 				while(lines[line].empty())
 					line++;
 				
-				if(line == lines.size())
+				if(line >= lines.size())
 					return 0;
 				if(sscanf_s(lines[line].c_str(), ";%s", buf))
 				{
@@ -113,7 +113,7 @@ namespace re
 				int line = current_line;
 				char buf[2048] = { 0 };
 				out = Section();
-				if(line == lines.size())
+				if(line >= lines.size())
 					return 0;
 				while(lines[line].empty())
 					line++;
@@ -121,7 +121,7 @@ namespace re
 				out._comment.clear();
 				while(line != (line+=comment(lines, line, _comment))) out._comment+=_comment;
 				
-				if(line == lines.size())
+				if(line >= lines.size())
 					return 0;
 				if(!sscanf_s(lines[line].c_str(), "[%s]", buf))
 					return 0;
@@ -138,7 +138,7 @@ namespace re
 			{
 				int line = current_line;
 				out = Entry();
-				if(line == lines.size())
+				if(line >= lines.size())
 					return 0;
 				while(lines[line].empty())
 					line++;
@@ -151,7 +151,7 @@ namespace re
 
 				char name[2048] = { 0 }, value[2048] = { 0 };
 				
-				if(line == lines.size())
+				if(line >= lines.size())
 					return 0;
 				if(2 != sscanf_s(lines[line].c_str(), "%s=%s", name, value))
 					return 0;
@@ -196,7 +196,7 @@ namespace re
 				while(current_line != (current_line += this->section(lines, current_line, section)))
 					sections.push_back(section);
 
-				return current_line == lines.size();
+				return current_line >= lines.size();
 			}
 
 			const Section * IniFile::findSection(const string &name) const
