@@ -101,10 +101,10 @@ namespace re
 				
 				if(line >= lines.size())
 					return 0;
-				if(sscanf_s(lines[line].c_str(), ";%s", buf))
+				if(sscanf_s(lines[line++].c_str(), ";%s", buf, _countof(buf)))
 				{
 					out = buf;
-					return line+1-current_line;
+					return line-current_line;
 				}
 				else return 0;
 			}
@@ -119,19 +119,28 @@ namespace re
 					line++;
 				string _comment;
 				out._comment.clear();
-				while(line != (line+=comment(lines, line, _comment))) out._comment+=_comment;
+				while(int temp = comment(lines, line, _comment))
+				{
+					out._comment+=_comment;
+					line += temp;
+				}
 				
 				if(line >= lines.size())
 					return 0;
-				if(!sscanf_s(lines[line].c_str(), "[%s]", buf))
+				if(!sscanf_s(lines[line++].c_str(), "[%[^]]]", buf, _countof(buf)))
 					return 0;
 				else
 				{
 					Entry _entry;
-					while(line != (line+=entry(lines, line, _entry)))
+					while(int temp = entry(lines, line, _entry))
+					{
 						out._entries.push_back(_entry);
+						line += temp;
+					}
 
-					return line+1-current_line;
+					out._name = buf;
+
+					return line-current_line;
 				}
 			}
 			int IniFile::entry(const std::vector<string> &lines, const int current_line, Entry &out)
@@ -146,14 +155,18 @@ namespace re
 				
 				string _comment;
 				out.comment.clear();
-				while(line != (line+=comment(lines, line, _comment))) out.comment+=_comment;
+				while(int temp = comment(lines, line, _comment))
+				{
+					out.comment+=_comment;
+					line += temp;
+				}
 
 
 				char name[2048] = { 0 }, value[2048] = { 0 };
 				
 				if(line >= lines.size())
 					return 0;
-				if(2 != sscanf_s(lines[line].c_str(), "%s=%s", name, value))
+				if(2 != sscanf_s(lines[line++].c_str(), "%[^=]=%s", name, _countof(name), value, _countof(value)))
 					return 0;
 				else
 				{
@@ -174,7 +187,7 @@ namespace re
 					}
 					else out.value_t = EntryValue::String;
 
-					return line+1-current_line;
+					return line-current_line;
 				}
 			}
 
@@ -188,15 +201,23 @@ namespace re
 				while(std::getline(file, line))
 					lines.push_back(line);
 
+				file.close();
+
 				int current_line = 0;
 				Entry entry;
-				while(current_line != (current_line += this->entry(lines, current_line, entry)))
+				while(int temp = this->entry(lines, current_line, entry))
+				{
 					Unnamed._entries.push_back(entry);
+					current_line += temp;
+				}
 				Section section;
-				while(current_line != (current_line += this->section(lines, current_line, section)))
+				while(int temp = this->section(lines, current_line, section))
+				{
 					sections.push_back(section);
+					current_line += temp;
+				}
 
-				return current_line >= lines.size();
+				return current_line == lines.size();
 			}
 
 			const Section * IniFile::findSection(const string &name) const

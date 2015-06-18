@@ -11,7 +11,7 @@
 #include <type_traits>
 
 #ifdef RE_DEBUG
-#define RE_INSPECT_HANDLES
+	#define RE_INSPECT_HANDLES
 #endif
 
 #ifdef RE_INSPECT_HANDLES
@@ -37,31 +37,31 @@ namespace re
 		class weak_handle;
 
 		template<class T, class ...Args>
-		inline unique_handle<T> alloc(Args&&... args)
+		REINL unique_handle<T> alloc(Args&&... args)
 		{
 			return MemoryPool<T>::GetInst()->alloc(std::forward<Args>(args)...);
 		}
 		
 		template<class T, class U>
-		inline strong_handle<T> dynamic(const strong_handle<U> &handle)
+		REINL strong_handle<T> dynamic(const strong_handle<U> &handle)
 		{
 			return handle.dynamic_handle_cast<T>();
 		}
 
 		template<class T, class U>
-		inline strong_handle<T> cast(const strong_handle<U> &handle)
+		REINL strong_handle<T> cast(const strong_handle<U> &handle)
 		{
 			return handle.static_handle_cast<T>();
 		}
 	
 		template<class T, class U>
-		inline weak_handle<T> dynamic(const weak_handle<U> &handle)
+		REINL weak_handle<T> dynamic(const weak_handle<U> &handle)
 		{
 			return handle.dynamic_handle_cast<T>();
 		}
 
 		template<class T, class U>
-		inline weak_handle<T> cast(const weak_handle<U> &handle)
+		REINL weak_handle<T> cast(const weak_handle<U> &handle)
 		{
 			return handle.static_handle_cast<T>();
 		}
@@ -99,7 +99,7 @@ namespace re
 			/*Contains whether an object is free or not.*/
 			std::vector<Entry> data;
 
-			void inc_ref(size_t offset)
+			REINL void inc_ref(size_t offset)
 			{
 				RE_ASSERT(offset % type_size == 0);
 				RE_ASSERT(offset/type_size < data.size());
@@ -108,7 +108,7 @@ namespace re
 				ENTRYAT(offset).usecount++;
 			}
 
-			void dec_ref(size_t offset)
+			REINL void dec_ref(size_t offset)
 			{
 				RE_ASSERT(offset/type_size < data.size());
 				RE_ASSERT(ENTRYAT(offset).usecount != 0);
@@ -116,6 +116,7 @@ namespace re
 				if(!--ENTRYAT(offset).usecount)
 					free(offset / type_size);
 			}
+#undef ENTRYAT
 
 			static void destruct(T* obj)
 			{
@@ -130,7 +131,22 @@ namespace re
 			void (*destructor)(T*);
 			const size_t type_size;
 
-			inline T* get(size_t byte_offset)
+			void for_each_s(void (callback)(const strong_handle<T> &obj))
+			{
+				for(size_t i = 0; i < data.size(); i++)
+					if(data[i].usecount)
+					{
+						callback(strong_handle<T>(*this, i*type_size));
+					}
+			}
+			void for_each_w(void (callback)(const weak_handle<T> &obj))
+			{
+				for(size_t i = 0; i < data.size(); i++)
+					if(data[i].usecount)
+						callback(weak_handle<T>(*this, i*type_size));
+			}
+
+			REINL T* get(size_t byte_offset)
 			{
 				// checks whether addressed object starts at a valid T[] index
 				RE_ASSERT(byte_offset/type_size<data.size());
@@ -205,7 +221,7 @@ namespace re
 				{
 					data.push_back(Entry());
 					data.back().usecount = 1;
-					unique_handle<T> ret(*this,(data.size()-1)*sizeof(Entry));
+					unique_handle<T> ret(*this,(data.size()-1)*type_size);
 					data.back().usecount--;
 					new (ret) T(std::forward<Args>(args)...);
 					return ret;
@@ -216,9 +232,9 @@ namespace re
 					firstFree = data[firstFree].nextFree;
 
 					data[index].usecount = 1;
-					unique_handle<T> ret(*this, index*sizeof(T));
+					unique_handle<T> ret(*this, index*type_size);
 					data[index].usecount--;
-					new (&data[index].object) T(std::forward<Args>(args)...);
+					new (ret) T(std::forward<Args>(args)...);
 					return ret;
 				}
 			}
@@ -279,37 +295,37 @@ namespace re
 				return *this;
 			}
 
-			bool operator!=(const strong_handle<T> &other) const { return pool != other.pool || byte_offset != other.byte_offset; }
-			bool operator==(const strong_handle<T> &other) const { return pool == other.pool && byte_offset == other.byte_offset; }
+			REINL bool operator!=(const strong_handle<T> &other) const { return pool != other.pool || byte_offset != other.byte_offset; }
+			REINL bool operator==(const strong_handle<T> &other) const { return pool == other.pool && byte_offset == other.byte_offset; }
 
 
-			operator bool() const { return valid(); }
-			bool valid() const { return byte_offset != -1 && pool != nullptr; }
+			REINL operator bool() const { return valid(); }
+			REINL bool valid() const { return byte_offset != -1 && pool != nullptr; }
 
-			size_t use_count() const { return valid()?pool->use_count(byte_offset) : 0; }
+			REINL size_t use_count() const { return valid()?pool->use_count(byte_offset) : 0; }
 
-			T& operator*() const { return *get(); }
-			T* get() const { return (valid())? pool->get(byte_offset) : nullptr; }
-			T* operator->() const { return (valid())? pool->get(byte_offset) : nullptr; }
+			REINL T& operator*() const { return *get(); }
+			REINL T* get() const { return (valid())? pool->get(byte_offset) : nullptr; }
+			REINL T* operator->() const { return (valid())? pool->get(byte_offset) : nullptr; }
 
-			operator T*() const { return get(); }
+			REINL operator T*() const { return get(); }
 
 			template<class U>
-			strong_handle<U> static_handle_cast() const
+			REINL strong_handle<U> static_handle_cast() const
 			{
 				static_assert(std::is_convertible<T*,U*>::value, "Bad static cast.");
 				if(U* ptr = static_cast<U*>(get()))
 					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
-					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
+					reinterpret_cast<const byte*>(ptr) - reinterpret_cast<const byte*>(pool->data.data()));
 				else return nullptr;
 			}
 
 			template<class U>
-			strong_handle<U> dynamic_handle_cast() const
+			REINL strong_handle<U> dynamic_handle_cast() const
 			{
 				if(U* ptr = dynamic_cast<U*>(get()))
 					return strong_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
-					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
+					reinterpret_cast<const byte*>(ptr) - reinterpret_cast<const byte*>(pool->data.data()));
 				else
 					return nullptr;
 			}
@@ -359,20 +375,20 @@ namespace re
 				return *this;
 			}
 
-			bool operator!=(const strong_handle<T> &other) const { return pool != other.pool || byte_offset != other.byte_offset; }
-			bool operator==(const strong_handle<T> &other) const { return pool == other.pool && byte_offset == other.byte_offset; }
+			REINL bool operator!=(const strong_handle<T> &other) const { return pool != other.pool || byte_offset != other.byte_offset; }
+			REINL bool operator==(const strong_handle<T> &other) const { return pool == other.pool && byte_offset == other.byte_offset; }
 
 			
-			operator bool() const { return valid(); }
-			bool valid() const { return byte_offset != -1 && pool != nullptr; }
+			REINL operator bool() const { return valid(); }
+			REINL bool valid() const { return byte_offset != -1 && pool != nullptr; }
 
-			size_t use_count() const { return valid()?pool->use_count(byte_offset) : 0; }
+			REINL size_t use_count() const { return valid()?pool->use_count(byte_offset) : 0; }
 
-			T& operator*() const { return *get(); }
-			T* get() const { return (valid())? pool->get(byte_offset) : nullptr; }
-			T* operator->() const { return (valid())? pool->get(byte_offset) : nullptr; }
+			REINL T& operator*() const { return *get(); }
+			REINL T* get() const { return (valid())? pool->get(byte_offset) : nullptr; }
+			REINL T* operator->() const { return (valid())? pool->get(byte_offset) : nullptr; }
 
-			operator T*() const { return get(); }
+			REINL operator T*() const { return get(); }
 		};
 
 		template<class T>
@@ -397,41 +413,41 @@ namespace re
 			
 			
 			template<class U>
-			weak_handle<U> static_handle_cast() const
+			REINL weak_handle<U> static_handle_cast() const
 			{
 				static_assert(std::is_convertible<T*,U*>::value, "Bad static cast.");
 				if(U* ptr = static_cast<U*>(get()))
 					return weak_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
 					// offset.
-					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
+					reinterpret_cast<const byte*>(ptr) - reinterpret_cast<const byte*>(pool->data.data()));
 				else return nullptr;
 			}
 
 			template<class U>
-			weak_handle<U> dynamic_handle_cast() const
+			REINL weak_handle<U> dynamic_handle_cast() const
 			{
 				if(U* ptr = dynamic_cast<U*>(get()))
 					return weak_handle<U>(reinterpret_cast<MemoryPool<U>&>(*pool),
 					// offset.
-					reinterpret_cast<const char*>(ptr) - reinterpret_cast<const char*>(pool->data.data()));
+					reinterpret_cast<const byte*>(ptr) - reinterpret_cast<const byte*>(pool->data.data()));
 				else
 					return nullptr;
 			}
 
 
-			bool operator!=(const strong_handle<T> &other) const { return pool != other.pool || byte_offset != other.byte_offset; }
-			bool operator==(const strong_handle<T> &other) const { return pool == other.pool && byte_offset == other.byte_offset; }
+			REINL bool operator!=(const strong_handle<T> &other) const { return pool != other.pool || byte_offset != other.byte_offset; }
+			REINL bool operator==(const strong_handle<T> &other) const { return pool == other.pool && byte_offset == other.byte_offset; }
 			
-			operator bool() const { return valid(); }
-			bool valid() const { return byte_offset != -1 && pool != nullptr; }
+			REINL operator bool() const { return valid(); }
+			REINL bool valid() const { return byte_offset != -1 && pool != nullptr; }
 
-			size_t use_count() const { return valid()?pool->use_count(byte_offset) : 0; }
+			REINL size_t use_count() const { return valid()?pool->use_count(byte_offset) : 0; }
 
-			T& operator*() const { return *get(); }
-			T* get() const { return (valid())? pool->get(byte_offset) : nullptr; }
-			T* operator->() const { return (valid())? pool->get(byte_offset) : nullptr; }
+			REINL T& operator*() const { return *get(); }
+			REINL T* get() const { return (valid())? pool->get(byte_offset) : nullptr; }
+			REINL T* operator->() const { return (valid())? pool->get(byte_offset) : nullptr; }
 
-			operator T*() const { return get(); }
+			REINL operator T*() const { return get(); }
 		};
 	}
 }
