@@ -23,6 +23,7 @@ namespace re
 	void Model::draw(const math::fmat4x4 &mvp) const
 	{
 		passMaterial();
+		texture->bind();
 		shader->setUniform("RE_MVP", mvp);
 		vertexData->bind();
 		vertexData->draw();

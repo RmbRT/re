@@ -555,7 +555,7 @@ namespace re
 		template<class T>
 		float absf(const vec4<T> &a)
 		{
-			return sqrtf(dotf(v,v));
+			return sqrtf(dotf(a,a));
 		}
 		
 		template<class T>

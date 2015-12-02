@@ -8,6 +8,7 @@
 #include "../defines.hpp"
 #include "../LogFile.hpp"
 
+#include <functional>
 #include <type_traits>
 
 #ifdef RE_DEBUG
@@ -131,19 +132,19 @@ namespace re
 			void (*destructor)(T*);
 			const size_t type_size;
 
-			void for_each_s(void (callback)(const strong_handle<T> &obj))
+			void for_each_s(std::function<void (const strong_handle<T> &obj)> fn)
 			{
 				for(size_t i = 0; i < data.size(); i++)
 					if(data[i].usecount)
 					{
-						callback(strong_handle<T>(*this, i*type_size));
+						fn(strong_handle<T>(*this, i*type_size));
 					}
 			}
-			void for_each_w(void (callback)(const weak_handle<T> &obj))
+			void for_each_w(std::function<void (const weak_handle<T> &obj)> fn)
 			{
 				for(size_t i = 0; i < data.size(); i++)
 					if(data[i].usecount)
-						callback(weak_handle<T>(*this, i*type_size));
+						fn(weak_handle<T>(*this, i*type_size));
 			}
 
 			REINL T* get(size_t byte_offset)

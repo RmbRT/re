@@ -55,7 +55,7 @@ namespace re
 		va_list varargs;
 		va_start(varargs, format);
 		char buffer[1024] = { 0 };
-		vsprintf_s(buffer, format, varargs);
+		vsprintf(buffer, format, varargs);
 
 		if(logFile)
 			fwrite(buffer, sizeof(char), strlen(buffer), logFile);
@@ -68,7 +68,7 @@ namespace re
 		va_start(varargs, format);
 		char buffer[1024] = { 0 };
 
-		int len = vsprintf_s(buffer, format, varargs);
+		int len = vsprintf(buffer, format, varargs);
 		buffer[len] = '\n';
 		buffer[len+1] = '\0';
 

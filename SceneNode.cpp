@@ -10,17 +10,17 @@ namespace re
 	}
 
 	SceneNode::~SceneNode() {}
-	SceneNode::SceneNode(): scene(nullptr), rotation(), position(), scaling(1,1,1), model(nullptr) { }
-	SceneNode::SceneNode(SceneNode &&move): child_nodes(std::move(move.child_nodes)), scene(move.scene), rotation(move.rotation), position(move.position), scaling(move.scaling), model(move.model)  {
+	SceneNode::SceneNode(): parent_node(nullptr), scene(nullptr), rotation(), position(), scaling(1,1,1), model(nullptr) { }
+	SceneNode::SceneNode(SceneNode &&move): parent_node(move.parent_node), child_nodes(std::move(move.child_nodes)), scene(move.scene), rotation(move.rotation), position(move.position), scaling(move.scaling), model(move.model)  {
 		for(SceneNode &node: child_nodes)
 			node.parent_node = this;
 	}
-	SceneNode::SceneNode(const SceneNode &copy): child_nodes(copy.child_nodes), scene(copy.scene), rotation(copy.rotation), position(copy.position), scaling(copy.scaling), model(copy.model)
+	SceneNode::SceneNode(const SceneNode &copy): parent_node(copy.parent_node), child_nodes(copy.child_nodes), scene(copy.scene), rotation(copy.rotation), position(copy.position), scaling(copy.scaling), model(copy.model)
 	{
 		for(SceneNode &node: child_nodes)
 			node.parent_node = this;
 	}
-	SceneNode::SceneNode(Scene &scene) : scene(scene), rotation(), position(), scaling(1,1,1), model(nullptr)  { }
+	SceneNode::SceneNode(Scene &scene) : parent_node(nullptr), scene(scene), rotation(), position(), scaling(1,1,1), model(nullptr)  { }
 
 
 	SceneNode &SceneNode::operator=(const SceneNode &rhs)
@@ -124,14 +124,25 @@ namespace re
 		return child_nodes.size() ? &child_nodes.back() : nullptr;
 	}
 
+	unsafe<SceneNode> SceneNode::nthChild(size_t child)
+	{
+		return child_nodes.size() > child ? &child_nodes[child] : nullptr;
+	}
+	unsafe<const SceneNode> SceneNode::nthChild(size_t child) const
+	{
+		return child_nodes.size() > child ? &child_nodes[child] : nullptr;
+	}
+
+	size_t SceneNode::children() const { return child_nodes.size(); }
+
 	notnull<SceneNode> SceneNode::addChild(const SceneNode &node)
 	{
 		RE_ASSERT(!node.parent_node);
 
 		child_nodes.push_back(node);
-		notnull<SceneNode> handle = child_nodes.back();
-		handle->parent_node = this;
-		handle->scene = scene;
+		SceneNode &handle = child_nodes.back();
+		handle.parent_node = this;
+		handle.scene = scene;
 		return handle;
 	}
 	void SceneNode::setModel(strong_handle<Model> model)
@@ -156,6 +167,8 @@ namespace re
 				return true;
 			else
 				continue;
+
+		return false;
 	}
 
 	notnull<SceneNode> SceneNode::transferChild(notnull<SceneNode> child, SceneNode &newParent)

@@ -58,6 +58,10 @@ namespace re
 		unsafe<SceneNode> lastChild();
 		unsafe<const SceneNode> lastChild() const;
 
+		unsafe<SceneNode> nthChild(size_t child);
+		unsafe<const SceneNode> nthChild(size_t child) const;
+		size_t children() const;
+
 		/*Releases the direct child SceneNode child, and stores it in out_node, if out_node is set.*/
 		void releaseChild(notnull<SceneNode> child, unsafe<SceneNode> out_node);
 

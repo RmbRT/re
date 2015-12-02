@@ -17,12 +17,13 @@ namespace re
 		
 		math::fmat4x4 camera_mat(camera->getViewMatrix());
 		
-		render(scene->getRoot(), projection * camera_mat * scene->getRoot().getTransformation());
+		render(scene->getRoot(), projection * camera_mat);
 	}
 
 	void Renderer::render(const SceneNode &node, math::fmat4x4 &camera_mat)
 	{
-		math::fmat4x4 mvp(camera_mat * node.getTransformation());
+		math::fmat4x4 mvp = camera_mat * node.getTransformation();
+
 		if(auto model = node.getModel())
 		{
 			model->draw(mvp);
@@ -30,7 +31,7 @@ namespace re
 		if(!node.isLeaf())
 		{
 			auto _node = node.firstChild();
-			do render(*_node, camera_mat);
+			do render(*_node, mvp);
 			while(_node = _node->nextSibling());
 		}
 	}
