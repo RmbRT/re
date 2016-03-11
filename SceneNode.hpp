@@ -41,6 +41,7 @@ namespace re
 		virtual ~SceneNode();
 
 		SceneNode &operator=(const SceneNode &rhs);
+		SceneNode &operator=(SceneNode &&rhs);
 
 		/*Returns the parent SceneNode of this SceneNode, if any.*/
 		unsafe<SceneNode> parentNode() const;

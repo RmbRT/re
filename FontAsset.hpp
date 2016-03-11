@@ -17,8 +17,9 @@ namespace re
 		void writeToFile(std::ofstream &file) const;
 		bool readFromFile(std::ifstream &file);
 
-		notnull<ui::Font> getFont() const;
-		void setFont(ui::Font font);
+		unique_handle<ui::Font> createFont() const;
+		void setFont(ui::Font const& font);
+		void setFont(ui::Font && font);
 
 	};
 }

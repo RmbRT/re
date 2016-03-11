@@ -10,6 +10,18 @@
 #define RE_ASSERT(X) void((!(X))?(RE_ASSERTION_FAILURE(#X),0):0)
 #define RE_TEST(X) re::LogFile::GetInst()->test((X), #X, __FILE__, __LINE__)
 
+#ifdef RE_DEBUG
+#define RE_DBG_LOG RE_LOG
+#define RE_DBG_ASSERT RE_ASSERT
+#define RE_DBG_TEST RE_TEST
+#else
+// produces no executable code.
+#define RE_DBG_LOG(X,...) void(0)
+// produces no executable code.
+#define RE_DBG_ASSERT(X) void(0)
+// produces no executable code.
+#define RE_DBG_TEST(X) void(0)
+#endif
 namespace re
 {
 	class LogFile: public Singleton<LogFile>

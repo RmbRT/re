@@ -38,34 +38,19 @@ namespace re
 		class weak_handle;
 
 		template<class T, class ...Args>
-		REINL unique_handle<T> alloc(Args&&... args)
-		{
-			return MemoryPool<T>::GetInst()->alloc(std::forward<Args>(args)...);
-		}
+		REINL unique_handle<T> alloc(Args&&... args);
 		
 		template<class T, class U>
-		REINL strong_handle<T> dynamic(const strong_handle<U> &handle)
-		{
-			return handle.dynamic_handle_cast<T>();
-		}
+		REINL strong_handle<T> dynamic(const strong_handle<U> &handle);
 
 		template<class T, class U>
-		REINL strong_handle<T> cast(const strong_handle<U> &handle)
-		{
-			return handle.static_handle_cast<T>();
-		}
+		REINL strong_handle<T> cast(const strong_handle<U> &handle);
 	
 		template<class T, class U>
-		REINL weak_handle<T> dynamic(const weak_handle<U> &handle)
-		{
-			return handle.dynamic_handle_cast<T>();
-		}
+		REINL weak_handle<T> dynamic(const weak_handle<U> &handle);
 
 		template<class T, class U>
-		REINL weak_handle<T> cast(const weak_handle<U> &handle)
-		{
-			return handle.static_handle_cast<T>();
-		}
+		REINL weak_handle<T> cast(const weak_handle<U> &handle);
 
 		template<class T>
 		/*A MemoryPool for a specific Type. Allows relative pointers to elements rather than absolute pointers.*/
@@ -79,45 +64,22 @@ namespace re
 
 			struct Entry
 			{
-				Entry() : usecount(0), nextFree(-1), object() { }
-				Entry(Entry &&move) : usecount(move.usecount), nextFree(move.nextFree) {
-					if(move.usecount)
-					// if object was allocated, move it.
-						( new (&object) T(std::move(*&move.object)) );
-				}
+				Entry();
+				Entry(Entry &&move);
 
-				lazy<T> object;
 				size_t nextFree;
 				size_t usecount;
-			};		
-
-
-#define ENTRYAT(offset) (*reinterpret_cast<Entry*>(reinterpret_cast<byte*>(data.data())+offset))
-
+				lazy<T> object;
+			};
 
 			size_t firstFree;
-			
+			size_t last_allocated_object_after; // the first address after the end of the last allocated object.
+
 			/*Contains whether an object is free or not.*/
 			std::vector<Entry> data;
 
-			REINL void inc_ref(size_t offset)
-			{
-				RE_ASSERT(offset % type_size == 0);
-				RE_ASSERT(offset/type_size < data.size());
-				RE_ASSERT(ENTRYAT(offset).usecount != 0);
-
-				ENTRYAT(offset).usecount++;
-			}
-
-			REINL void dec_ref(size_t offset)
-			{
-				RE_ASSERT(offset/type_size < data.size());
-				RE_ASSERT(ENTRYAT(offset).usecount != 0);
-
-				if(!--ENTRYAT(offset).usecount)
-					free(offset / type_size);
-			}
-#undef ENTRYAT
+			REINL void inc_ref(size_t byte_offset_entry);
+			REINL void dec_ref(size_t byte_offset_entry);
 
 			static void destruct(T* obj)
 			{
@@ -126,12 +88,14 @@ namespace re
 
 		public:
 
-			MemoryPool(): data(0), firstFree(-1), type_size(sizeof(Entry)), destructor(&destruct) {}
-			MemoryPool(size_t capacity): data(0), firstFree(-1), type_size(sizeof(Entry)), destructor(&destruct) { reservePool(capacity); }
+			MemoryPool();
+			MemoryPool(size_t capacity);
 
-			void (*destructor)(T*);
-			const size_t type_size;
+			void (*const destructor)(T*);
+			const size_t entry_size;
 
+			/*For each function that passes a strong_handle of every object to the given function.
+			@param[in] fn: a function that is called for every object allocated in this memory pool (using a strong_handle).*/
 			void for_each_s(std::function<void (const strong_handle<T> &obj)> fn)
 			{
 				for(size_t i = 0; i < data.size(); i++)
@@ -140,6 +104,9 @@ namespace re
 						fn(strong_handle<T>(*this, i*type_size));
 					}
 			}
+			
+			/*For each function that passes a weak_handle of every object to the given function.
+			@param[in] fn: a function that is called for every object allocated in this memory pool (using a weak_handle).*/
 			void for_each_w(std::function<void (const weak_handle<T> &obj)> fn)
 			{
 				for(size_t i = 0; i < data.size(); i++)
@@ -147,14 +114,15 @@ namespace re
 						fn(weak_handle<T>(*this, i*type_size));
 			}
 
-			REINL T* get(size_t byte_offset)
+			REINL T* get(size_t byte_offset_entry, size_t byte_offset_object)
 			{
 				// checks whether addressed object starts at a valid T[] index
-				RE_ASSERT(byte_offset/type_size<data.size());
-				RE_ASSERT(byte_offset % type_size == 0);
+				RE_DBG_ASSERT(byte_offset_entry < last_allocated_object_after);
+				RE_DBG_ASSERT(byte_offset_entry % type_size == 0);
+				RE_DBG_ASSERT(byte_offset_object < entry_size);
 
 				// returns address of object with byte offset
-				return reinterpret_cast<T*>(reinterpret_cast<byte*>(data.data())+byte_offset);
+				return reinterpret_cast<T*>(reinterpret_cast<byte*>(data.data())+byte_offset_entry+byte_offset_object);
 			}
 
 
@@ -166,36 +134,64 @@ namespace re
 				data.clear();
 			}
 
-			inline size_t use_count(size_t offset)
+			/*Returns how many strong_handles or unique_handles are referring to the entry at the given relative address.
+			@param[in] byte_offset_entry: the relative address of the Entry structure in the pool.*/
+			inline size_t use_count(size_t byte_offset_entry)
 			{
-				RE_ASSERT(offset % type_size == 0);
-				RE_ASSERT(offset / type_size < data.size());
+				RE_DBG_ASSERT(offset % type_size == 0);
+				RE_DBG_ASSERT(byte_offset < last_allocated_object_after);
 
-				return data[offset / type_size].usecount;
+				return reinterpret_cast<Entry*>(reinterpret_cast<byte*>(data.data()) + byte_offset_entry)->usecount;
 			}
 
-			void free(size_t index)
+			/*Destroys the object allocated at the given byte offset in the pool.
+			@param[in] byte_offset_entry:
+				the relative address of the Entry that contains the instance to be destroyed in the pool.*/
+			void free(size_t byte_offset_entry)
 			{
-				RE_ASSERT(index < data.size());
-				RE_ASSERT(data[index].usecount == 0);
 
+				RE_DBG_ASSERT(byte_offset_entry % entry_size == 0);
+				RE_DBG_ASSERT(byte_offset_entry < last_allocated_object_after);
+				
+				Entry * const entry = reinterpret_cast<Entry*>(reinterpret_cast<byte*>(data.data())+byte_offset_entry);
+				size_t const index = byte_offset_entry / entry_size;
+
+				RE_DBG_ASSERT(entry->usecount == 0);
+				
 				// destroy object
-				destructor(&data[index].object);
+				destructor(&entry->object);
+
+				if(last_allocated_object_after == byte_offset_entry + entry_size)
+				{
+					last_allocated_object_after = 0;
+					for(size_t i = byte_offset_entry; i != 0; i -= entry_size)
+					{
+						Entry const * data_i = reinterpret_cast<Entry*>(reinterpret_cast<byte*>(data.data())+i);
+						if(data_i->usecount != 0)
+						{
+							last_allocated_object_after = i+byte_offset_entry;
+							break;
+						}
+					}
+				}
 
 				if(firstFree > index)
 				{
-					data[index].nextFree = firstFree;
+					entry->nextFree = firstFree;
 					firstFree = index;
 				}
 				else
 				{
-					for(size_t i = index; i-->0;)
-						if((data[i].usecount == 0))
+					for(size_t i = byte_offset_entry; i!=0; i-=entry_size)
+					{
+						Entry const * data_i = reinterpret_cast<Entry*>(reinterpret_cast<byte*>(data.data())+i);
+						if(data_i->usecount == 0)
 						{
-							data[index].nextFree = data[i].nextFree;
-							data[i].nextFree = index;
+							entry->nextFree = data_i->nextFree;
+							data_i->nextFree = index;
 							break;
 						}
+					}
 				}
 			}
 
@@ -215,25 +211,32 @@ namespace re
 				}
 			}
 			template<class ...Args>
-			/*Returns a pointer to be used with placement new.*/
+			/*Allocates a new instance in the pool and initializes it with the given arguments.
+			@param[in] args: the arguments to be passed to the constructor of the allocated instance.
+			@return: a unique_handle pointing to the allocated instance.*/
 			unique_handle<T> alloc(Args&&... args)
 			{
 				if(firstFree == -1)
 				{
-					data.push_back(Entry());
-					data.back().usecount = 1;
-					unique_handle<T> ret(*this,(data.size()-1)*type_size);
-					data.back().usecount--;
-					new (ret) T(std::forward<Args>(args)...);
+					data.emplace_back();
+					Entry & back = data.back();
+					back.usecount = 1;
+					size_t const byte_offset_entry = (data.size()-1) * entry_size;
+					size_t const byte_offset_object = byte_offset_entry + offsetof(Entry, object);
+					unique_handle<T> ret(*this,byte_offset_entry, byte_offset_object);
+					back.usecount--;
+					new (&back.object) T(std::forward<Args>(args)...);
 					return ret;
 				}
 				else
 				{
-					size_t index = firstFree;
+					size_t const index = firstFree;
 					firstFree = data[firstFree].nextFree;
 
 					data[index].usecount = 1;
-					unique_handle<T> ret(*this, index*type_size);
+					size_t const byte_offset_entry = index * entry_size;
+					size_t const byte_offset_object = byte_offset_entry + offsetof(Entry, object);
+					unique_handle<T> ret(*this, byte_offset_entry, byte_offset_object);
 					data[index].usecount--;
 					new (ret) T(std::forward<Args>(args)...);
 					return ret;
@@ -252,17 +255,19 @@ namespace re
 			friend class weak_handle<const T>;
 
 			MemoryPool<T> *pool;
-			size_t byte_offset;
+			size_t byte_offset_entry;
+			size_t byte_offset_object;
 
 			_RE_HANDLE_INSPECT_MEMBER_DECL
 
-			strong_handle(MemoryPool<T> &pool, unsigned byte_offset) : pool(&pool), byte_offset(byte_offset) { pool.inc_ref(byte_offset); }
+			strong_handle(MemoryPool<T> &pool, size_t byte_offset_entry, size_t byte_offset_object) : pool(&pool), byte_offset(byte_offset) { pool.inc_ref(byte_offset); }
 			
 		public:
 			strong_handle() : pool(nullptr), byte_offset(-1) { _RE_HANDLE_INSPECT_UPDATE }
 			strong_handle(nullptr_t) : pool(nullptr), byte_offset(-1) { _RE_HANDLE_INSPECT_UPDATE }
 
 			strong_handle(const strong_handle<T> &copy) : pool(copy.pool), byte_offset(copy.byte_offset) { if(pool)pool->inc_ref(byte_offset); _RE_HANDLE_INSPECT_UPDATE }
+			strong_handle(strong_handle<T> &&move) { operator=(std::move(move)); }
 			strong_handle(unique_handle<T> &&move) : pool(move.pool), byte_offset(move.byte_offset) { move.byte_offset = -1; _RE_HANDLE_INSPECT_UPDATE }
 			~strong_handle() { if(valid()) pool->dec_ref(byte_offset); pool = nullptr; byte_offset = -1; _RE_HANDLE_INSPECT_UPDATE }
 			strong_handle<T> &operator=(const strong_handle<T> &copy)
@@ -452,5 +457,7 @@ namespace re
 		};
 	}
 }
+
+#include "MemoryPool.inl"
 
 #endif

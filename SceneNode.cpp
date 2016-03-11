@@ -41,6 +41,24 @@ namespace re
 		return *this;
 	}
 
+	SceneNode &SceneNode::operator=(SceneNode &&rhs)
+	{
+		if(&rhs == this)
+			return *this;
+		parent_node = rhs.parent_node;
+		child_nodes = std::move(rhs.child_nodes);
+
+		rotation = rhs.rotation;
+		position = rhs.position;
+		scaling = rhs.scaling;
+		model = rhs.model;
+
+		for(SceneNode &child: child_nodes)
+			child.parent_node = this;
+
+		return *this;
+	}
+
 	void SceneNode::releaseChild(notnull<SceneNode> node, unsafe<SceneNode> out_node)
 	{
 		RE_ASSERT(node>= &child_nodes.front() && node<=&child_nodes.back() && node->parent_node == this);
