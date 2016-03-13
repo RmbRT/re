@@ -17,7 +17,7 @@ namespace re
 		struct KeyEvent;
 		class InputManager;
 
-		RE_ENUM(ModifierKey)
+		enum class ModifierKey
 		{
 			MODIFIER_SHIFT = 1,
 			MODIFIER_CONTROL = 2,
@@ -28,7 +28,7 @@ namespace re
 		/*Contains all the Keys used for input by the Engine. The values are continuous from 0 to KEY_COUNT-1.
 		The keys 0-9, A-Z have their character (uppercase) values as enum values.
 		@see KEY_COUNT: The count of enum values. Also the first invalid key value.*/
-		RE_ENUM(Key)
+		enum class Key
 		{
 			
 			K_F1,K_F2,K_F3,K_F4,K_F5,K_F6,K_F7,K_F8,K_F9,K_F10,K_F11,K_F12,K_F13,K_F14,K_F15,K_F16,K_F17,K_F18,K_F19,K_F20,K_F21,K_F22,K_F23,K_F24,K_F25,

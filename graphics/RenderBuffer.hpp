@@ -8,7 +8,7 @@ namespace re
 {
 	namespace graphics
 	{
-		RE_ENUM(RenderBufferType)
+		enum class RenderBufferType
 		{
 			BUFFER_DEPTH,
 			BUFFER_STENCIL,

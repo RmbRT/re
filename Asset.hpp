@@ -8,7 +8,7 @@
 namespace re
 {
 
-	RE_ENUM(AssetType)
+	enum class AssetType
 	{
 		/*Used by text-based Assets.*/
 		AT_TEXT,

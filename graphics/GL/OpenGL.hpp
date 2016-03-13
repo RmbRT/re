@@ -6,7 +6,7 @@
 #define GLFW_INCLUDE_NONE
 #include <glfw\glfw3.h>
 #include <string>
-#include "../LogFile.hpp"
+#include "../../LogFile.hpp"
 
 #define GL_ERROR_CHECK(X) gl_error_check(__FILE__, __LINE__, X, __FUNCTION__)
 #ifdef RE_DEBUG

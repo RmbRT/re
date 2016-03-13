@@ -13,7 +13,7 @@ namespace re
 		const float PI_OVER_180 = (3.14159265359/180.0);
 		const float PI_UNDER_180 = (180.0/3.14159265359);
 
-		RE_ENUM(AngleType)
+		enum class AngleType
 		{
 			DEG,
 			RAD

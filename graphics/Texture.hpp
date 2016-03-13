@@ -12,7 +12,7 @@ namespace re
 	{
 		
 		/*Used for coniguring the parameters of a Texture.*/
-		RE_ENUM(Filter)
+		enum class Filter
 		{
 			F_NEAREST,
 			F_LINEAR,
@@ -22,7 +22,7 @@ namespace re
 			F_LINEAR_MIPMAP_NEAREST
 		};
 		/*Used for coniguring the parameters of a Texture.*/
-		RE_ENUM(Wrap)
+		enum class Wrap
 		{
 			W_CLAMP,
 			W_REPEAT,
@@ -31,13 +31,13 @@ namespace re
 			W_MIRRORED_REPEAT
 		};
 		/*Used for coniguring the parameters of a Texture.*/
-		RE_ENUM(TextureCompareMode)
+		enum class TextureCompareMode
 		{
 			COMPARE_R_TO_TEXTURE,
 			NONE
 		};
 		/*Used for coniguring the parameters of a Texture.*/
-		RE_ENUM(TextureCompareFunc)
+		enum class TextureCompareFunc
 		{
 			LEQUAL,
 			GEQUAL,
@@ -49,7 +49,7 @@ namespace re
 			NEVER
 		};
 		/*Used for coniguring the parameters of a Texture.*/
-		RE_ENUM(DepthTextureMode)
+		enum class DepthTextureMode
 		{
 			LUMINANCE,
 			INTESITY,

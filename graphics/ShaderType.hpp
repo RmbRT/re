@@ -8,7 +8,7 @@ namespace re
 	namespace graphics
 	{
 		/*Contains the available shader types.*/
-		RE_ENUM(ShaderType)
+		enum class ShaderType
 		{
 			/*Vertex shader.*/
 			ST_VERTEX,

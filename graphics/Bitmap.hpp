@@ -8,13 +8,13 @@ namespace re
 {
 	namespace graphics
 	{
-		RE_ENUM(MipmapFilter)
+		enum class MipmapFilter
 		{
 			Center,
 			Adjacent4,
 			Adjacent8
 		};
-		RE_ENUM(ColorChannel)
+		enum class ColorChannel
 		{
 			FLOAT1,
 			FLOAT2,
