@@ -1,10 +1,10 @@
-#ifndef __re_graphics_gl_glvertexarray_hpp_defined
-#define __re_graphics_gl_glvertexarray_hpp_defined
+#ifndef __re_graphics_gl_vertexarray_hpp_defined
+#define __re_graphics_gl_vertexarray_hpp_defined
 
 #include "../../types.hpp"
 #include "../../defines.hpp"
-#include "GLHandle.hpp"
-#include "GLBuffer.hpp"
+#include "Handle.hpp"
+#include "Buffer.hpp"
 
 namespace re
 {
@@ -61,38 +61,39 @@ namespace re
 				RM_TRIANGLE_FAN
 			};
 
-			class GLVertexArrayBase : GLHandle
+			class VertexArrayBase : Handle
 			{
-				static gl_handle_t bound;
-				GLBuffer
+				static handle_t bound;
+				
+				Buffer
 					m_vertex,
 					m_index;
 				bool m_index_used;
 				RenderMode m_render_mode;
 			public:
 				/* Creates an invalid handle. */
-				GLVertexArrayBase(BufferAccess access, BufferUsage usage);
+				VertexArrayBase(BufferAccess access, BufferUsage usage);
 				/* Moves the ownership of the array from one instance to another. */
-				GLVertexArrayBase(GLVertexArrayBase &&);
+				VertexArrayBase(VertexArrayBase &&);
 				/* Moves the ownership of the array from one instance to another.
 				The destination instance must not have an existing handle already. */
-				GLVertexArrayBase &operator=(GLVertexArrayBase &&);
+				VertexArrayBase &operator=(VertexArrayBase &&);
 				/* Asserts that the vertex array must not exist anymore. */
-				REINL ~GLVertexArrayBase();
+				REINL ~VertexArrayBase();
 			
-				GLVertexArrayBase(GLVertexArrayBase const&) = delete;
-				GLVertexArrayBase &operator=(GLVertexArrayBase const&) = delete;
+				VertexArrayBase(VertexArrayBase const&) = delete;
+				VertexArrayBase &operator=(VertexArrayBase const&) = delete;
 
 				/* Binds the vertex array to select it for future OpenGL calls. */
 				void bind();
 
-				using GLHandle::exists;
-				using GLHandle::gl_handle;
+				using Handle::exists;
+				using Handle::handle;
 
-				static void alloc_handles(gl_handle_t * handles, size_t count);
-				static void alloc(GLVertexArrayBase * arrays, size_t count);
-				static void destroy_handles(gl_handle_t * handles, size_t count);
-				static void destroy(GLVertexArrayBase * arrays, size_t count);
+				static void alloc_handles(handle_t * handles, size_t count);
+				static void alloc(VertexArrayBase * arrays, size_t count);
+				static void destroy_handles(handle_t * handles, size_t count);
+				static void destroy(VertexArrayBase * arrays, size_t count);
 
 				void configure(
 					VertexElement const * vertexType,
@@ -112,35 +113,44 @@ namespace re
 					uint32_t const * index_data,
 					size_t indices);
 
-				static void wireframe_rendering(bool wireframe);
-
 				void draw(size_t count, size_t start);
 			};
 
 			
 			template<class Vertex>
-			class GLVertexArray : GLVertexArrayBase
+			class VertexArray : VertexArrayBase
 			{
 			public:
-				GLVertexArray(BufferAccess access);
-				GLVertexArray(GLVertexArray<Vertex> &&);
-				GLVertexArray<buffers> &operator=(GLVertexArray<Vertex> &&);
-				~GLVertexArray();
+				VertexArray(BufferAccess access, BufferUsage usage);
+				VertexArray(VertexArray<Vertex> &&);
+				VertexArray<buffers> &operator=(VertexArray<Vertex> &&);
+				~VertexArray();
 
-				GLVertexArray(GLVertexArray<Vertex> const&) = delete;
-				GLVertexArray<buffers> &operator=(GLVertexArray<Vertex> const&) = delete;
+				VertexArray(VertexArray<Vertex> const&) = delete;
+				VertexArray<buffers> &operator=(VertexArray<Vertex> const&) = delete;
 
-				static void alloc(GLVertexArray<Vertex> * arrays, size_t count);
-				static void destroy(GLVertexArray<Vertex> * arrays, size_t count);
+				static void alloc(VertexArray<Vertex> * arrays, size_t count);
+				static void destroy(VertexArray<Vertex> * arrays, size_t count);
 
 				void configure(VertexType<Vertex> const& type_description);
 
-				void set_data(Vertex const * data, size_t count);
+				void set_data(
+					Vertex const * vertex_data,
+					size_t vertices,
+					RenderMode render_mode);
+				void set_data(
+					Vertex const * vertex_data,
+					size_t vertices,
+					RenderMode render_mode,
+					uint32_t const * index_data,
+					size_t indices);
+
+				using VertexArrayBase::draw;
 			};
 		}
 	}
 }
 
-#include "GLVertexArray.inl"
+#include "VertexArray.inl"
 
 #endif

@@ -1,4 +1,4 @@
-#include "GLBuffer.hpp"
+#include "Buffer.hpp"
 #include "OpenGL.hpp"
 #include <malloc.h>
 
@@ -8,30 +8,30 @@ namespace re
 	{
 		namespace GL
 		{
-			GLBuffer::GLBuffer(
+			Buffer::Buffer(
 				BufferType type,
 				BufferAccess access,
 				BufferUsage usage):
-				GLHandle(),
+				Handle(),
 				m_type(type),
 				m_access(access),
 				m_usage(usage)
 			{
 			}
 
-			GLBuffer::GLBuffer(GLBuffer && move):
-				GLHandle(std::move(move)),
+			Buffer::Buffer(Buffer && move):
+				Handle(std::move(move)),
 				m_type(move.m_type),
 				m_access(move.m_access),
 				m_usage(move.m_usage)
 			{
 			}
 
-			GLBuffer &GLBuffer::operator=(GLBuffer && move)
+			Buffer &Buffer::operator=(Buffer && move)
 			{
 				if(&move != this)
 				{
-					static_cast<GLHandle&>(*this) = std::move(move);
+					static_cast<Handle&>(*this) = std::move(move);
 					m_type = move.m_type;
 					m_access = move.m_access;
 					m_usage = move.m_usage;
@@ -50,54 +50,54 @@ namespace re
 				return table[size_t(type)];
 			}
 
-			void GLBuffer::bind()
+			void Buffer::bind()
 			{
-				if(exists() && bound != gl_handle())
+				if(exists() && bound != handle())
 				{
-					RE_OGL(glBindBuffer(opengl_target(m_type), gl_handle()));
-					bound = gl_handle();
+					RE_OGL(glBindBuffer(opengl_target(m_type), handle()));
+					bound = handle();
 				}
 			}
 
-			void GLBuffer::alloc_handles(gl_handle_t * handles, size_t count)
+			void Buffer::alloc_handles(handle_t * handles, size_t count)
 			{
 				RE_OGL(glGenBuffers(count, handles));
 			}
 
-			void GLBuffer::alloc(GLBuffer * buffers, size_t count)
+			void Buffer::alloc(Buffer * buffers, size_t count)
 			{
 				for(size_t i = count; i--;)
 					RE_DBG_ASSERT(!buffers[i].exists() &&
-						"Tried to allocate existing GLBuffer!");
+						"Tried to allocate existing Buffer!");
 
-				gl_handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = allocation_buffer(count);
 
 				alloc_handles(handles, count);
 
 				for(size_t i = count; i--;)
-					buffers[i].set_gl_handle(handles[i]);
+					buffers[i].set_handle(handles[i]);
 			}
 
-			void GLBuffer::destroy_handles(gl_handle_t * handles, size_t count)
+			void Buffer::destroy_handles(handle_t * handles, size_t count)
 			{
 				RE_OGL(glDeleteBuffers(count, handles));
 			}
 
-			void GLBuffer::destroy(GLBuffer * buffers, size_t count)
+			void Buffer::destroy(Buffer * buffers, size_t count)
 			{
-				gl_handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = allocation_buffer(count);
 
 				for(size_t i = count; i--;)
 				{
 					RE_DBG_ASSERT(buffers[i].exists() &&
-						"Tried to destroy nonexisting GLBuffer!");
+						"Tried to destroy nonexisting Buffer!");
 
-					handles[i] = buffers[i].gl_handle();
+					handles[i] = buffers[i].handle();
 
-					if(bound == buffers[i].gl_handle())
+					if(bound == buffers[i].handle())
 						bound = 0;
 
-					buffers[i].null_gl_handle();
+					buffers[i].null_handle();
 				}
 
 				destroy_handles(handles, count);
@@ -128,7 +128,7 @@ namespace re
 				return table[size_t(access)][size_t(usage)];
 			}
 
-			void GLBuffer::data(void const * data, size_t elements, size_t element_size)
+			void Buffer::data(void const * data, size_t elements, size_t element_size)
 			{
 				bind();
 

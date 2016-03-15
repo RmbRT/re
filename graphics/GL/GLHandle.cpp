@@ -1,4 +1,4 @@
-#include "GLHandle.hpp"
+#include "Handle.hpp"
 #include <memory>
 namespace re
 {
@@ -6,16 +6,16 @@ namespace re
 	{
 		namespace GL
 		{
-			gl_handle_t * GLHandle::allocation_buffer(size_t count)
+			handle_t * Handle::allocation_buffer(size_t count)
 			{
-				static std::auto_ptr<gl_handle_t> alloc_buf(nullptr);
+				static std::auto_ptr<handle_t> alloc_buf(nullptr);
 				static size_t size = 0;
 
 				if(size < count)
 					alloc_buf.reset(
-						(gl_handle_t*) realloc(
+						(handle_t*) realloc(
 							alloc_buf.release(),
-							(size = count) * sizeof(gl_handle_t)));
+							(size = count) * sizeof(handle_t)));
 
 				return alloc_buf.get();
 			}

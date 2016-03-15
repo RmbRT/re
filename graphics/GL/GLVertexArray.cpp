@@ -1,4 +1,4 @@
-#include "GLVertexArray.hpp"
+#include "VertexArray.hpp"
 #include "OpenGL.hpp"
 
 namespace re
@@ -7,26 +7,26 @@ namespace re
 	{
 		namespace GL
 		{
-			GLVertexArrayBase::GLVertexArrayBase(BufferAccess access, BufferUsage usage):
-				GLHandle(),
+			VertexArrayBase::VertexArrayBase(BufferAccess access, BufferUsage usage):
+				Handle(),
 				m_vertex(BufferType::VertexData, access, usage),
 				m_index(BufferType::IndexData, access, usage),
 				m_index_used(false)
 			{
 			}
-			GLVertexArrayBase::GLVertexArrayBase(GLVertexArrayBase && move):
-				GLHandle(std::move(move)),
+			VertexArrayBase::VertexArrayBase(VertexArrayBase && move):
+				Handle(std::move(move)),
 				m_vertex(std::move(move.m_vertex)),
 				m_index(std::move(move.m_index)),
 				m_index_used(move.m_index_used)
 			{
 			}
 
-			GLVertexArrayBase &GLVertexArrayBase::operator=(GLVertexArrayBase && move)
+			VertexArrayBase &VertexArrayBase::operator=(VertexArrayBase && move)
 			{
 				if(this != &move)
 				{
-					static_cast<GLHandle&>(*this) = std::move(move);
+					static_cast<Handle&>(*this) = std::move(move);
 					m_vertex = std::move(move.m_vertex);
 					m_index = std::move(move.m_index);
 					m_index_used = move.m_index_used;
@@ -34,23 +34,25 @@ namespace re
 				return *this;
 			}
 
-			void GLVertexArrayBase::bind()
+			void VertexArrayBase::bind()
 			{
-				if(exists() && bound == gl_handle())
+				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting vertex array!");
+
+				if(bound != handle())
 				{
-					RE_OGL(glBindVertexArray(gl_handle()));
-					bound = gl_handle();
+					RE_OGL(glBindVertexArray(handle()));
+					bound = handle();
 				}
 			}
 
-			void GLVertexArrayBase::alloc_handles(gl_handle_t * handles, size_t count)
+			void VertexArrayBase::alloc_handles(handle_t * handles, size_t count)
 			{
 				RE_OGL(glGenVertexArrays(count, handles));
 			}
 
-			void GLVertexArrayBase::alloc(GLVertexArrayBase * arrays, size_t count)
+			void VertexArrayBase::alloc(VertexArrayBase * arrays, size_t count)
 			{
-				gl_handle_t * buffer = allocation_buffer(count);
+				handle_t * buffer = allocation_buffer(count);
 				
 				alloc_handles(buffer, count);
 
@@ -59,11 +61,11 @@ namespace re
 					RE_DBG_ASSERT(!arrays[i].exists() &&
 						"Tried to allocate existing vertex array!");
 
-					arrays[i].set_gl_handle(buffer[i]);
+					arrays[i].set_handle(buffer[i]);
 				}
 				buffer = allocation_buffer(count << 1);
 
-				GLBuffer::alloc_handles(buffer, count);
+				Buffer::alloc_handles(buffer, count);
 				for(size_t i = count; i--;)
 				{
 					RE_DBG_ASSERT(!arrays[i].m_vertex.exists() &&
@@ -72,12 +74,12 @@ namespace re
 					RE_DBG_ASSERT(!arrays[i].m_index.exists() &&
 						"Tried to allocate existing index buffer!");
 
-					arrays[i].m_vertex.set_gl_handle(buffer[(i<<1)]);
-					arrays[i].m_vertex.set_gl_handle(buffer[(i<<1)+1]);
+					arrays[i].m_vertex.set_handle(buffer[(i<<1)]);
+					arrays[i].m_vertex.set_handle(buffer[(i<<1)+1]);
 				}
 			}
 
-			void GLVertexArrayBase::destroy_handles(gl_handle_t * handles, size_t count)
+			void VertexArrayBase::destroy_handles(handle_t * handles, size_t count)
 			{
 				for(size_t i = count; i--;)
 					RE_DBG_ASSERT(handles[i] != 0
@@ -85,9 +87,9 @@ namespace re
 
 				RE_OGL(glDeleteVertexArrays(count, handles));
 			}
-			void GLVertexArrayBase::destroy(GLVertexArrayBase * arrays, size_t count)
+			void VertexArrayBase::destroy(VertexArrayBase * arrays, size_t count)
 			{
-				gl_handle_t * const buffers = allocation_buffer(count << 1);
+				handle_t * const buffers = allocation_buffer(count << 1);
 				for(size_t i = count; i--;)
 				{
 					RE_DBG_ASSERT(arrays[i].m_vertex.exists() &&
@@ -95,29 +97,29 @@ namespace re
 					RE_DBG_ASSERT(arrays[i].m_index.exists() &&
 						"Tried to destroy nonexisting index buffer!");
 
-					buffers[(i<<1)] = arrays[i].m_vertex.gl_handle();
-					buffers[(i<<1)+1] = arrays[i].m_index.gl_handle();
-					arrays[i].m_vertex.null_gl_handle();
-					arrays[i].m_index.null_gl_handle();
+					buffers[(i<<1)] = arrays[i].m_vertex.handle();
+					buffers[(i<<1)+1] = arrays[i].m_index.handle();
+					arrays[i].m_vertex.null_handle();
+					arrays[i].m_index.null_handle();
 				}
 
-				GLBuffer::destroy_handles(buffers, count << 1);
+				Buffer::destroy_handles(buffers, count << 1);
 
-				gl_handle_t * const vaos = allocation_buffer(count);
+				handle_t * const vaos = allocation_buffer(count);
 
 				for(size_t i = count; i--;)
 				{
 					RE_DBG_ASSERT(arrays[i].exists() &&
 						"Tried to destroy nonexisting vertex array!");
 
-					vaos[i] = arrays[i].gl_handle();
-					arrays[i].null_gl_handle();
+					vaos[i] = arrays[i].handle();
+					arrays[i].null_handle();
 				}
 
 				destroy_handles(vaos, count);
 			}
 
-			void GLVertexArrayBase::configure(
+			void VertexArrayBase::configure(
 				VertexElement const * vertexType,
 				size_t element_count,
 				size_t type_size)
@@ -143,7 +145,7 @@ namespace re
 				}
 			}
 
-			void GLVertexArrayBase::set_data(
+			void VertexArrayBase::set_data(
 					void const * vertex_data,
 					size_t vertices,
 					size_t type_size,
@@ -154,7 +156,7 @@ namespace re
 				m_render_mode = render_mode;
 			}
 
-			void GLVertexArrayBase::set_data(
+			void VertexArrayBase::set_data(
 					void const * vertex_data,
 					size_t vertices,
 					size_t type_size,
@@ -168,7 +170,7 @@ namespace re
 				m_render_mode = render_mode;
 			}
 
-			void GLVertexArrayBase::draw(size_t count, size_t start)
+			void VertexArrayBase::draw(size_t count, size_t start)
 			{
 				static GLenum const rendermode_lookup[] =
 				{
