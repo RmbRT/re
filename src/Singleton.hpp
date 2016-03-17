@@ -34,7 +34,7 @@ namespace re
 	public:
 		/*Returns the instance stored by this singleton.
 		If it does not exist, a new one will be allocated, and a delete callback will be registered for the exit of the program.*/
-		inline static T* GetInst()
+		REINL static T* GetInst()
 		{
 			if(!instance)
 			{

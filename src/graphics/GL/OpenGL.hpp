@@ -1,10 +1,10 @@
 #ifndef __re_graphics_opengl_hpp_defined
 #define __re_graphics_opengl_hpp_defined
 
-#include <gl3\glew.h>
-#include <gl3\wglew.h>
+#include <gl3/glew.h>
+#include <gl3/wglew.h>
 #define GLFW_INCLUDE_NONE
-#include <glfw\glfw3.h>
+#include <glfw/glfw3.h>
 #include <string>
 #include "../../LogFile.hpp"
 

@@ -4,7 +4,7 @@ namespace re
 	{
 		namespace GL
 		{
-			FrameBuffer::FrameBuffer()
+			FrameBuffer::~FrameBuffer()
 			{
 				RE_DBG_ASSERT(!exists() &&
 					"Frame buffer not properly cleaned up!");

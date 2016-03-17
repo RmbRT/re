@@ -31,8 +31,8 @@ namespace re
 				
 			public:
 				FrameBuffer();
-				FrameBuffer(FrameBuffer &&);
-				FrameBuffer & operator=(FrameBuffer &&);
+				FrameBuffer(FrameBuffer &&) = default;
+				FrameBuffer & operator=(FrameBuffer &&) = default;
 				REINL ~FrameBuffer();
 
 				FrameBuffer(FrameBuffer const&) = delete;

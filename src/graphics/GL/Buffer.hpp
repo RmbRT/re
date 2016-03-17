@@ -48,9 +48,6 @@ namespace re
 				Buffer &operator=(Buffer &&);
 				REINL ~Buffer(); /* Checks whether the Buffer was released. */
 
-				Buffer(Buffer const&) = delete;
-				Buffer &operator=(Buffer const&) = delete;
-
 				void bind();
 				static void alloc(Buffer * buffers, size_t count);
 				static void destroy(Buffer * buffers, size_t count);

@@ -10,26 +10,26 @@ namespace re
 
 	enum class AssetType
 	{
-		/*Used by text-based Assets.*/
+		/** Used by text-based Assets.*/
 		AT_TEXT,
-		/*Used by image-based Assets.*/
+		/** Used by image-based Assets.*/
 		AT_BITMAP,
-		/*Used by geometry-based Assets.*/
+		/** Used by geometry-based Assets.*/
 		AT_MODEL,
-		/*Used by texture-based Assets.*/
+		/** Used by texture-based Assets.*/
 		AT_TEXTURE,
 
-		/*This is for user made Asset types.
+		/** This is for user made Asset types.
 		They have to use this type to correspond to the Resource File protocol.*/
 		AT_CUSTOM
 	};
 
-	/*The header structure of an Asset that is written into the file before the Asset.*/
+	/** The header structure of an Asset that is written into the file before the Asset.*/
 	struct AssetFileHeader
 	{
-		/*The name of the Asset.*/
+		/** The name of the Asset.*/
 		string name;
-		/*The type of the Asset.*/
+		/** The type of the Asset.*/
 		AssetType type;
 	};
 	class AssetBase
@@ -48,8 +48,6 @@ namespace re
 
 		void writeAssetFileHeader(std::ofstream &file) const;
 		static bool loadAssetFileHeader(std::ifstream &file, AssetFileHeader &fileHeader);
-
-
 	};
 }
 

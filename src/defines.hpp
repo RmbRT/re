@@ -1,7 +1,7 @@
 #ifndef __re_defines_hpp_defined
 #define __re_defines_hpp_defined
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(QT_QML_DEBUG)
 #define RE_DEBUG
 #endif
 

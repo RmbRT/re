@@ -5,7 +5,7 @@
 #include "defines.hpp"
 #include "base_types.hpp"
 
-#define RE_LOG(X,...) re::LogFile::GetInst()->writefln(__FUNCTION__": "X, __VA_ARGS__)
+#define RE_LOG(X,...) re::LogFile::GetInst()->writefln("%s: " X, __FUNCTION__, ##__VA_ARGS__)
 #define RE_ASSERTION_FAILURE(X) re::LogFile::GetInst()->assertion_failure(X, __FILE__, __LINE__, __FUNCTION__)
 #define RE_ASSERT(X) void((!(X))?(RE_ASSERTION_FAILURE(#X),0):0)
 #define RE_TEST(X) re::LogFile::GetInst()->test((X), #X, __FILE__, __LINE__)
