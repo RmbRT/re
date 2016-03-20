@@ -5,6 +5,12 @@ namespace re
 		// VECTOR II
 
 		template<class T>
+		vec2<T>::vec2():
+			x(0),
+			y(0)
+		{
+		}
+		template<class T>
 		vec2<T>::vec2(copy_arg_t<T> x, copy_arg_t<T> y) :
 			x(x),
 			y(y)
@@ -157,6 +163,14 @@ namespace re
 		}
 
 		template<class T>
+		vec3<T>::vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z):
+			x(x),
+			y(y),
+			z(z)
+		{
+		}
+
+		template<class T>
 		template<class U>
 		vec3<T>::vec3(vec3<U> const& rval) : x(rval.x), y(rval.y), z(rval.z) {	}
 		template<class T>
@@ -287,12 +301,12 @@ namespace re
 		}
 
 		template<class T>
-		T sqrDist(vec3<T> const& a, vec3<T> const& b)
+		T sqr_dist(vec3<T> const& a, vec3<T> const& b)
 		{
 			return sqrAbs(b-a);
 		}
 		template<class T>
-		T sqrAbs(vec3<T> const& a)
+		T sqr_abs(vec3<T> const& a)
 		{
 			return dot(a, a);
 		}

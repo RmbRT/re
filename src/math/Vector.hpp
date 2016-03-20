@@ -41,45 +41,75 @@ namespace re
 			Supports conversion to element pointer, for easier passing to C functions. */
 		struct vec2
 		{
+			/** Creates a zero-vector. */
 			vec2();
+			/** Creates a vector with the given coordinates. */
 			vec2(copy_arg_t<T> x, copy_arg_t<T> y);
 
 			template<class U>
-			REINL explicit operator vec2<U>() const;
+			/** Converts this vector to a vector of the given type. */
+			REINL constexpr explicit operator vec2<U>() const;
 
+			/** Converts this vector to a C-style array. */
 			REINL constexpr operator T*();
+			/** Converts this vector to a C-style array. */
 			REINL constexpr operator T const*() const;
 
-			T x, y;
+			/** The x (first) coordinate of the vector. */
+			T x;
+			/** The y (second) coordinate of the vector.*/
+			T y;
 		};
 
-		template<class T> bool operator==(vec2<T> const& a, vec2<T> const& b);
-		template<class T> bool operator!=(vec2<T> const& a, vec2<T> const& b);
-		template<class T> vec2<T> operator+(vec2<T> const& a, vec2<T> const& b);
-		template<class T> vec2<T> operator-(vec2<T> const& a, vec2<T> const& b);
-		template<class T> vec2<T> operator*(vec2<T> const& a, float b);
-		template<class T> vec2<T> operator*(vec2<T> const& a, double b);
-		template<class T> vec2<T> operator*(vec2<T> const& a, int b);
-		template<class T> vec2<T> operator*(float a, vec2<T> const&b);
-		template<class T> vec2<T> operator*(double a, vec2<T> const& b);
-		template<class T> vec2<T> operator*(int a, vec2<T> const& b);
-		/** Scales the given vector by the multiplicative inverse of the given number. */
-		template<class T> vec2<T> operator / (vec2<T> const& a, float b);
-		/** Scales the given vector by the multiplicative inverse of the given number. */
-		template<class T> vec2<T> operator / (vec2<T> const& a, double b);
-		/** Scales the given vector by the multiplicative inverse of the given number. */
-		template<class T> vec2<T> operator / (vec2<T> const& a, int b);
-		/** Calculates the dot product of the given vectors as a double. */
-		template<class T> double dotd(vec2<T> const& a, vec2<T> const& b);
-		/** Calculates the dot product of the given vectors as a float. */
-		template<class T> float dotf(vec2<T> const& a, vec2<T> const& b);
-		/** Calculates the dot product of the given vectors as the element type of the vectors. */
-		template<class T> T dot(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		bool operator==(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		bool operator!=(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		vec2<T> operator+(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		vec2<T> operator-(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		vec2<T> operator*(vec2<T> const& a, float b);
+		template<class T>
+		vec2<T> operator*(vec2<T> const& a, double b);
+		template<class T>
+		vec2<T> operator*(vec2<T> const& a, int b);
+		template<class T>
+		vec2<T> operator*(float a, vec2<T> const&b);
+		template<class T>
+		vec2<T> operator*(double a, vec2<T> const& b);
+		template<class T>
+		vec2<T> operator*(int a, vec2<T> const& b);
 
-		/** Calculates the length of a */
-		template<class T> double abs(vec2<T> const& v);
-		template<class T> float absf(vec2<T> const& v);
-		template<class T> vec2<T> norm(vec2<T> const& a);
+		template<class T>
+		/** Scales the given vector by the multiplicative inverse of the given number. */
+		vec2<T> operator / (vec2<T> const& a, float b);
+		template<class T>
+		/** Scales the given vector by the multiplicative inverse of the given number. */
+		vec2<T> operator / (vec2<T> const& a, double b);
+		template<class T>
+		/** Scales the given vector by the multiplicative inverse of the given number. */
+		vec2<T> operator / (vec2<T> const& a, int b);
+		template<class T>
+		/** Calculates the dot product of the given vectors as a double. */
+		double dotd(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		/** Calculates the dot product of the given vectors as a float. */
+		float dotf(vec2<T> const& a, vec2<T> const& b);
+		template<class T>
+		/** Calculates the dot product of the given vectors as the element type of the vectors. */
+		T dot(vec2<T> const& a, vec2<T> const& b);
+
+		template<class T>
+		/** Calculates the length of a vector as a double. */
+		double abs(vec2<T> const& v);
+		template<class T>
+		/** Calculates the length of a vector as a float. */
+		float absf(vec2<T> const& v);
+		template<class T>
+		/** Divides the given vector by its length. */
+		vec2<T> norm(vec2<T> const& a);
 
 
 
@@ -88,17 +118,26 @@ namespace re
 			Supports conversion to element pointer, for easier passing to C functions. */
 		struct vec3
 		{
-			typedef T type;
 			template<class U>
-			explicit vec3(vec3<U> const& v);
+			/** Converts this vector to a vector of the given type. */
+			REINL constexpr explicit operator vec3<U>() const;
 
+			/** Creates a vector with the given coordinates. */
 			vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z);
+			/** Creates a zero-vector. */
 			vec3();
 
-			operator const T*() const;
-			operator T*();
+			/** Converts this vector to a C-style array. */
+			REINL constexpr operator const T*() const;
+			/** Converts this vector to a C-style array. */
+			REINL constexpr operator T*();
 
-			T x, y, z;
+			/** The x (first) coordinate of the vector. */
+			T x;
+			/** The y (second) coordinate of the vector. */
+			T y;
+			/** The z (third) coordinate of the vector. */
+			T z;
 		};
 
 		template<class T> bool operator==(vec3<T> const& a, vec3<T> const& b);
@@ -117,12 +156,18 @@ namespace re
 		template<class T> double dotd(vec3<T> const& a, vec3<T> const& b);
 		template<class T> float dotf(vec3<T> const& a, vec3<T> const& b);
 		template<class T> T dot(vec3<T> const& a, vec3<T> const& b);
-		template<class T> double abs(vec3<T> const& a, vec3<T> const& b);
-		template<class T> float absf(vec3<T> const& a, vec3<T> const& b);
+		/** Calculates the length of the given vector as double. */
+		template<class T> double abs(vec3<T> const& v);
+		/** Calculates the length of the given vector as float. */
+		template<class T> float absf(vec3<T> const& v);
+		/** Calculates the cross product of the given vectors. */
 		template<class T> vec3<T> cross(vec3<T> const& a, vec3<T> const& b);
+		/** Divides the given vector by its length. */
 		template<class T> vec3<T> norm(vec3<T> const& a);
-		template<class T> T sqrDist(vec3<T> const& a, vec3<T> const& b);
-		template<class T> T sqrAbs(vec3<T> const& a);
+		/** Calculates the square of the distance between the given vectors. */
+		template<class T> T sqr_dist(vec3<T> const& a, vec3<T> const& b);
+		/** Calculates the square of the length of the given vector. */
+		template<class T> T sqr_abs(vec3<T> const& a);
 
 
 		template<class T>
@@ -130,20 +175,31 @@ namespace re
 			Supports conversion to element pointer, for easier passing to C functions. */
 		struct vec4
 		{
-			typedef T type;
 			template<class U>
 			explicit vec4(vec4<U> const& v);
 
+			/** Creates a 4-dimensional vector with the given coordinates.
+				@param[in] xyz: The first three coordinates of the vector.
+				@param[in] w: The fourth coordinate of the vector. */
 			vec4(vec3<T> const& xyz, copy_arg_t<T> w);
-
+			/** Creates a 4-dimensional vector with the given coordinates. */
 			vec4(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z, copy_arg_t<T> w);
-			explicit vec4(const T v[4]);
+			/** Creates a zero-vector. */
 			vec4();
 
+			/** Converts this vector to a C-style array. */
 			operator const T*() const;
+			/** Converts this vector to a C-style array. */
 			operator T*();
 
-			T x, y, z, w;
+			/** The x (first) coordinate of the vector. */
+			T x;
+			/** The y (second) coordinate of the vector. */
+			T y;
+			/** The z (third) coordinate of the vector. */
+			T z;
+			/** The w (fourth) coordinate of the vector. */
+			T w;
 		};
 
 		template<class T> bool operator==(vec4<T> const& a, vec4<T> const& b);
@@ -156,14 +212,23 @@ namespace re
 		template<class T> vec4<T> operator*(float a, vec4<T> const& b);
 		template<class T> vec4<T> operator*(double a, vec4<T> const& b);
 		template<class T> vec4<T> operator*(int a, vec4<T> const& b);
+		/** Scales the vector with the multiplicative inverse of the given number. */
 		template<class T> vec4<T> operator / (vec4<T> const& a, float b);
+		/** Scales the vector with the multiplicative inverse of the given number. */
 		template<class T> vec4<T> operator / (vec4<T> const& a, double b);
+		/** Scales the vector with the multiplicative inverse of the given number. */
 		template<class T> vec4<T> operator / (vec4<T> const& a, int b);
+		/** Calculates the dot product of the given vectors as double. */
 		template<class T> double dotd(vec4<T> const& a, vec4<T> const& b);
+		/** Calculates the dot product of the given vectors as float. */
 		template<class T> float dotf(vec4<T> const& a, vec4<T> const& b);
+		/** Calculates the dot product of the given vectors as element type. */
 		template<class T> T dot(vec4<T> const& a, vec4<T> const& b);
-		template<class T> double abs(vec4<T> const& a, vec4<T> const& b);
-		template<class T> float absf(vec4<T> const& a, vec4<T> const& b);
+		/** Calculates the length of the given vector as double. */
+		template<class T> double abs(vec4<T> const& v);
+		/** Calculates the length of the given vector as float. */
+		template<class T> float absf(vec4<T> const& v);
+		/** Divides the given vector by its length. */
 		template<class T> vec4<T> norm(vec4<T> const& a);
 	}
 }

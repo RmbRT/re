@@ -8,11 +8,9 @@
 #include "util/NotNull.hpp"
 #include "util/Delegate.hpp"
 #include <Lock/Lock.hpp>
-#include "util/Lazy.hpp"
 
 namespace re
 {
-	using re::util::lazy;
 
 	using re::util::notnull;
 

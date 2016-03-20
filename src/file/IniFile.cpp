@@ -9,84 +9,116 @@ namespace re
 	{
 		namespace IniFile
 		{
-			Entry::Entry() : key(), parsed(), content(), value_t(EntryValue::String) { }
-			
-			Entry::Entry(const string &key, const string &parsed) : key(key), content(content), value_t(EntryValue::String) { }
-			Entry::Entry(const string &key, const string &content, int parsed) : key(key), content(content), value_t(EntryValue::Int) { this->parsed.Int = parsed; }
-			Entry::Entry(const string &key, const string &content, float parsed) : key(key), content(content), value_t(EntryValue::Float) { this->parsed.Float = parsed; }
-			Entry::Entry(const string &key, const string &content, bool parsed) : key(key), content(content), value_t(EntryValue::Bool) { this->parsed.Bool = parsed; }
-
-			EntryValue Entry::valueType() const
+			Entry::Entry():
+				m_key(),
+				m_parsed(),
+				m_content(),
+				m_value_t(EntryValue::String)
 			{
-				return value_t;
+			}
+			
+			Entry::Entry(string key, string parsed):
+				m_key(std::move(key)),
+				m_content(std::move(parsed)),
+				m_value_t(EntryValue::String)
+			{
 			}
 
-			bool Entry::toFloat(float &out) const
+			Entry::Entry(string key, string content, int parsed):
+				m_key(std::move(key)),
+				m_content(std::move(content)),
+				m_value_t(EntryValue::Int)
 			{
-				if(value_t == EntryValue::Bool)
+				m_parsed.Int = parsed;
+			}
+
+			Entry::Entry(string key, string content, float parsed):
+				m_key(std::move(key)),
+				m_content(std::move(content)),
+				m_value_t(EntryValue::Float)
+			{
+				m_parsed.Float = parsed;
+			}
+
+			Entry::Entry(string key, string content, bool parsed):
+				m_key(std::move(key)),
+				m_content(std::move(content)),
+				m_value_t(EntryValue::Bool)
+			{
+				m_parsed.Bool = parsed;
+			}
+
+			bool Entry::to_float(float &out) const
+			{
+				if(m_value_t == EntryValue::Bool)
 				{
-					out = parsed.Bool ? 1.f : 0.f;
+					out = m_parsed.Bool ? 1.f : 0.f;
 					return true;
-				} else if(value_t == EntryValue::Float)
+				} else if(m_value_t == EntryValue::Float)
 				{
-					out = parsed.Float;
+					out = m_parsed.Float;
 					return true;
-				} else if(value_t == EntryValue::Int)
+				} else if(m_value_t == EntryValue::Int)
 				{
-					out = parsed.Int;
+					out = m_parsed.Int;
 					return true;
 				}
 				else return false;
 			}
 
-			bool Entry::toInt(int &out) const
+			bool Entry::to_int(int &out) const
 			{
-				if(value_t == EntryValue::Bool)
+				if(m_value_t == EntryValue::Bool)
 				{
-					out = parsed.Bool ? 1 : 0;
+					out = m_parsed.Bool ? 1 : 0;
 					return true;
-				} else if(value_t == EntryValue::Int)
+				} else if(m_value_t == EntryValue::Int)
 				{
-					out = parsed.Int;
+					out = m_parsed.Int;
 					return true;
-				} else if(value_t == EntryValue::Float)
+				} else if(m_value_t == EntryValue::Float)
 				{
-					out = parsed.Float;
+					out = m_parsed.Float;
 					return true;
 				}
 				else return false;
 			}
-			bool Entry::toBool(bool &out) const
+			bool Entry::to_bool(bool &out) const
 			{
-				if(value_t == EntryValue::Bool)
-					out = parsed.Bool;
-				else if(value_t == EntryValue::Float)
-					out = parsed.Float;
-				else if(value_t == EntryValue::Int)
-					out = parsed.Int;
+				if(m_value_t == EntryValue::Bool)
+					out = m_parsed.Bool;
+				else if(m_value_t == EntryValue::Float)
+					out = m_parsed.Float;
+				else if(m_value_t == EntryValue::Int)
+					out = m_parsed.Int;
 				else return false;
 
 				return true;
 			}
 			
-			bool Entry::toString(string &out) const
+			string const& Entry::to_string() const
 			{
-				out = content;
-				return true;
+				return m_content;
 			}
 
-			const string &Section::name() const { return _name; }
-			const std::vector<Entry> &Section::entries() const { return _entries; }
-			const Entry * Section::findEntry(const string &name) const
+			string const& Section::name() const
 			{
-				for(const auto &entry : _entries)
-					if(entry.key == name)
+				return m_name;
+			}
+			std::vector<Entry> const& Section::entries() const
+			{
+				return m_entries;
+			}
+			Entry const* Section::find_entry(const string &name) const
+			{
+				for(const auto &entry : m_entries)
+					if(entry.key() == name)
 						return &entry;
 				return nullptr;
 			}
-			const Entry * Section::operator[](const string &name) const
+			Entry const* Section::operator[](const string &name) const
 			{
-				return findEntry(name);
+				return find_entry(name);
 			}
 
 			int IniFile::comment(const std::vector<string> &lines, const int current_line, string &out)
@@ -101,7 +133,7 @@ namespace re
 				
 				if(line >= lines.size())
 					return 0;
-				if(sscanf_s(lines[line++].c_str(), ";%s", buf, _countof(buf)))
+				if(sscanf(lines[line++].c_str(), ";%s", buf))
 				{
 					out = buf;
 					return line-current_line;
@@ -117,47 +149,49 @@ namespace re
 					return 0;
 				while(lines[line].empty())
 					line++;
-				string _comment;
-				out._comment.clear();
-				while(int temp = comment(lines, line, _comment))
+				string comment;
+				out.comment.clear();
+				while(int temp = this->comment(lines, line, comment))
 				{
-					out._comment+=_comment;
+					out.comment += comment;
 					line += temp;
 				}
 				
 				if(line >= lines.size())
 					return 0;
-				if(!sscanf_s(lines[line++].c_str(), "[%[^]]]", buf, _countof(buf)))
+				if(!sscanf(lines[line++].c_str(), "[%[^]]]", buf))
 					return 0;
 				else
 				{
-					Entry _entry;
-					while(int temp = entry(lines, line, _entry))
+					Entry entry;
+					while(int temp = this->entry(lines, line, entry))
 					{
-						out._entries.push_back(_entry);
+						out.entries.push_back(std::move(entry));
 						line += temp;
 					}
 
-					out._name = buf;
+					out.name = buf;
 
 					return line-current_line;
 				}
 			}
+
+
 			int IniFile::entry(const std::vector<string> &lines, const int current_line, Entry &out)
 			{
 				int line = current_line;
-				out = Entry();
+				string out_comment;
+
 				if(line >= lines.size())
 					return 0;
 				while(lines[line].empty())
 					line++;
 
 				
-				string _comment;
-				out.comment.clear();
-				while(int temp = comment(lines, line, _comment))
+				string comment;
+				while(int temp = this->comment(lines, line, comment))
 				{
-					out.comment+=_comment;
+					out_comment += comment;
 					line += temp;
 				}
 
@@ -166,26 +200,26 @@ namespace re
 				
 				if(line >= lines.size())
 					return 0;
-				if(2 != sscanf_s(lines[line++].c_str(), "%[^=]=%s", name, _countof(name), value, _countof(value)))
+				if(2 != sscanf(lines[line++].c_str(), "%[^=]=%s", name, value))
 					return 0;
 				else
 				{
-					out.key = name;
-					out.content = value;
-					if(sscanf_s(value, "%i", &out.parsed.Int))
-						out.value_t = EntryValue::Int;
-					else if(sscanf_s(value, "%f", &out.parsed.Float))
-						out.value_t = EntryValue::Float;
+					union {
+						int Int;
+						float Float;
+						bool Bool;
+					};
+
+					if(sscanf(value, "%i", &Int))
+						out = Entry(name, value, Int);
+					else if(sscanf(value, "%f", &Float))
+						out = Entry(name, value, Float);
 					else if(!strcmp(value, "true") || !strcmp(value, "yes"))
-					{
-						out.parsed.Bool = true;
-						out.value_t = EntryValue::Bool;
-					} else if(!strcmp(value, "false") || !strcmp(value, "no"))
-					{
-						out.parsed.Bool = false;
-						out.value_t = EntryValue::Bool;
-					}
-					else out.value_t = EntryValue::String;
+						out = Entry(name, value, true);
+					else if(!strcmp(value, "false") || !strcmp(value, "no"))
+						out = Entry(name, value, false);
+					else
+						out = Entry(name, value);
 
 					return line-current_line;
 				}
@@ -207,25 +241,38 @@ namespace re
 				Entry entry;
 				while(int temp = this->entry(lines, current_line, entry))
 				{
-					Unnamed._entries.push_back(entry);
+					Unnamed.entries.push_back(entry);
 					current_line += temp;
 				}
 				Section section;
 				while(int temp = this->section(lines, current_line, section))
 				{
-					sections.push_back(section);
-					current_line += temp;
+					if(Section const* sect = findSection(section.name))
+					{
+						for(Entry & entry : section.entries)
+						{
+							if(Entry const* ent = sect->find_entry(entry.key()))
+								*const_cast<Entry *>(ent) = std::move(entry);
+							else
+								const_cast<Section *>(sect)->entries.push_back(std::move(entry));
+						}
+					}
+					else
+					{
+						sections.push_back(section);
+						current_line += temp;
+					}
 				}
 
 				return current_line == lines.size();
 			}
 
-			const Section * IniFile::findSection(const string &name) const
+			const Section * IniFile::findSection(string const& name) const
 			{
 				if(name.empty())
 					return &Unnamed;
 				for(const Section &section : sections)
-					if(section._name == name)
+					if(section.name == name)
 						return &section;
 				return nullptr;
 			}
@@ -234,7 +281,7 @@ namespace re
 				if(name.empty())
 					return &Unnamed;
 				for(const Section &section : sections)
-					if(section._name == name)
+					if(section.name == name)
 						return &section;
 				return nullptr;
 			}
