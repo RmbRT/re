@@ -8,11 +8,17 @@ namespace re
 	/** Contains classes and functions for mathematical calculations. */
 	namespace math		{	}
 	/** Contains classes and functions for rendering or window management. */
-	namespace graphics	{	}
+	namespace graphics
+	{
+		/** Contains OpenGL classes used for rendering with OpenGL. */
+		namespace GL	{	}
+	}
 	/** Contains classes for object communication. */
 	namespace messaging	{	}
 	/** Contains classes for handling input by the user. */
 	namespace input		{	}
+	/** Contains classes and functions to reduce redundant code. */
+	namespace util		{	}
 }
 
 #include "defines.hpp"

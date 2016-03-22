@@ -5,12 +5,15 @@
 #define RE_DEBUG
 #endif
 
-#define REPTRCAST __fastcall
-
 /* Inline function calls. */
 #ifdef _MSC_VER
 #define REINL __forceinline
 #else
 #define REINL inline
 #endif
+
+#ifndef _countof
+#define _countof(x) (sizeof(x) / sizeof(*(x)))
+#endif
+
 #endif

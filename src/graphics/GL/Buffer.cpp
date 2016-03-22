@@ -1,6 +1,5 @@
 #include "Buffer.hpp"
 #include "OpenGL.hpp"
-#include <malloc.h>
 
 namespace re
 {
@@ -17,27 +16,6 @@ namespace re
 				m_access(access),
 				m_usage(usage)
 			{
-			}
-
-			Buffer::Buffer(Buffer && move):
-				Handle(std::move(move)),
-				m_type(move.m_type),
-				m_access(move.m_access),
-				m_usage(move.m_usage)
-			{
-			}
-
-			Buffer &Buffer::operator=(Buffer && move)
-			{
-				if(&move != this)
-				{
-					static_cast<Handle&>(*this) = std::move(move);
-					m_type = move.m_type;
-					m_access = move.m_access;
-					m_usage = move.m_usage;
-				}
-
-				return *this;
 			}
 
 			REINL GLenum opengl_target(BufferType type)

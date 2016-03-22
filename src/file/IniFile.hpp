@@ -3,8 +3,6 @@
 
 #include "../types.hpp"
 
-#include <map>
-
 namespace re
 {
 	namespace file
@@ -48,7 +46,7 @@ namespace re
 					The name of the property stored by this Entry.
 				@param[in] parsed:
 					The value of the property stored by this Entry. */
-				Entry(string key, string parsed);
+				Entry(string key, string parsed, string comment);
 				/** Creates an Entry with the given key and the given int as value.
 				@param[in] key:
 					The name of the property stored by this Entry.
@@ -56,7 +54,7 @@ namespace re
 					The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
 					The parsed integer value of the property stored by this Entry. */
-				Entry(string key, string content, int parsed);
+				Entry(string key, string content, string comment, int parsed);
 				/** Creates an Entry with the given key and the given float as value.
 				@param[in] key:
 				The name of the property stored by this Entry.
@@ -64,7 +62,7 @@ namespace re
 				The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
 				The parsed float value of the property stored by this Entry. */
-				Entry(string key, string content, float parsed);
+				Entry(string key, string content, string comment, float parsed);
 				/** Creates an Entry with the given key and the given bool as value.
 				@param[in] key:
 				The name of the property stored by this Entry.
@@ -72,7 +70,7 @@ namespace re
 				The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
 				The parsed bool value of the property stored by this Entry. */
-				Entry(string key, string content, bool parsed);
+				Entry(string key, string content, string comment, bool parsed);
 
 				/** Determines what type the value of this Entry has. */
 				EntryValue value_type() const;
@@ -85,7 +83,7 @@ namespace re
 					Where the output should be stored.
 				@return
 					True, if the value could be read, otherwise false. */
-				bool to_float(float &out) const;
+				bool to_float(float & out) const;
 				/** Retrieves the stored value into the given integer.
 					If the stored value is a bool, sets out to 1 or 0.
 					If the stored value is a float, casts the stored float into out.
@@ -94,25 +92,21 @@ namespace re
 					Where the output should be stored.
 				@return
 					True, if the value could be read, otherwise false. */
-				bool to_int(int &out) const;
+				bool to_int(int & out) const;
 
 				/** Retrieves the stored value into the given bool.
 					If the stored value is an int or float, sets out to true, when the stored value is not 0.
 					If the stored value is a string, fails.
-				@param[out] out:
-					Where the output should be stored.
-				@return
-					True, if the value could be read, otherwise false. */
-				bool to_bool(bool &out) const;
-				/** Retrieves the stored value as it was written in the file into out. */
-				REINL string const& to_string() const;
+				@param[out] out: Where the output should be stored.
+				@return True, if the value could be read, otherwise false. */
+				bool to_bool(bool & out) const;
 
+				/** Retrieves the stored value as it was written in the file. */
+				REINL string const& content() const;
 				/** Returns the key of the Entry. */
 				REINL string const& key() const;
 				/** Returns the comment of the Entry. */
 				REINL string const& comment() const;
-				/** Returns the comment of the Entry. */
-				REINL string & comment();
 			};
 
 			/** Describes a section ("[sectionname]") of an IniFile. */
@@ -129,43 +123,66 @@ namespace re
 
 				/** Tries to find an Entry with the given name.
 				@param[in] name:
+					The name / key of the Entry to be looked for.
+				@return
+					If an Entry with a matching name was found, returns its address, otherwise null. */
+				Entry * find_entry(string const& name);
+				/** Tries to find an Entry with the given name.
+				@param[in] name:
 					The name/key of the Entry to be looked for.
 				@return
 					If an Entry with a matching name was found, returns its address, otherwise null. */
 				Entry const* find_entry(string const& name) const;
 				/** @see find_entry. */
+				REINL Entry * operator[](string const& name);
+				/** @see find_entry. */
 				REINL Entry const* operator[](string const& name) const;
 			};
 
+			/** Represents a .ini file. */
 			class IniFile
 			{
-				Section Unnamed;
-				std::vector<Section> sections;
+				/** The unnamed / default section of the file. */
+				Section m_unnamed_section;
+				/** The named sections of the file. */
+				std::vector<Section> m_sections;
 
 				/** Reads a Section out of the given lines.
 				@return The number of lines consumed. */
-				int section(std::vector<string> const& lines, const int current_line, Section &out);
+				int section(std::vector<string> const& lines, const int current_line, Section & out);
 				/** Reads an Entry out of the given lines.
 				@return The number of lines consumed. */
-				int entry(std::vector<string> const& lines, const int current_line, Entry &out);
+				int entry(std::vector<string> const& lines, const int current_line, Entry & out);
 				/** Reads a comment out of the given lines.
 				@return The number of lines consumed. */
-				int comment(std::vector<string> const& lines, const int current_line, string &out);
+				int comment(std::vector<string> const& lines, const int current_line, string & out);
 
 			public:
-				/*pass "" for the unnamed section.*/
-				const Section * findSection(const string &name) const;
-				/*pass "" for the unnamed section.*/
-				const Section * operator[](const string &name) const;
-				const Section * unnamedSection() const;
 
-				bool load(const string &filename);
+				/** Tries to find the Section with the given name.
+					Pass "" for the unnamed section. */
+				Section * find_section(string const& name);
+				/** Tries to find the Section with the given name.
+					Pass "" for the unnamed section. */
+				Section const* find_section(string const& name) const;
+				/** Tries to find the Section with the given name.
+					Pass "" for the unnamed section.*/
+				REINL Section * operator[](string const& name);
+				/** Tries to find the Section with the given name.
+					Pass "" for the unnamed section.*/
+				REINL Section const* operator[](string const& name) const;
+				/** Returns the unnamed / default Section of the file. */
+				REINL Section & unnamed_section();
+				/** Returns the unnamed / default Section of the file. */
+				REINL Section const& unnamed_section() const;
+
+				/** Tries to load the given file. */
+				bool load(string const& filename);
 			};
-
 		}
-
-		IniFile::IniFile loadIniFile(const string &filename);
 	}
 }
+
+#include "IniFile.inl"
 
 #endif

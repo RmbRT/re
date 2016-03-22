@@ -8,12 +8,15 @@ namespace re
 {
 	namespace graphics
 	{
+		/** Filter method useed to generate a mipmap. */
 		enum class MipmapFilter
 		{
 			Center,
 			Adjacent4,
 			Adjacent8
 		};
+
+		/** Internal data types used by a Bitmap. */
 		enum class ColorChannel
 		{
 			FLOAT1,
@@ -26,25 +29,28 @@ namespace re
 			BYTE4
 		};
 
+		/** Represents an Image. */
 		class Bitmap
 		{
-			ColorChannel channel;
-			uint32 width;
-			uint32 height;
+			size_t m_bytes;
+			ColorChannel m_channel;
+			uint32 m_width;
+			uint32 m_height;
 
-			void* pixels;
+			void* m_pixels;
 
 		public:
-			Bitmap(const Bitmap &bitmap);
 			Bitmap();
+			Bitmap(Bitmap const& bitmap);
 			Bitmap(ColorChannel channel, uint32 width, uint32 height);
 			Bitmap(Bitmap &&move);
 			~Bitmap();
 
-			/*Allocates a bitmap with the given channels and bounds.*/
+			/** Allocates a bitmap with the given channels and bounds.*/
 			void alloc(ColorChannel channel, uint32 widh, uint32 height);
 
-			Bitmap &operator=(const Bitmap &bitmap);
+			Bitmap &operator=(Bitmap const& bitmap);
+			Bitmap &operator=(Bitmap && bitmap);
 
 			uint32 getWidth() const;
 			uint32 getHeight() const;

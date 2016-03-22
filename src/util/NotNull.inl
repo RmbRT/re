@@ -1,4 +1,4 @@
-#include "LogFile.hpp"
+#include "../LogFile.hpp"
 
 namespace re
 {

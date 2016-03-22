@@ -1,4 +1,5 @@
 #include "BMPFile.hpp"
+#include "../util/Error.hpp"
 
 namespace re
 {
@@ -36,24 +37,24 @@ namespace re
 		};
 #define _addr(X) &reinterpret_cast<char&>(X)
 #define _readobj(X) read(_addr(X), sizeof(X))
-		graphics::Bitmap loadBMP(const std::string &file)
+		bool loadBMP(std::string const& file, Bitmap & out)
 		{
 			std::ifstream is(file, std::ios::binary | std::ios::in);
 
 			BITMAPFILEHEADER fh;
-			RE_ASSERT(is.read(_addr(fh), 14));
+			CRITICAL(is.read(_addr(fh), 14), false);
 			uint32 HeaderSize;
-			RE_ASSERT(is._readobj(HeaderSize));
+			CRITICAL(is._readobj(HeaderSize), false);
 
 			BITMAPINFOHEADER header;
-			//RE_ASSERT(HeaderSize == 40);
-			RE_ASSERT(is.read(_addr(header)+sizeof(header.biSize), 36));
+			//CRITICAL(HeaderSize == 40, false);
+			CRITICAL(is.read(_addr(header)+sizeof(header.biSize), 36));
 
 			byte skip;
 			for(size_t i = 0; i<HeaderSize-40; i++)
-				RE_ASSERT(is._readobj(skip));
+				CRITICAL(is._readobj(skip), false);
 
-			RE_ASSERT(header.biBitCount == 8 || header.biBitCount >= 24);
+			CRITICAL(header.biBitCount == 8 || header.biBitCount >= 24, false);
 
 			graphics::Bitmap data;
 			switch(header.biBitCount)
@@ -68,7 +69,7 @@ namespace re
 
 					for(size_t y = 0; y < header.biHeight; y++)
 					{
-						RE_ASSERT(is.read(_addr(row[0]), row.size()));
+						CRITICAL(is.read(_addr(row[0]), row.size()), false);
 						for(size_t x = 0; x<header.biWidth; x++)
 							data.getByte1(x,y) = row[x];
 					}
@@ -82,7 +83,7 @@ namespace re
 					std::vector<byte> row(row_w);
 					for(size_t y = 0; y < header.biHeight; y++)
 					{
-						RE_ASSERT(is.read(_addr(row[0]), row.size()));
+						CRITICAL(is.read(_addr(row[0]), row.size()), false);
 						for(size_t x = 0; x<header.biWidth; x++)
 						{
 							const size_t base_off = x+x+x;
@@ -101,7 +102,7 @@ namespace re
 					std::vector<byte> row(row_w);
 					for(size_t y = 0; y < header.biHeight; y++)
 					{
-						RE_ASSERT(is.read(_addr(row[0]), row.size()));
+						CRITICAL(is.read(_addr(row[0]), row.size()), false);
 						for(size_t x = 0; x<header.biWidth; x++)
 						{
 							const size_t base_off = x<<2;
@@ -116,7 +117,7 @@ namespace re
 				} break;
 			default:
 				{
-					RE_ASSERTION_FAILURE("UNABLE TO READ BITMAP FILE: INVALID BPP");
+					return false;
 				} break;
 			}
 			return data;

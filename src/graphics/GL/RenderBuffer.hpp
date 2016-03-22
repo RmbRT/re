@@ -18,10 +18,11 @@ namespace re
 					m_width,
 					m_height;
 			public:
+				/** */
 				RenderBuffer();
-				RenderBuffer(RenderBuffer &&);
-				RenderBuffer &operator=(RenderBuffer &&);
-				/* Asserts that the render buffer must not exist anymore. */
+				RenderBuffer(RenderBuffer &&) = default;
+				RenderBuffer &operator=(RenderBuffer &&) = default;
+				/** Asserts that the render buffer must not exist anymore. */
 				REINL ~RenderBuffer();
 
 				RenderBuffer(RenderBuffer const&) = delete;

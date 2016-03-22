@@ -17,33 +17,37 @@ namespace re
 			{
 			}
 			
-			Entry::Entry(string key, string parsed):
+			Entry::Entry(string key, string parsed, string comment):
 				m_key(std::move(key)),
 				m_content(std::move(parsed)),
-				m_value_t(EntryValue::String)
+				m_value_t(EntryValue::String),
+				m_comment(std::move(comment))
 			{
 			}
 
-			Entry::Entry(string key, string content, int parsed):
+			Entry::Entry(string key, string content, string comment, int parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
-				m_value_t(EntryValue::Int)
+				m_value_t(EntryValue::Int),
+				m_comment(std::move(comment))
 			{
 				m_parsed.Int = parsed;
 			}
 
-			Entry::Entry(string key, string content, float parsed):
+			Entry::Entry(string key, string content, string comment, float parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
-				m_value_t(EntryValue::Float)
+				m_value_t(EntryValue::Float),
+				m_comment(std::move(comment))
 			{
 				m_parsed.Float = parsed;
 			}
 
-			Entry::Entry(string key, string content, bool parsed):
+			Entry::Entry(string key, string content, string comment, bool parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
-				m_value_t(EntryValue::Bool)
+				m_value_t(EntryValue::Bool),
+				m_comment(std::move(comment))
 			{
 				m_parsed.Bool = parsed;
 			}
@@ -95,31 +99,25 @@ namespace re
 
 				return true;
 			}
-			
-			string const& Entry::to_string() const
-			{
-				return m_content;
-			}
 
-			string const& Section::name() const
+			Entry * Section::find_entry(const string &name)
 			{
-				return m_name;
-			}
-			std::vector<Entry> const& Section::entries() const
-			{
-				return m_entries;
-			}
-			Entry const* Section::find_entry(const string &name) const
-			{
-				for(const auto &entry : m_entries)
+				for(auto &entry : m_entries)
 					if(entry.key() == name)
 						return &entry;
 				return nullptr;
 			}
-			Entry const* Section::operator[](const string &name) const
+
+			Entry const* Section::find_entry(const string &name) const
 			{
-				return find_entry(name);
+				for(auto const& entry : m_entries)
+					if(entry.key() == name)
+						return &entry;
+				return nullptr;
 			}
+
+			// Entry end.
+			// IniFile start.
 
 			int IniFile::comment(const std::vector<string> &lines, const int current_line, string &out)
 			{
@@ -225,11 +223,10 @@ namespace re
 				}
 			}
 
-			bool IniFile::load(const string &filename)
+			bool IniFile::load(string const& filename)
 			{
 				std::vector<string> lines;
 				std::ifstream file(filename, std::ios::in);
-				
 				string line;
 
 				while(std::getline(file, line))
@@ -241,7 +238,7 @@ namespace re
 				Entry entry;
 				while(int temp = this->entry(lines, current_line, entry))
 				{
-					Unnamed.entries.push_back(entry);
+					m_unnamed_section.entries.push_back(entry);
 					current_line += temp;
 				}
 				Section section;
@@ -251,15 +248,15 @@ namespace re
 					{
 						for(Entry & entry : section.entries)
 						{
-							if(Entry const* ent = sect->find_entry(entry.key()))
-								*const_cast<Entry *>(ent) = std::move(entry);
+							if(Entry * ent = sect->find_entry(entry.key()))
+								*ent = std::move(entry);
 							else
-								const_cast<Section *>(sect)->entries.push_back(std::move(entry));
+								sect->entries.push_back(std::move(entry));
 						}
 					}
 					else
 					{
-						sections.push_back(section);
+						m_sections.push_back(section);
 						current_line += temp;
 					}
 				}
@@ -267,36 +264,25 @@ namespace re
 				return current_line == lines.size();
 			}
 
-			const Section * IniFile::findSection(string const& name) const
+			Section * IniFile::find_section(string const& name)
 			{
 				if(name.empty())
-					return &Unnamed;
-				for(const Section &section : sections)
+					return &m_unnamed_section;
+				for(Section & section : m_sections)
 					if(section.name == name)
 						return &section;
 				return nullptr;
 			}
-			const Section * IniFile::operator[](const string &name) const
+
+			Section const* IniFile::find_section(string const& name) const
 			{
 				if(name.empty())
-					return &Unnamed;
-				for(const Section &section : sections)
+					return &m_unnamed_section;
+				for(Section const& section : m_sections)
 					if(section.name == name)
 						return &section;
 				return nullptr;
 			}
-			const Section * IniFile::unnamedSection() const
-			{
-				return &Unnamed;
-			}
-
-		}
-
-		IniFile::IniFile loadIniFile(const string &filename)
-		{
-			IniFile::IniFile file;
-			file.load(filename);
-			return file;
 		}
 	}
 }

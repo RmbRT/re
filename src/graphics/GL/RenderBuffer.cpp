@@ -14,13 +14,6 @@ namespace re
 			{
 			}
 
-			RenderBuffer::RenderBuffer(RenderBuffer && move):
-				Handle(std::move(move)),
-				m_width(move.m_width),
-				m_height(move.m_height)
-			{
-			}
-
 			RenderBuffer &RenderBuffer::operator=(RenderBuffer && move)
 			{
 				if(this == &move)

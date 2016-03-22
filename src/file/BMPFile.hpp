@@ -3,14 +3,13 @@
 
 #include "../types.hpp"
 #include "../graphics/Bitmap.hpp"
-#include <fstream>
 
 namespace re
 {
 	namespace file
 	{
-		/** Loads a Bitmap from the given file stream. */
-		graphics::Bitmap loadBMP(std::ifstream &in);
+		/** Loads a Bitmap from the given file. */
+		bool loadBMP(string const& filename, Bitmap &out);
 	}
 }
 

@@ -13,6 +13,17 @@ namespace re
 	{
 		namespace GL
 		{
+			enum class TextureType
+			{
+				Texture1D,
+				Texture1DArray,
+				Texture2D,
+				Texture2DArray,
+				Texture2DMultisample,
+				Texture2DMultisampleArray,
+				Texture3D
+			};
+
 			class Texture : Handle
 			{
 				static void alloc_handles(handle_t * handles, size_t count);
@@ -20,19 +31,18 @@ namespace re
 
 			public:
 				Texture();
-				Texture(Texture &&);
-				Texture &operator=(Texture &&);
+				Texture(Texture &&) = default;
+				Texture &operator=(Texture &&) = default;
 				REINL ~Texture();
 
 				using Handle::handle;
 				using Handle::exists;
 
-				Texture(Texture const&) = delete;
-				Texture &operator=(Texture const&) = delete;
+				virtual TextureType type() const = 0;
 			};
 
 
-			class Texture2D : Texture
+			class Texture2D : public Texture
 			{
 				static handle_t bound;
 
@@ -41,20 +51,19 @@ namespace re
 					m_height;
 			public:
 				Texture2D();
-				Texture2D(Texture2D &&);
-				Texture2D &operator=(Texture2D &&);
+				Texture2D(Texture2D &&) = default;
+				Texture2D &operator=(Texture2D &&) = default;
 				REINL ~Texture2D();
 				
-				Texture2D(Texture2D const&) = delete;
-				Texture2D &operator=(Texture2D const&) = delete;
-
 				using Texture::handle;
 				using Texture::exists;
 
 				void bind();
+
+				REINL TextureType type() const override;
 			};
 
-			class Texture2DArray : Texture
+			class Texture2DArray : public Texture
 			{
 			public:
 				Texture2DArray();
@@ -70,5 +79,7 @@ namespace re
 		}
 	}
 }
+
+#include "Texture.inl"
 
 #endif

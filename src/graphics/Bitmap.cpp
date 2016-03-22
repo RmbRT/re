@@ -5,25 +5,51 @@ namespace re
 {
 	namespace graphics
 	{
-		Bitmap::Bitmap(const Bitmap &bitmap) : width(bitmap.width), height(bitmap.height), channel(bitmap.channel), pixels(nullptr)
+		Bitmap::Bitmap(Bitmap const& bitmap):
+			width(bitmap.width),
+			height(bitmap.height),
+			channel(bitmap.channel),
+			pixels(nullptr)
 		{
 			size_t size = getByteSize();
 			pixels = new byte[size];
 			memcpy(pixels, bitmap.pixels, size);
 		}
 
-		Bitmap::Bitmap(): channel(ColorChannel::BYTE4), width(0), height(0), pixels(nullptr)	{	}
+		Bitmap::Bitmap():
+			channel(ColorChannel::BYTE4),
+			width(0),
+			height(0),
+			pixels(nullptr)
+		{
+		}
 		
-		Bitmap::Bitmap(ColorChannel channel, uint32 width, uint32 height): width(width), height(height), channel(channel), pixels(nullptr)
+		Bitmap::Bitmap(ColorChannel channel, uint32 width, uint32 height):
+			width(width),
+			height(height),
+			channel(channel),
+			pixels(nullptr)
 		{
 			alloc(channel, width, height);
 		}
-		Bitmap::Bitmap(Bitmap &&move) : channel(move.channel), width(move.width), height(move.height), pixels(move.pixels) { move.pixels = nullptr; move.width = move.height = 0; }
+
+		Bitmap::Bitmap(Bitmap &&move):
+			channel(move.channel),
+			width(move.width),
+			height(move.height),
+			pixels(move.pixels)
+		{
+			move.pixels = nullptr;
+			move.width = move.height = 0;
+		}
 		
 		Bitmap::~Bitmap()
 		{
-			delete []pixels;
-			pixels = nullptr;
+			if(pixels)
+			{
+				delete []pixels;
+				pixels = nullptr;
+			}
 		}
 
 		void Bitmap::alloc(ColorChannel channel, uint32 width, uint32 height)
@@ -37,23 +63,36 @@ namespace re
 			pixels = new byte[getByteSize()];
 		}
 
-		Bitmap &Bitmap::operator=(const Bitmap &bitmap)
+		Bitmap &Bitmap::operator=(Bitmap const& bitmap)
 		{
 			if(&bitmap == this)
 				return *this;
+			bool needs_realloc = getByteSize() < bitmap.getByteSize();
+			if(pixels && needs_realloc)
+			{
+				delete[] pixels;
+				pixels = nullptr;
+			}
 
-			delete[] pixels;
 			channel = bitmap.channel;
 			width = bitmap.width;
 			height = bitmap.height;
 
 			size_t size = getByteSize();
-
-			pixels = new byte[size];
+			if(!pixels || needs_realloc)
+				pixels = new byte[size];
 
 			memcpy(pixels, bitmap.pixels, size);
 
 			return *this;
+		}
+
+		Bitmap &Bitmap::operator=(Bitmap && move)
+		{
+			if(&move == this)
+				return *this;
+
+			if(pixels)
 		}
 
 		uint32 Bitmap::getWidth() const
