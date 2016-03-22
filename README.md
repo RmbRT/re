@@ -16,7 +16,7 @@ Clone the repository, go into the ``/re/`` folder, make sure CMake is installed,
 cmake .
 ``
 
-This creates project files (or makefiles, depending on your machine), which you can use to compile the RmbRT Engine.
+This creates project files (or makefiles, depending on your machine), which you can use to compile the RmbRT Engine. Also copies all header files of the RmbRT Engine to ``/re/include/re/``, so that you can use the directory ``/re/include/`` as include directory for your project that uses the RmbRT Engine.
 ### Doxygen
 You have to have Doxygen installed. Now go to ``/re/doxygen``, and execute:
 
@@ -29,7 +29,7 @@ This will generate a Doxygen documentation in ``/re/doxygen/html``.
 ## What's included?
 ### Sources
 #### Dependencies
-The RmbRT Engine depends on certain libraries, which can be found in ``re/depend/``, namely:
+The RmbRT Engine depends on certain libraries, which can be found in ``/re/depend/``, namely:
 * **GLFW**: The RmbRT Engine comes with its own copy of the GLFW source code, to ensure more portability.
 
 #### RmbRT Engine
@@ -45,4 +45,4 @@ You are currently reading the readme file ``/re/README.md``.
 A Doxyfile can be found in ``/re/doxygen/``. It is set to generate a HTML documentation in ``/re/doxygen/html/`` per default. Please note that in order to reduce the size of the repository, the documentation is not part of it. This means you will have to install Doxygen on your machine and generate the documentation yourself. For this, see the [Doxygen installation section](#doxygen).
 
 ### CMake CMakeLists.txt
-The CMake script ``/re/CMakeLists.txt`` is used to generate the several project files / makefiles (depending on your machine) that are used to compile the RmbRT Engine and its dependancies.
+The CMake script ``/re/CMakeLists.txt`` is used to generate the several project files / makefiles (depending on your machine) that are used to compile the RmbRT Engine and its dependencies. It also generates the directory ``/re/include/``, which contains all header files used by the RmbRT Engine.
