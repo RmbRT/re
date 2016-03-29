@@ -7,33 +7,39 @@ namespace re
 	{
 		namespace GL
 		{
-			Buffer::Buffer(
-				BufferType type,
-				BufferAccess access,
-				BufferUsage usage):
-				Handle(),
-				m_type(type),
-				m_access(access),
-				m_usage(usage)
-			{
-			}
-
-			REINL GLenum opengl_target(BufferType type)
+			RECXDA GLenum opengl_target(BufferType type)
 			{
 				static GLenum const table[] = {
 					GL_ARRAY_BUFFER,
-					GL_ELEMENT_ARRAY_BUFFER
+					GL_ATOMIC_COUNTER_BUFFER,
+					GL_COPY_READ_BUFFER,
+					GL_COPY_WRITE_BUFFER,
+					GL_DISPATCH_INDIRECT_BUFFER,
+					GL_DRAW_INDIRECT_BUFFER,
+					GL_ELEMENT_ARRAY_BUFFER,
+					GL_PIXEL_PACK_BUFFER,
+					GL_PIXEL_UNPACK_BUFFER,
+					GL_QUERY_BUFFER,
+					GL_SHADER_STORAGE_BUFFER,
+					GL_TEXTURE_BUFFER,
+					GL_TRANSFORM_FEEDBACK_BUFFER,
+					GL_UNIFORM_BUFFER
 				};
+
 				RE_DBG_ASSERT(size_t(type) <= _countof(table));
+				
 				return table[size_t(type)];
 			}
 
-			void Buffer::bind()
+			void Buffer::bind() &
 			{
-				if(exists() && bound != handle())
+				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting Buffer.");
+				RE_DBG_ASSERT(size_t(m_type) <= RE_COUNT(BufferType));
+
+				if(!bindings[size_t(m_type)].bound(handle()))
 				{
 					RE_OGL(glBindBuffer(opengl_target(m_type), handle()));
-					bound = handle();
+					bindings[size_t(m_type).bind(handle());
 				}
 			}
 
@@ -44,10 +50,6 @@ namespace re
 
 			void Buffer::alloc(Buffer * buffers, size_t count)
 			{
-				for(size_t i = count; i--;)
-					RE_DBG_ASSERT(!buffers[i].exists() &&
-						"Tried to allocate existing Buffer!");
-
 				handle_t * const handles = allocation_buffer(count);
 
 				alloc_handles(handles, count);
@@ -67,9 +69,6 @@ namespace re
 
 				for(size_t i = count; i--;)
 				{
-					RE_DBG_ASSERT(buffers[i].exists() &&
-						"Tried to destroy nonexisting Buffer!");
-
 					handles[i] = buffers[i].handle();
 
 					if(bound == buffers[i].handle())
@@ -82,7 +81,7 @@ namespace re
 			}
 
 
-			GLenum opengl_usage(BufferAccess access, BufferUsage usage)
+			RECXDA GLenum opengl_usage(BufferAccess access, BufferUsage usage)
 			{
 				static GLenum const table[][3] = {
 					{
@@ -100,13 +99,13 @@ namespace re
 					}
 				};
 
-				RE_ASSERT(size_t(access) <= _countof(table));
-				RE_ASSERT(size_t(usage) <= _countof(table[size_t(access)]));
+				RE_DBG_ASSERT(size_t(access) <= _countof(table));
+				RE_DBG_ASSERT(size_t(usage) <= _countof(table[size_t(access)]));
 
 				return table[size_t(access)][size_t(usage)];
 			}
 
-			void Buffer::data(void const * data, size_t elements, size_t element_size)
+			void Buffer::data(void const * data, size_t elements, size_t element_size) &
 			{
 				bind();
 

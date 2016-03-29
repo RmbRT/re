@@ -19,13 +19,11 @@ namespace re
 			
 			Handle &Handle::operator=(Handle && move)
 			{
+				RE_DBG_ASSERT(&move != this && "Tried to move Handle to itself!");
 				RE_DBG_ASSERT(!exists() && "Tried to overwrite existing Handle!");
-				
-				if(&move != this)
-				{
-					m_handle = move.m_handle;
-					move.m_handle = 0;
-				}
+			
+				m_handle = move.m_handle;
+				move.m_handle = 0;
 
 				return *this;
 			}
@@ -50,6 +48,7 @@ namespace re
 
 			void Handle::null_handle()
 			{
+				RE_DBG_ASSERT(exists() && "Tried to reset nonexisting Handle.");
 				m_handle = 0;
 			}
 		}

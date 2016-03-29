@@ -4,6 +4,7 @@
 #include "../../types.hpp"
 #include "../../defines.hpp"
 #include "Handle.hpp"
+#include "Binding.hpp"
 
 namespace re
 {
@@ -14,9 +15,25 @@ namespace re
 			/** Whether a Buffer stores vertex data or index data. */
 			enum class BufferType
 			{
-				VertexData,
-				IndexData
+				/** Vertex data. */
+				Array,
+				AtomicCounter,
+				CopyRead,
+				CopyWrite,
+				DispatchIndirect,
+				DrawIndirect,
+				/** Index data. */
+				ElementArray,
+				PixelPack,
+				PixelUnpack,
+				Query,
+				ShaderStorage,
+				Texture,
+				TransformFeedback,
+				Uniform
 			};
+
+			bool is_available(BufferType type, int gl_major, int gl_minor);
 
 			/** The memory policy of a Buffer. */
 			enum class BufferAccess
@@ -40,20 +57,20 @@ namespace re
 			Allocate / destroy multiple objects at once for more efficiency. */
 			class Buffer : Handle
 			{	friend class VertexArrayBase;
-				static handle_t bound;
+				static Binding bindings[RE_COUNT(BufferType)];
 
 				BufferType m_type;
 				BufferAccess m_access;
 				BufferUsage m_usage;
 			public:
-				Buffer(BufferType type, BufferAccess access, BufferUsage usage);
+				RECX Buffer(BufferType type, BufferAccess access, BufferUsage usage);
 				Buffer(Buffer &&) = default;
-				Buffer &operator=(Buffer &&) = default;
-				/** Asserts that the Buffer must not exist anymore. */
-				REINL ~Buffer();
+				Buffer &operator=(Buffer &&) & = default;
+
+
 
 				/** Binds the Buffer. */
-				void bind();
+				void bind() &;
 				/** Allocates the given Buffers.
 				None of the given Buffers must be allocated yet. */
 				static void alloc(Buffer * buffers, size_t count);
@@ -66,10 +83,11 @@ namespace re
 				using Handle::handle;
 
 				/** Sets the data stored on the GPU.
+				@important The Buffer must exist.
 				@param[in] data: the data that is to be stored on the GPU.
 				@param[in] elements: the count of elements in data.
 				@param[in] element_size: the type size of the elements in data. */
-				void data(void const* data, size_t elements, size_t element_size);
+				void data(void const* data, size_t elements, size_t element_size) &;
 
 			private:
 				/** Allocates the given Handles as Buffers. */

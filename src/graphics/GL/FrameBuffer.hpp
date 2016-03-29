@@ -19,9 +19,9 @@ namespace re
 			class FrameBuffer : Handle
 			{
 				/** The FrameBuffer currently used for read operations. */
-				static handle_t bound_read;
+				static Binding bound_read;
 				/** The FrameBuffer currently used for write operations. */
-				static handle_t bound_write;
+				static Binding bound_write;
 				
 				/**@{
 					The bounds of the FrameBuffer. */
@@ -43,19 +43,14 @@ namespace re
 				FrameBuffer();
 				FrameBuffer(FrameBuffer &&) = default;
 				FrameBuffer & operator=(FrameBuffer &&) = default;
-				/** Asserts that the FrameBuffer must not exist anymore. */
-				REINL ~FrameBuffer();
-
-				FrameBuffer(FrameBuffer const&) = delete;
-				FrameBuffer & operator=(FrameBuffer const&) = delete;
 
 				/** Binds this FrameBuffer for read operations. */
-				void bind_read();
+				void bind_read() &;
 				/** Binds this FrameBuffer for write operations. */
-				void bind_write();
+				void bind_write() &;
 				/** Binds this FrameBuffer for read and write operations.
 					This function is to be preferred instead of calling bind_read and bind_write. */
-				void bind_both();
+				void bind_both() &;
 
 				/** Unbinds the currently bound read FrameBuffer. */
 				static void unbind_read();
@@ -88,24 +83,24 @@ namespace re
 					bool blit_stencil,
 					bool interpolate);
 
-				void attach_color(Texture && color);
+				void attach_color(Texture && color) &;
 				void detach_color(Texture & out);
 				REINL bool has_color() const;
 
-				void attach_depth(RenderBuffer && depth);
+				void attach_depth(RenderBuffer && depth) &;
 				void detach_depth(RenderBuffer & out);
 				REINL bool has_depth() const;
 
-				void attach_stencil(RenderBuffer && stencil);
+				void attach_stencil(RenderBuffer && stencil) &;
 				void detach_stencil(RenderBuffer & out);
 				REINL bool has_stencil() const;
 
-				void attach_depth_stencil(RenderBuffer && depth_stencil);
+				void attach_depth_stencil(RenderBuffer && depth_stencil) &;
 				void detach_depth_stencil(RenderBuffer & out);
 				REINL bool has_depth_stencil() const;
 
 				/** Resizes the FrameBuffer and all its attachments to the given size. */
-				void resize(uint32 width, uint32 height);
+				void resize(uint32 width, uint32 height) &;
 			};
 		}
 	}

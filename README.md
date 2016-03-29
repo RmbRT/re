@@ -31,6 +31,7 @@ This will generate a Doxygen documentation in ``/re/doxygen/html``.
 #### Dependencies
 The RmbRT Engine depends on certain libraries, which can be found in ``/re/depend/``, namely:
 * **GLFW**: The RmbRT Engine comes with its own copy of the GLFW source code, to ensure more portability.
+* **Lock** The thread safety library 'Lock' is also included.
 
 #### RmbRT Engine
 The RmbRT Engine source code is included as well, obviously, and can be found in ``/re/src/``.

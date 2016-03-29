@@ -4,9 +4,15 @@ namespace re
 	{
 		namespace GL
 		{
-			Buffer::~Buffer()
+			Buffer::Buffer(
+				BufferType type,
+				BufferAccess access,
+				BufferUsage usage):
+				Handle(),
+				m_type(type),
+				m_access(access),
+				m_usage(usage)
 			{
-				RE_DBG_ASSERT(!exists() && "Did not properly release Buffer!");
 			}
 		}
 	}

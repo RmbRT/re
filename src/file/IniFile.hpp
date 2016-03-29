@@ -73,7 +73,7 @@ namespace re
 				Entry(string key, string content, string comment, bool parsed);
 
 				/** Determines what type the value of this Entry has. */
-				EntryValue value_type() const;
+				RECX EntryValue value_type() const;
 
 				/** Retrieves the stored value into the given float.
 					If the stored value is a bool, stores 1.f or 0.f.
@@ -102,11 +102,11 @@ namespace re
 				bool to_bool(bool & out) const;
 
 				/** Retrieves the stored value as it was written in the file. */
-				REINL string const& content() const;
+				RECX string const& content() const;
 				/** Returns the key of the Entry. */
-				REINL string const& key() const;
+				RECX string const& key() const;
 				/** Returns the comment of the Entry. */
-				REINL string const& comment() const;
+				RECX string const& comment() const;
 			};
 
 			/** Describes a section ("[sectionname]") of an IniFile. */
@@ -134,9 +134,9 @@ namespace re
 					If an Entry with a matching name was found, returns its address, otherwise null. */
 				Entry const* find_entry(string const& name) const;
 				/** @see find_entry. */
-				REINL Entry * operator[](string const& name);
+				RECX Entry * operator[](string const& name);
 				/** @see find_entry. */
-				REINL Entry const* operator[](string const& name) const;
+				RECX Entry const* operator[](string const& name) const;
 			};
 
 			/** Represents a .ini file. */
@@ -167,14 +167,14 @@ namespace re
 				Section const* find_section(string const& name) const;
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section.*/
-				REINL Section * operator[](string const& name);
+				RECX Section * operator[](string const& name);
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section.*/
-				REINL Section const* operator[](string const& name) const;
+				RECX Section const* operator[](string const& name) const;
 				/** Returns the unnamed / default Section of the file. */
-				REINL Section & unnamed_section();
+				RECX Section & unnamed_section();
 				/** Returns the unnamed / default Section of the file. */
-				REINL Section const& unnamed_section() const;
+				RECX Section const& unnamed_section() const;
 
 				/** Tries to load the given file. */
 				bool load(string const& filename);

@@ -16,6 +16,13 @@ namespace re
 		template<class T>
 		struct vec4;
 
+		typedef vec2<byte> byte2, bvec2, vec2b;
+		typedef vec3<byte> byte3, bvec3, vec3b;
+		typedef vec4<byte> byte4, bvec4, vec4b;
+		typedef vec2<ubyte> ubyte2, ubvec2, vec2ub;
+		typedef vec3<ubyte> ubyte3, ubvec3, vec3ub;
+		typedef vec4<ubyte> ubyte4, ubvec4, vec4ub;
+
 		typedef vec2<float> float2, fvec2, vec2f;
 		typedef vec3<float> float3, fvec3, vec3f;
 		typedef vec4<float> float4, fvec4, vec4f;

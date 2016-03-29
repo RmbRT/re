@@ -28,30 +28,24 @@ namespace re
 				/** Moves the ownership of the handle from one Handle to another. */
 				REINL Handle(Handle &&);
 				/** Moves the ownership of the handle from one Handle to another. */
-				REINL Handle &operator=(Handle &&);
+				REICXDA Handle &operator=(Handle &&);
 				/** Asserts that the Handle must not exist anymore. */
-				REINL ~Handle();
-				
-				Handle(Handle const&) = delete;
-				Handle &operator=(Handle const&) = delete;
+				REICXDA ~Handle();
 
 				/** Use to set the Handle value.
 				@important
 					The handle must not exist already.
 				@param[in] handle:
 					The new value of the Handle. */
-				REINL void set_handle(handle_t handle);
+				REICXDA void set_handle(handle_t handle);
 				/** Use to release the Handle value. */
-				REINL void null_handle();
+				REICXDA void null_handle();
 
 				/** Returns whether a Handle exists / was allocated. */
-				REINL bool exists() const;
+				REICX bool exists() const;
 
 				/** Returns the handle to this Handle. */
-				REINL handle_t handle() const;
-
-				/** Returns a reusable buffer to be used for clustering handles for OpenGL calls. */
-				static handle_t * allocation_buffer(size_t count);
+				REICX handle_t handle() const;
 			};
 		}
 	}

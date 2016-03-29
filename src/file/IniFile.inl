@@ -4,6 +4,11 @@ namespace re
 	{
 		namespace IniFile
 		{
+			EntryValue Entry::value_type() const
+			{
+				return m_value_t;
+			}
+
 			string const& Entry::content() const
 			{
 				return m_content;

@@ -4,6 +4,9 @@ project(RmbRT_Engine)
 # Set the C++ standard used by the RmbRT Engine.
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
+# Add Lock library include path.
+include_directories(depend/Lock/include);
+
 # Select all source files.
 file(GLOB_RECURSE re_sources ./src/*.cpp)
 # Add them to the RmbRT Engine library.

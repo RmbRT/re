@@ -25,68 +25,81 @@ namespace re
 		RE_OGL(glDepthFunc(GL_LEQUAL));
 	}
 
-	Window::Window(int x, int y, int w, int h, const string &title, bool visible)
-		:	x(x), y(y), w(w), h(h), title(title),
-			was_windowed(true), visible(visible), focused(visible), wnd(nullptr),
-			monitor(nullptr), frameBuffer()
+	void Window::destroy()
 	{
-		wnd = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
-		glfwSetWindowPos(wnd, x, y);
-		modules::WindowManager::GetInst()->registerWindow(this);
+		RE_DBG_ASSERT(exists());
+		glfwDestroyWindow(m_handle);
+		invalidate();
+	}
+
+	void invalidate()
+	{
+		m_current_context_ptr = nullptr;
+		m_context_slaves = nullptr;
+		m_context_master = nullptr;
+		m_handle = nullptr;
+		m_monitor = nullptr;
+	}
+
+	Window::Window():
+		m_current_context_ptr(nullptr),
+		m_context_slaves(0),
+		m_context_master(nullptr),
+		m_handle(nullptr),
+		m_monitor(nullptr)
+	{
+	}
+
+	Window::Window(Window && move):
+		m_current_context_ptr(move.m_current_context_ptr),
+		m_context_slaves(std::move(move.m_context_slaves)),
+		m_context_master(move.m_context_master),
+		m_handle(move.m_handle),
+		m_monitor(move.m_monitor)
+	{
+		for(Window * slave : m_context_slaves)
+			slave->m_context_master = this;
+		if(m_context_master)
+			for(Window * & slave : m_context_master->m_context_slaves)
+				if(slave == &move)
+					slave = this;
+		move.m_current_context_ptr = nullptr;
+		move.m_context_master = nullptr;
+		move.m_handle = nullptr;
+		move.m_monitor = nullptr;			
+	}
+
+	Window &operator=(Window && move)
+	{
+		RE_DBG_ASSERT(&move != this);
 		
-		initGlew(*this);
+		if(exists())
+			destroy();
+		
+		m_current_context_ptr = move.m_current_context_ptr;
+		m_context_slaves = std::move(move.m_context_slaves);
+		m_context_master = move.m_context_master;
+		m_handle = move.m_handle;
+		m_monitor = move.m_monitor;
 
-		if(visible)
-			show();
-		else
-			hide();
-	}
+		for(Window * slave : m_context_slaves)
+			slave->m_context_master = this;
 
-	Window::Window(def_win_pos_t, int w, int h, const string &title, bool visible)
-		:	x(), y(), w(w), h(h), title(title),
-			was_windowed(true), visible(visible), focused(visible), wnd(nullptr),
-			monitor(nullptr), frameBuffer()
-	{
-		wnd = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
-		glfwGetWindowPos(wnd, &x, &y);
-		modules::WindowManager::GetInst()->registerWindow(this);
+		if(m_context_master)
+			for(Window * & slave : m_context_master->m_context_slaves)
+				if(slave == &move)
+					slave = this;
 
-		initGlew(*this);
-
-		if(visible)
-			show();
-		else
-			hide();
-	}
-
-	Window::Window(graphics::Monitor &monitor, const string &title, bool visible)
-		:x(0), y(0), w(), h(), title(title),
-		was_windowed(false), visible(visible), focused(visible), wnd(nullptr),
-		monitor(&monitor), frameBuffer()
-	{
-		graphics::VideoMode mode;
-		monitor.getCurrentVideoMode(&mode);
-
-		w = mode.width;
-		h = mode.height;
-			
-		wnd = glfwCreateWindow(mode.width, mode.height, title.c_str(), monitor.monitor, nullptr);
-		modules::WindowManager::GetInst()->registerWindow(this);
-
-		initGlew(*this);
-
-		if(visible)
-			show();
-		else
-			hide();
+		move.m_current_context_ptr = nullptr;
+		move.m_context_master = nullptr;
+		move.m_handle = nullptr;
+		move.m_monitor = nullptr;
 	}
 
 	Window::~Window()
 	{
-		frameBuffer.destroy();
-		if(wnd)
-			glfwDestroyWindow(wnd);
-		modules::WindowManager::GetInst()->unregisterWindow(this);
+		if(exists())
+			destroy();
 	}
 
 
