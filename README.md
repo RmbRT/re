@@ -1,4 +1,5 @@
 # RmbRT Engine Readme
+**The RmbRT Engine is still in the WIP stage, thus not yet usable.**
 
 ## Setup Guide
 
