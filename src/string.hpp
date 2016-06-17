@@ -17,25 +17,25 @@ namespace re
 	};
 
 	typedef<class C>
-	/** string class. */
-	class string
+	/** String class. To be a replacement for the std::string class, and have some extensions, for example type safe formatting functions. */
+	class String
 	{
 		C const * m_ptr;
 		size_t m_size;
 		size_t m_capacity;
 	public:
 
-		string();
-		string(notnull<C const> ptr);
-		string(string<C> const& copy);
-		string(string<C> && move);
+		String();
+		String(NotNull<C const> ptr);
+		String(String<C> const& copy);
+		String(String<C> && move);
 
-		string<C> &operator=(notnull<C const> * ptr);
-		string<C> &operator=(string<C> const& copy);
-		string<C> &operator=(string<C> && move);
+		String<C> &operator=(NotNull<C const> * ptr);
+		String<C> &operator=(String<C> const& copy);
+		String<C> &operator=(String<C> && move);
 
-		bool operator==(string<C> const& rhs) const;
-		bool operator==(notnull<C> const& rhs) const;
+		bool operator==(String<C> const& rhs) const;
+		bool operator==(NotNull<C> const& rhs) const;
 
 		/** Returns whether the string is empty or uninitialized. */
 		RECX bool empty() const;
@@ -45,15 +45,15 @@ namespace re
 		/** For UTF-8 strings, O = O(n), and represents the amount of characters represented in the string. For UTF-32 strings, acts the same as size(). */
 		RECX size_t characters() const;
 		/** The string data - this is guaranteed to be a valid pointer. If the string is empty, returns a statically allocated pointer. */
-		RECX notnull<C const> data() const;
+		RECX NotNull<C const> data() const;
 		/** The number of elements allocated. */
 		RECX size_t capacity() const;
 
 		/** Transforms the string into an upper case string. */
-		string& make_upper();
+		String<C> &make_upper();
 
 		/** Transformst the string into a lower case string. */
-		string& make_lower();
+		String<C> &make_lower();
 
 		/** Reserves the given count of */
 		void reserve(size_t capacity);
@@ -61,8 +61,8 @@ namespace re
 		void clear();
 	};
 
-	typedef string<utf32_t> Utf32String;
-	typedef string<utf8_t> Utf8String;
+	typedef String<utf32_t> Utf32String;
+	typedef String<utf8_t> Utf8String;
 }
 
 #endif

@@ -12,7 +12,7 @@
 namespace re
 {
 
-	using re::util::notnull;
+	using re::util::NotNull;
 
 	using re::util::Delegate;
 }

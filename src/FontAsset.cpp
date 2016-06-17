@@ -2,7 +2,7 @@
 
 namespace re
 {
-	notnull<ui::Font> FontAsset::getFont() const
+	NotNull<ui::Font> FontAsset::getFont() const
 	{
 		strong_handle<graphics::Texture> atlasTex = alloc<graphics::Texture>();
 		atlasTex->alloc(2);

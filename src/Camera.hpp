@@ -42,12 +42,12 @@ namespace re
 		template<CameraType type>
 		void convert();
 		
-		unsafe<LookAtCamera> getLookAt();
-		unsafe<const LookAtCamera> getLookAt() const;
-		unsafe<DirectionalCamera> getDirectional();
-		unsafe<const DirectionalCamera> getDirectional() const;
-		unsafe<FollowingCamera> getFollowing();
-		unsafe<const FollowingCamera> getFollowing() const;
+		LookAtCamera * getLookAt();
+		const LookAtCamera * getLookAt() const;
+		DirectionalCamera * getDirectional();
+		const DirectionalCamera * getDirectional() const;
+		FollowingCamera * getFollowing();
+		const FollowingCamera * getFollowing() const;
 
 	};
 

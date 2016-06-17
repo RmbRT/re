@@ -31,7 +31,7 @@ namespace re
 			return *this;
 		}
 
-		notnull<const Entry> Font::getEntry(uint32 codepoint) const
+		NotNull<const Entry> Font::getEntry(uint32 codepoint) const
 		{
 			auto it = entries.find(codepoint);
 			if(it == entries.end())

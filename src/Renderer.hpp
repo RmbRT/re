@@ -14,20 +14,20 @@ namespace re
 {
 	class Renderer
 	{
-		notnull<graphics::ShaderProgram> shader;
+		NotNull<graphics::ShaderProgram> shader;
 		
 		graphics::ShaderProgram::uniform_t transform_uniform;
 		
-		notnull<Scene> scene;
-		notnull<Window> window;
-		notnull<Camera> camera;
+		NotNull<Scene> scene;
+		NotNull<Window> window;
+		NotNull<Camera> camera;
 		math::fmat4x4 projection;
 
 
 	public:
-		Renderer(notnull<graphics::ShaderProgram> shader, notnull<Scene> scene, notnull<Window> window, notnull<Camera> camera, graphics::ShaderProgram::uniform_t transform_uniform);
-		Renderer(notnull<graphics::ShaderProgram> shader, notnull<Scene> scene, notnull<Window> window, notnull<Camera> camera, const string &transform_uniform);
-		notnull<graphics::ShaderProgram> getShader();
+		Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, graphics::ShaderProgram::uniform_t transform_uniform);
+		Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, const string &transform_uniform);
+		NotNull<graphics::ShaderProgram> getShader();
 
 		void setTransformUniform(graphics::ShaderProgram::uniform_t uniform);
 		void setTransformUniform(const string &name);

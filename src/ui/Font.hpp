@@ -87,7 +87,7 @@ namespace re
 
 			Font &operator=(Font &&move);
 
-			notnull<const Entry> getEntry(uint32 codepoint) const;
+			NotNull<const Entry> getEntry(uint32 codepoint) const;
 
 			unique_handle<graphics::VertexData> compile(const string &text, const FontSettings &settings, math::fvec2 &pen_position) const;
 			unique_handle<graphics::VertexData> compile(const u32string &text, const FontSettings &settings, math::fvec2 &pen_position) const;

@@ -191,37 +191,37 @@ namespace re
 			} break;
 		}
 	}
-	unsafe<LookAtCamera> Camera::getLookAt()
+	LookAtCamera * Camera::getLookAt()
 	{
 		if(type == CameraType::LookAt)
 			return base;
 		else return nullptr;
 	}
-	unsafe<const LookAtCamera> Camera::getLookAt() const
+	const LookAtCamera * Camera::getLookAt() const
 	{
 		if(type == CameraType::LookAt)
 			return base;
 		else return nullptr;
 	}
-	unsafe<DirectionalCamera> Camera::getDirectional()
+	DirectionalCamera * Camera::getDirectional()
 	{
 		if(type == CameraType::Directional)
 			return base;
 		else return nullptr;
 	}
-	unsafe<const DirectionalCamera> Camera::getDirectional() const
+	const DirectionalCamera * Camera::getDirectional() const
 	{
 		if(type == CameraType::Directional)
 			return base;
 		else return nullptr;
 	}
-	unsafe<FollowingCamera> Camera::getFollowing()
+	FollowingCamera * Camera::getFollowing()
 	{
 		if(type == CameraType::Following)
 			return base;
 		else return nullptr;
 	}
-	unsafe<const FollowingCamera> Camera::getFollowing() const
+	const FollowingCamera * Camera::getFollowing() const
 	{
 		if(type == CameraType::Following)
 			return base;

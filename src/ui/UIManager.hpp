@@ -12,9 +12,9 @@ namespace re
 	{
 		class UIManager
 		{
-			notnull<UIElement> root;
+			NotNull<UIElement> root;
 			math::fvec2 cursor;
-			unsafe<input::InputManager> inputManager;
+			input::InputManager * inputManager;
 		public:
 
 			/*Updates the mouse position and checks for and generates events

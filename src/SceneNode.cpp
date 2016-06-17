@@ -59,7 +59,7 @@ namespace re
 		return *this;
 	}
 
-	void SceneNode::releaseChild(notnull<SceneNode> node, unsafe<SceneNode> out_node)
+	void SceneNode::releaseChild(NotNull<SceneNode> node, SceneNode * out_node)
 	{
 		RE_ASSERT(node>= &child_nodes.front() && node<=&child_nodes.back() && node->parent_node == this);
 		
@@ -70,7 +70,7 @@ namespace re
 		child_nodes.erase(child_nodes.begin()+i);
 	}
 
-	unsafe<SceneNode> SceneNode::parentNode() const
+	SceneNode * SceneNode::parentNode() const
 	{
 		return parent_node;
 	}
@@ -85,7 +85,7 @@ namespace re
 		return child_nodes.empty();
 	}
 
-	unsafe<SceneNode> SceneNode::nextSibling()
+	SceneNode * SceneNode::nextSibling()
 	{
 		if(!parent_node)
 			return nullptr;
@@ -96,7 +96,7 @@ namespace re
 		else
 			return nullptr;
 	}
-	unsafe<const SceneNode> SceneNode::nextSibling() const
+	const SceneNode * SceneNode::nextSibling() const
 	{
 		if(!parent_node)
 			return nullptr;
@@ -107,7 +107,7 @@ namespace re
 		else
 			return nullptr;
 	}
-	unsafe<SceneNode> SceneNode::prevSibling()
+	SceneNode * SceneNode::prevSibling()
 	{
 		if(!parent_node)
 			return nullptr;
@@ -116,7 +116,7 @@ namespace re
 			return parent_node->child_nodes[index-1];
 		else return nullptr;
 	}
-	unsafe<const SceneNode> SceneNode::prevSibling() const
+	const SceneNode * SceneNode::prevSibling() const
 	{
 		if(!parent_node)
 			return nullptr;
@@ -125,35 +125,35 @@ namespace re
 			return parent_node->child_nodes[index-1];
 		else return nullptr;
 	}
-	unsafe<SceneNode> SceneNode::firstChild()
+	SceneNode * SceneNode::firstChild()
 	{
 		return child_nodes.size() ? &child_nodes.front() : nullptr;
 	}
-	unsafe<const SceneNode> SceneNode::firstChild() const
+	const SceneNode * SceneNode::firstChild() const
 	{
 		return child_nodes.size() ? &child_nodes.front() : nullptr;
 	}
-	unsafe<SceneNode> SceneNode::lastChild()
+	SceneNode * SceneNode::lastChild()
 	{
 		return child_nodes.size() ? &child_nodes.back() : nullptr;
 	}
-	unsafe<const SceneNode> SceneNode::lastChild() const
+	const SceneNode * SceneNode::lastChild() const
 	{
 		return child_nodes.size() ? &child_nodes.back() : nullptr;
 	}
 
-	unsafe<SceneNode> SceneNode::nthChild(size_t child)
+	SceneNode * SceneNode::nthChild(size_t child)
 	{
 		return child_nodes.size() > child ? &child_nodes[child] : nullptr;
 	}
-	unsafe<const SceneNode> SceneNode::nthChild(size_t child) const
+	const SceneNode * SceneNode::nthChild(size_t child) const
 	{
 		return child_nodes.size() > child ? &child_nodes[child] : nullptr;
 	}
 
 	size_t SceneNode::children() const { return child_nodes.size(); }
 
-	notnull<SceneNode> SceneNode::addChild(const SceneNode &node)
+	NotNull<SceneNode> SceneNode::addChild(const SceneNode &node)
 	{
 		RE_ASSERT(!node.parent_node);
 
@@ -176,7 +176,7 @@ namespace re
 		return reinterpret_cast<const strong_handle<const Model>&>(model);
 	}
 
-	bool SceneNode::isfarchild(notnull<SceneNode> child) const
+	bool SceneNode::isfarchild(NotNull<SceneNode> child) const
 	{
 		for(const SceneNode &_child: child_nodes)
 			if(&_child == child)
@@ -189,7 +189,7 @@ namespace re
 		return false;
 	}
 
-	notnull<SceneNode> SceneNode::transferChild(notnull<SceneNode> child, SceneNode &newParent)
+	NotNull<SceneNode> SceneNode::transferChild(NotNull<SceneNode> child, SceneNode &newParent)
 	{
 		if(this == &newParent)
 			return child;
