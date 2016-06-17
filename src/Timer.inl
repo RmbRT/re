@@ -5,12 +5,12 @@
 #else
 namespace re
 {
-	REINL double ContinuousTimer::delta() const
+	REIL double ContinuousTimer::delta() const
 	{
 		return _delta;
 	}
 
-	REINL double ContinuousTimer::age() const
+	REIL double ContinuousTimer::age() const
 	{
 		return _time-_time_0;
 	}

@@ -9,7 +9,7 @@ namespace re
 	namespace file
 	{
 		/** Loads a Bitmap from the given file. */
-		bool loadBMP(string const& filename, Bitmap &out);
+		bool loadBMP(char const* filename, Bitmap2D &out);
 	}
 }
 

@@ -12,17 +12,21 @@ namespace re
 	namespace util
 	{
 		template<class T>
-		using error_t = std::_If<std::is_enum<T>::value, T, bool>::type;
+		using error_t = std::_If<std::is_enum<T>::value,
+			T,
+			std::_If<std::is_same<T, char const*>::value,
+				char const*,
+				bool>::type>::type;
 
 		template<class Enum>
 		bool is_error_impl(Enum value);
 		template<class T>
-		bool is_error(
+		bool is_error(error_t<T> value);
 
 		template<class Enum>
 		bool is_error_impl(Enum value)
 		{
-			static_assert(false, "Error handler error::is_error not implemented.");
+			static_assert(false, "error::is_error not implemented.");
 		}
 
 		template<class T>
@@ -52,63 +56,39 @@ namespace re
 		template<>
 		char const * to_string_impl<bool>(bool error_code)
 		{
-			if(error_code)
-				return "Success";
-			else
-				return "Failure";
+			return error_code ? "Success":"Failure";
 		}
 
-		template<class T>
-		struct Result
+		template<>
+		char const * to_string_impl<char const*>(char const * error_msg)
 		{
-			Result(copy_arg<T> error_code, char const * file, char const * function, int line, char const * expression):
-				error_code(error_code),
-				file(file),
-				function(function),
-				line(line),
-				expression(expression)
-			{
-			}
-
-			error_t<T> error_code;
-			char const * file;
-			char const * function;
-			int line;
-			char const * expression;
-		};
-
-		template<class T>
-		std::ostream & operator<<(std::ostream & o, Result<T> const& err)
-		{
-			return o << to_string<T>(err.error_code) << " in " << err.function << " (" << err.file << ", " << err.line << "): " << err.expression << '\n';
+			return error_msg ? error_msg:"(null)";
 		}
 	}
 }
 
-#define CHECKED(x, onfail) \
+#define RE_CHECKED(x, onfail) \
 	do { \
 		auto const& error_code = (x); \
-		if(re::util::error::is_error(error_code)) \
+		if(re::util::is_error(error_code)) \
 		{ \
 			onfail; \
 		} \
 	} while(0,0)
 
-#define ERROR_LOG(X) std::cout << Result<decltype((x))>(error_code, __FILE__, __FUNCTION__, __LINE__, #x)
-#define CHECKED_LOG(x, onfail) CHECKED(x, { ERROR_LOG(x); onfail; })
+#define RE_ERROR_LOG(name) void(std::clog << __FILE__ << '@' << __LINE__ << " in " << __FUNCTION__ << ":\n\t" << name << ": " << re::util::to_string((error_code)) << '\n')
+#define RE_CHECKED_LOG(x, name, onfail) RE_CHECKED(x, { RE_ERROR_LOG(name); onfail; })
 
-#define CRITICAL(x, onfail) CHECKED(X, { return onfail; })
-#define CRITICAL_LOG(x, onfail) CHECKED_LOG(x, { return onfail; })
+#define RE_CRITICAL(x, errcode) RE_CHECKED(x, { return errcode; })
+#define RE_CRITICAL_LOG(x, name, errcode) RE_CHECKED_LOG(x, name, { return errcode; })
 
 #ifdef RE_DEBUG
-#define DBG_CHECKED CHECKED
-#define DBG_CHECKED_LOG CHECKED_LOG
-#define DBG_CRITICAL CRITICAL
-#define DBG_CRITICAL_LOG CRITICAL_LOG
+	#define RE_CHECKED_DBG_LOG RE_CHECKED_LOG
+	#define RE_CRITICAL_DBG_LOG RE_CRITICAL_LOG
 #else
-#define DBG_CHECKED do { (x); } while(0,0)
-#define DBG_CHECKED_LOG do { (x); } while(0,0)
-#define DBG_CRITICAL do { (x); } while(0,0)
-#define DBG_CRITICAL_LOG do { (x); } while(0,0)
+	#define RE_CHECKED_DBG_LOG(x, name, errcode) RE_CHECKED(x, errcode)
+	#define RE_CRITICAL_DBG_LOG(x, name, errcode) RE_CRITICAL(x, errcode)
 #endif
+
+
 #endif 

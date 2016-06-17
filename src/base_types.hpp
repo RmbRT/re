@@ -7,20 +7,19 @@
 
 namespace re
 {
-	typedef unsigned char uchar;
-	typedef std::uint8_t ubyte, uint8;
-	typedef std::int8_t byte, int8;
-	typedef unsigned short ushort;
-	typedef std::uint16_t uword, uint16;
-	typedef std::int8_t word, int16;
-	typedef unsigned int uint;
-	typedef std::uint32_t udword, uint32;
-	typedef std::int32_t dword, int32;
+	typedef std::uint8_t ubyte_t, uint8_t;
+	typedef std::int8_t byte_t, int8_t;
+
+	typedef std::uint16_t uint16_t;
+	typedef std::int16_t int16_t;
+
+	typedef unsigned int uint_t;
+	typedef std::uint32_t uint32_t;
+	typedef std::int32_t int32_t;
+
 	typedef std::size_t size_t;
 
 	using std::string;
-	using std::wstring;
-
 	using std::u16string;
 	using std::u32string;
 

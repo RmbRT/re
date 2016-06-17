@@ -126,17 +126,17 @@ namespace re
 					The name / key of the Entry to be looked for.
 				@return
 					If an Entry with a matching name was found, returns its address, otherwise null. */
-				Entry * find_entry(string const& name);
+				Entry * find_entry(char const * name);
 				/** Tries to find an Entry with the given name.
 				@param[in] name:
 					The name/key of the Entry to be looked for.
 				@return
 					If an Entry with a matching name was found, returns its address, otherwise null. */
-				Entry const* find_entry(string const& name) const;
+				Entry const* find_entry(char const * name) const;
 				/** @see find_entry. */
-				RECX Entry * operator[](string const& name);
+				RECX Entry * operator[](char const * name);
 				/** @see find_entry. */
-				RECX Entry const* operator[](string const& name) const;
+				RECX Entry const* operator[](char const * name) const;
 			};
 
 			/** Represents a .ini file. */
@@ -161,23 +161,23 @@ namespace re
 
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section. */
-				Section * find_section(string const& name);
+				Section * find_section(char const * name);
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section. */
-				Section const* find_section(string const& name) const;
+				Section const* find_section(char const * name) const;
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section.*/
-				RECX Section * operator[](string const& name);
+				RECX Section * operator[](char const * name);
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section.*/
-				RECX Section const* operator[](string const& name) const;
+				RECX Section const* operator[](char const *  name) const;
 				/** Returns the unnamed / default Section of the file. */
 				RECX Section & unnamed_section();
 				/** Returns the unnamed / default Section of the file. */
 				RECX Section const& unnamed_section() const;
 
 				/** Tries to load the given file. */
-				bool load(string const& filename);
+				bool load(char const * filename);
 			};
 		}
 	}

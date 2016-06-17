@@ -55,12 +55,12 @@ namespace re
 
 			template<class U>
 			/** Converts this vector to a vector of the given type. */
-			REINL constexpr explicit operator vec2<U>() const;
+			REIL constexpr explicit operator vec2<U>() const;
 
 			/** Converts this vector to a C-style array. */
-			REINL constexpr operator T*();
+			REIL constexpr operator T*();
 			/** Converts this vector to a C-style array. */
-			REINL constexpr operator T const*() const;
+			REIL constexpr operator T const*() const;
 
 			/** The x (first) coordinate of the vector. */
 			T x;
@@ -118,6 +118,8 @@ namespace re
 		/** Divides the given vector by its length. */
 		vec2<T> norm(vec2<T> const& a);
 
+		template<class T, size_t sz>
+		vec2<T> avg(std::array<vec2<T>, sz> const&);
 
 
 		template<class T>
@@ -127,7 +129,7 @@ namespace re
 		{
 			template<class U>
 			/** Converts this vector to a vector of the given type. */
-			REINL constexpr explicit operator vec3<U>() const;
+			REIL constexpr explicit operator vec3<U>() const;
 
 			/** Creates a vector with the given coordinates. */
 			vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z);
@@ -135,9 +137,9 @@ namespace re
 			vec3();
 
 			/** Converts this vector to a C-style array. */
-			REINL constexpr operator const T*() const;
+			REIL constexpr operator const T*() const;
 			/** Converts this vector to a C-style array. */
-			REINL constexpr operator T*();
+			REIL constexpr operator T*();
 
 			/** The x (first) coordinate of the vector. */
 			T x;
@@ -175,6 +177,9 @@ namespace re
 		template<class T> T sqr_dist(vec3<T> const& a, vec3<T> const& b);
 		/** Calculates the square of the length of the given vector. */
 		template<class T> T sqr_abs(vec3<T> const& a);
+
+		template<class T, size_t sz>
+		vec3<T> abs(std::array<vec3<T>, sz> const&);
 
 
 		template<class T>
@@ -237,6 +242,9 @@ namespace re
 		template<class T> float absf(vec4<T> const& v);
 		/** Divides the given vector by its length. */
 		template<class T> vec4<T> norm(vec4<T> const& a);
+
+		template<class T, size_t sz>
+		vec4<T> avg(std::array<vec4<T>, sz> const&);
 	}
 }
 

@@ -6,11 +6,13 @@
 
 #include <Lock/Lock.hpp>
 
-#include "GL/Version.hpp"
+#include "Version.hpp"
 #include "Monitor.hpp"
 #include "../input/Input.hpp"
-#include "GL/FrameBuffer.hpp"
+#include "Context.hpp"
 #include "../math/Vector.hpp"
+#include "../math/Rect.hpp"
+#include "Hints.hpp"
 
 namespace re
 {
@@ -20,90 +22,131 @@ namespace re
 			It is extended with overridable callback events.
 		@usage:
 			Derive a class of Window to implement custom behaviour and receive window events.
-		@note:
-			When the Window is instantiated, a window will be created.
-			Likewise, upon destruction, the window will also be closed.
-			This should be kept in mind when specifying the lifetime of a Window instance.
-		@note:
-			Deriving classes should call onCreate in their constructors and onClose in their destructors. */
-		class Window
+			GPU data should be stored in the Context. Create a custom Context by overriding create_context(). */
+		class Window : ContextReferenceCounter
 		{
-			thread_local static lock::ThreadSafe<Window *> current_context;
-			/** The pointer pointing to this Window, if it is current.
-				Used for releasing the old thread*/
-			lock::ThreadSafe<Window *> * m_current_context_ptr;
-
-			/** The Windows that share their contexts with this ones. */
-			std::vector<Window *> m_context_slaves;
-			/** The Window this instance shares its context with. If this Window owns its context, it is null. */
-			Window * m_context_master;
+			/** The Context of the Window.
+			Only the Window that is pointed back to by the Context owns the Context. */
+			Context * m_context;
 
 			/** The Handle to the window. */
-			struct NativeWindowHandle * m_handle;
+			struct GLFWwindow * m_handle;
+			
 			/** If this Window is in fullscreen mode, then this is a pointer to the Monitor used. */
 			Monitor * m_monitor;
+
+			/** The title of the Window. */
+			string m_title;
+			/** The Window bounds in screen coordinates. */
+			math::Rect<int> m_screen_bounds;
+			/** The Window size in pixels. */
+			math::int2 m_pixels;
+			/** Whether the Window is visible or hidden. */
+			bool m_visible;
+			/** Whether the Window is focused for input. */
+			bool m_focused;
+			/** Whether the Window is iconified. */
+			bool m_iconified;
+			/** The cursor positon relative to the Window, in screen coordinates. */
+			math::double2 m_cursor;
+
+			/** The WindowHints used when creating the Window. */
+			WindowHints m_window_hints;
+			/** The FramebufferHints used when creating the Window. */
+			FramebufferHints m_framebuffer_hints;
 		public:
-			/** Creates an empty Window handle.
-				Create the Window with create(). */
+			/** Creates an empty Window handle. */
 			Window();
 			/** Moves the ownership of the Window. */
 			Window(Window &&);
 			/** Moves the ownership of the Window. */
 			Window &operator=(Window &&);
-			/** Closes the Window. */
+			/** Closes the Window, if it exists. */
 			~Window();
 
 			/** Whether the Window exists. */
 			RECX bool exists() const;
 
-			/** Fetches whether the window was requested to be closed. */
-			bool should_close() const;
-				
-			/** Checks whether the window is in fullscreen mode. */
-			bool fullscreen() const;
+			/** Whether the Window is in fullscreen mode.
+			@assert The Window must exist. */
+			RECXDA bool fullscreen() const;
 
-			/** Returns whether the window is currently focused. */
-			bool focused() const;
+			/** Whether the Window is currently focused.
+			@assert The Window must exist. */
+			RECXDA bool focused() const;
 
-			/** Returns the size of the framebuffer associated with the window.
+			/** Whether the Window is currently iconified.
+			@assert The Window must exist. */
+			RECXDA bool iconified() const;
+
+			/** Returns the size of the framebuffer associated with the window, in pixels.
 			This is not equal to the size of the window, but only of the drawing area/canvas.
-			@param[out] width: the width of the framebuffer.
-			@param[out] height: the height of the framebuffer. */
-			void framebuffer_size(int * width, int * height) const;
+			@assert The Window must exist. */
+			RECXDA math::int2 const& pixels() const;
 				
-			/** Returns the width of the window (window bounds). */
-			int width() const;
-				
-			/** Returns the height of the window (window bounds). */
-			int height() const;
+			/** Returns the Window bounds (in screen coordinates).
+			@assert The Window must exist. */
+			RECXDA math::Rect<int> const& screen_bounds() const;
 
-			/** Returns the X coordinate of the window in screen coordinates. */
-			int x() const;
-			/** Returns the Y coordinate of the window in screen coordinates. */
-			int y() const;
+			/** Returns the title of the window.
+			@assert The Window must exist. */
+			RECXDA string const& title() const;
 
-			/** Returns the title of the window. */
-			const char* title() const;
-				
-			/** Returns whether the window is visible or not. */
-			bool visible() const;
+			/** Returns whether the window is visible or not.
+			@assert The Window must exist. */
+			RECXDA bool visible() const;
+			
+			/** Returns the Cursor position relative to the client area of the window.
+			@return: the Cursor position relative to the client are of the window, in screen coordinates. */
+			RECXDA math::double2 const& cursor() const;
+
+			/** Requests the Window to close.
+				Calls onCloseRequest, and if the close request was accepted, closes the Window. */
+			void request_close();
+
+			/** Returns the Context of the Window.
+			@assert The Window must exist. */
+			RECXDA Context & context();
+			/** Returns the Context of the Window.
+			@assert The Window must exist. */
+			RECXDA Context const& context() const;
 
 		protected:
 
 			/** Creates the Window handle with the given arguments.
-			@assert The Window must not exist yet.
-			@param[in] w, h: The size of the Window, in screen coordinates.
-			@param[in] title: The title of the Window.
-			@param[in] visible: Whether the Window should be visible upon creation.
-			@param[in] share_context: A Window to share the GPU context with, or null. */
-			/** @param[in] x, y: The position of the Window, in screen coordinates. */
-			void create(int x, int y, int w, int h, string title, bool visible, Window * share_context);
-			/** Uses the OS default Window position. */
-			void create(int w, int h, string title, bool visible, Window * share_context);
-			/** Creates a fullscreen Window.
-			@param[in] monitor: When creating a fullscreen Window, a Monitor must be used as target. */
-			void create(Monitor & monitor, int w, int h, bool visible, Window * share_context);
-			/**@}*/
+			@assert The Window must not yet exist.
+			@param[in] window: The hints controlling the Window creation.
+			@param[in] framebuffer: The hints controlling the framebuffer creation.
+			@param[in] context: The hints controlling the Context creation.
+			@return Whether the Window was created successfully. */
+			bool create(
+				string title,
+				WindowHints const& window,
+				FramebufferHints const& framebuffer,
+				ContextHints const& context);
+
+			/** Creates the Window and shares the Context with the given Window.
+			@assert The Window must not yet exist.
+			@param[in] hints: The hints controlling */
+			bool create(
+				string title,
+				WindowHints const& window,
+				FramebufferHints const& framebuffer,
+				Window const& share_context);
+
+			/** Recreates the Window handle, keeping the old context.
+			@assert The Window must exist.
+			@param[in] window: The new WindowHints.
+			@param[in] framebuffer: The new FramebufferHints.
+			@return: Whether the new Window could be created. If it failed, the old window is kept. */
+			bool recreate(
+				string title,
+				WindowHints const& window,
+				FramebufferHints const& framebuffer);
+
+			/** Destroys the Window handle.
+			@assert The Window must exist. */
+			void destroy();
 
 			/** Makes the window visible. */
 			void show();
@@ -111,15 +154,9 @@ namespace re
 			/** Makes the window invisible. */
 			void hide();
 
-			/** Requests the window to close. */
-			void close();
-			
-			/** Returns the Cursor position relative to the client area of the window.
-			@return: the Cursor position relative to the client are of the window, in screen coordinates. */
-			math::vec2<double> cursor() const;
 			/** Sets the Cursor position relative to the client area of the window.
 			@param[in] pos: the new Cursor position relative to the client area of the window, in screen coordinates. */
-			void set_cursor(const math::vec2<double> &pos);
+			void set_cursor(math::double2 const& pos);
 
 			/** Sets the position of the window.
 			@param[in] x: the X coordinate of the client area of the window, in screen coordinates.
@@ -134,12 +171,25 @@ namespace re
 			@param[in] title: the title of the window. */
 			void set_title(string title);
 
-			/** Makes the context of the window current, enabling rendering to the window. */
+			/** Makes the context of the window current, enabling rendering to the window.
+			@assert The Window must exist. */
 			void make_context_current();
 
-			/** Swaps the background and the foreground buffers. */
-			void swapBuffers();
+			/** Swaps the background and the foreground buffers.
+			@assert The Window must exist. */
+			void swap_buffers();
+
+			/** Processes all waiting events. */
+			static void poll_events();
+
+			/** Pauses the current thread until an event occurs, and processes it.
+				If events wait already, processes them directly. */
+			static void wait_events();
 		private:
+
+			/** Creates the correct Context used by this Window.
+				Called by create(). */
+			virtual Context * create_context(ContextHints const&, gl::Version const&) = 0;
 
 			/** Called when the Window receives an unicode character.
 			@param[in] codepoint: the unicode value of the character. */
@@ -176,8 +226,11 @@ namespace re
 			@param[in] height: the new height (in pixels) of the framebuffer. */
 			virtual void onFramebufferSizeChanged(int width, int height) = 0;
 
-			/** Called when the window close button was clicked or the destructor is called. */
-			virtual void onClose() = 0;
+			/** Called when the user attempts to close the Window.
+				Use this function to decide how the Window reacts when the user requests it to close.
+				If the close request is accepted, the Window is destroyed afterwards.
+			@return True, if the close request should be accepted, and false, if denied. */
+			virtual bool onCloseRequest() = 0;
 
 			/** Called when the window gains or looses focus.
 			@param[in] focus: true if the window gained focus, false if it lost focus. */
@@ -200,9 +253,6 @@ namespace re
 			@param[in] height: the new height of the window. */
 			virtual void onSizeChanged(int width, int height) = 0;
 
-			/** Called when the window was created.*/
-			virtual void onCreate() = 0;
-
 			/** Gets called by Window::show() and Window::hide().
 			@param[in] shown: true if the window became visible, false if it became hidden. */
 			virtual void onVisibilityChanged(bool shown) = 0;
@@ -211,16 +261,10 @@ namespace re
 			@param[in] xoffset: the amount of pixels scrolled in x axis.
 			@param[in] yoffset: the amount of pixels scrolled in y axis. */
 			virtual void onScroll(double xoffset, double yoffset) = 0;
-
-
-
-			/** Destroys the Window handle.
-			@assert The Window must exist. */
-			void destroy();
-			/** Invalidates the Window, so that no data is released twice. */
-			void invalidate();
 		};
 	}
 }
+
+#include "Window.inl"
 
 #endif

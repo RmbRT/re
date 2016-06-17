@@ -18,10 +18,10 @@ namespace re
 		ContinuousTimer();
 
 		/*Returns the time in seconds that passed between the last two update calls.*/
-		REINL double delta() const;
+		REIL double delta() const;
 
 		/*Returns the time in seconds that passed since the timer was created.*/
-		REINL double age() const;
+		REIL double age() const;
 
 		void update();
 	};

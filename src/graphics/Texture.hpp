@@ -12,48 +12,48 @@ namespace re
 	{
 		
 		/*Used for coniguring the parameters of a Texture.*/
-		enum class Filter
+		enum class TextureFilter
 		{
-			F_NEAREST,
-			F_LINEAR,
-			F_NEAREST_MIPMAP_LINEAR,
-			F_NEAREST_MIPMAP_NEAREST,
-			F_LINEAR_MIPMAP_LINEAR,
-			F_LINEAR_MIPMAP_NEAREST
+			Nearest,
+			Linear,
+			NearestMipmapLinear,
+			NearestMipmapNearest,
+			LinearMipmapLinear,
+			LinearMipmapNearest
 		};
 		/*Used for coniguring the parameters of a Texture.*/
-		enum class Wrap
+		enum class TextureWrap
 		{
-			W_CLAMP,
-			W_REPEAT,
-			W_CLAMP_TO_BORDER,
-			W_CLAMP_TO_EDGE,
-			W_MIRRORED_REPEAT
+			Clamp,
+			Repeat,
+			ClampToBorder,
+			ClampToEdge,
+			MirroredRepeat
 		};
 		/*Used for coniguring the parameters of a Texture.*/
 		enum class TextureCompareMode
 		{
-			COMPARE_R_TO_TEXTURE,
-			NONE
+			CompareRToTexture,
+			None
 		};
 		/*Used for coniguring the parameters of a Texture.*/
 		enum class TextureCompareFunc
 		{
-			LEQUAL,
-			GEQUAL,
-			LESS,
-			GREATER,
-			EQUAL,
-			NOTEQUAL,
-			ALWAYS,
-			NEVER
+			LEqual,
+			GEqual,
+			Less,
+			Greater,
+			Equal,
+			NotEqual,
+			Always,
+			Never
 		};
 		/*Used for coniguring the parameters of a Texture.*/
 		enum class DepthTextureMode
 		{
-			LUMINANCE,
-			INTESITY,
-			ALPHA
+			Luminance,
+			Intensity,
+			Alpha
 		};
 
 		/*Contains the parameters of a Texture as used by OpenGL.*/

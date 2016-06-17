@@ -29,22 +29,22 @@ namespace re
 				return m_comment;
 			}
 
-			Entry * Section::operator[](string const& name)
+			Entry * Section::operator[](char const * name)
 			{
 				return find_entry(name);
 			}
 
-			Entry const* Section::operator[](string const& name) const
+			Entry const * Section::operator[](char const * name) const
 			{
 				return find_entry(name);
 			}
 
-			Section * IniFile::operator[](string const& name)
+			Section * IniFile::operator[](char const * name)
 			{
 				return find_entry(name);
 			}
 
-			Section const* IniFile::operator[](string const& name)
+			Section const * IniFile::operator[](char const * name) const
 			{
 				return find_entry(name);
 			}

@@ -7,14 +7,14 @@
 
 /* Inline functions. */
 #ifdef _MSC_VER
-#define REINL __forceinline
+#define REIL __forceinline
 #else
-#define REINL inline
+#define REIL inline
 #endif
 
 #define RECX constexpr
 
-#define REICX REINL RECX
+#define RECX REIL RECX
 
 #ifndef _countof
 #define _countof(x) (sizeof(x) / sizeof(*(x)))
@@ -34,6 +34,6 @@
 #define RE_COUNT(Enum) size_t(Enum::__re_last_field)
 
 /** Constexpr with debug assertions. */
-#define RECXDA RESWITCH(REINL,REINL RECX)
+#define RECXDA RESWITCH(REIL,REIL RECX)
 
 #endif

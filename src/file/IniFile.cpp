@@ -100,7 +100,7 @@ namespace re
 				return true;
 			}
 
-			Entry * Section::find_entry(const string &name)
+			Entry * Section::find_entry(char const * name)
 			{
 				for(auto &entry : m_entries)
 					if(entry.key() == name)
@@ -108,7 +108,7 @@ namespace re
 				return nullptr;
 			}
 
-			Entry const* Section::find_entry(const string &name) const
+			Entry const* Section::find_entry(char const * name) const
 			{
 				for(auto const& entry : m_entries)
 					if(entry.key() == name)
@@ -175,7 +175,7 @@ namespace re
 			}
 
 
-			int IniFile::entry(const std::vector<string> &lines, const int current_line, Entry &out)
+			int IniFile::entry(std::vector<string> const& lines, const int current_line, Entry &out)
 			{
 				int line = current_line;
 				string out_comment;
@@ -223,7 +223,7 @@ namespace re
 				}
 			}
 
-			bool IniFile::load(string const& filename)
+			bool IniFile::load(char const * filename)
 			{
 				std::vector<string> lines;
 				std::ifstream file(filename, std::ios::in);

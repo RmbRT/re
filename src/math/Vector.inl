@@ -147,6 +147,71 @@ namespace re
 				return a;
 		}
 
+		namespace detail
+		{
+			template<class T>
+			typedef T avg_accum_t;
+
+			template<>
+			typedef short avg_accum_t<char>;
+			template<>
+			typedef unsigned short avg_accum_t<unsigned char>;
+
+			template<>
+			typedef long avg_accum_t<short>;
+			template<>
+			typedef unsigned long avg_accum_t<unsigned short>;
+		}
+
+
+
+		template<class T, size_t sz>
+		vec2<T> avg(std::array<vec2<T>, sz> const& arr)
+		{
+			avg_accum_t<T> accx(0), accy(0);
+			for(size_t i = sz; i--;)
+			{
+				accx += arr[i].x;
+				accy += arr[i].y;
+			}
+			if(sz)
+				return vec2<T>( accx / sz, accy / sz );
+			else
+				return vec2<T>(0,0);
+		}
+
+		template<class T, size_t sz>
+		vec3<T> avg(std::array<vec3<T>, sz> const& arr)
+		{
+			avg_accum_t<T> accx(0), accy(0), accz(0);
+			for(size_t i = sz; i--;)
+			{
+				accx += arr[i].x;
+				accy += arr[i].y;
+				accz += arr[i].z;
+			}
+			if(sz)
+				return vec3<T>( accx / sz, accy / sz, accz / sz);
+			else
+				return vec3<T>(0,0,0);
+		}
+
+		template<class T, size_t sz>
+		vec4<T> avg(std::array<vec4<T>, sz> const& arr)
+		{
+			avg_accum_t<T> accx(0), accy(0), accz(0), accw(0);
+			for(size_t i = sz; i--;)
+			{
+				accx += arr[i].x;
+				accy += arr[i].y;
+				accz += arr[i].z;
+				accw += arr[i].w;
+			}
+			if(sz)
+				return vec4<T>( accx / sz, accy / sz, accz / sz);
+			else
+				return vec4<T>(0,0,0,0);
+		}
 
 		// vec3
 

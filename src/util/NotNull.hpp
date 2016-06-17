@@ -19,7 +19,7 @@ namespace re
 		public:
 			notnull(T *data);
 
-			REINL constexpr operator T*() const;
+			RECX constexpr operator T*() const;
 		};
 	}
 }

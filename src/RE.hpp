@@ -11,7 +11,7 @@ namespace re
 	namespace graphics
 	{
 		/** Contains OpenGL classes used for rendering with OpenGL. */
-		namespace GL	{	}
+		namespace gl	{	}
 	}
 	/** Contains classes for object communication. */
 	namespace messaging	{	}

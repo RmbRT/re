@@ -1,1026 +1,263 @@
 #include "Bitmap.hpp"
-#include "../LogFile.hpp"
+#include <memory>
 
 namespace re
 {
 	namespace graphics
 	{
-		Bitmap::Bitmap(Bitmap const& bitmap):
-			width(bitmap.width),
-			height(bitmap.height),
-			channel(bitmap.channel),
-			pixels(nullptr)
-		{
-			size_t size = getByteSize();
-			pixels = new byte[size];
-			memcpy(pixels, bitmap.pixels, size);
-		}
-
 		Bitmap::Bitmap():
-			channel(ColorChannel::BYTE4),
-			width(0),
-			height(0),
-			pixels(nullptr)
+			m_size(0),
+			m_data(0)
 		{
 		}
-		
-		Bitmap::Bitmap(ColorChannel channel, uint32 width, uint32 height):
-			width(width),
-			height(height),
-			channel(channel),
-			pixels(nullptr)
+
+		Bitmap::Bitmap(Channel channel, Component component, uint32 size):
+			m_channel(channel),
+			m_component(component),
+			m_size(0),
+			m_data(nullptr)
 		{
-			alloc(channel, width, height);
+			alloc(channel, component, size);
 		}
 
-		Bitmap::Bitmap(Bitmap &&move):
-			channel(move.channel),
-			width(move.width),
-			height(move.height),
-			pixels(move.pixels)
+		RECXDA size_of(Channel ch, Component c)
 		{
-			move.pixels = nullptr;
-			move.width = move.height = 0;
-		}
-		
-		Bitmap::~Bitmap()
-		{
-			if(pixels)
-			{
-				delete []pixels;
-				pixels = nullptr;
-			}
+			static int components const[] = { 1, 2, 3, 4 };
+			static int size const[] = { sizeof(float), sizeof(ubyte) };
+			
+			RE_DBG_ASSERT(size_t(ch) < _countof(components));
+			RE_DBG_ASSERT(size_t(c) < _countof(size));
+
+			return components[ch] * size[c];
 		}
 
-		void Bitmap::alloc(ColorChannel channel, uint32 width, uint32 height)
+		Bitmap::Bitmap(Bitmap const& copy):
+			m_size(0),
+			m_data(nullptr)
 		{
-			this->channel = channel;
-			this->width = width;
-			this->height = height;
+			alloc(
+				copy.m_channel,
+				copy.m_component,
+				copy.m_size);
 
-			if(pixels)
-				delete[] pixels;
-			pixels = new byte[getByteSize()];
+			std::memcpy(
+				m_data,
+				copy.m_data,
+				copy.m_size * size_of(m_channel, m_component));
 		}
 
-		Bitmap &Bitmap::operator=(Bitmap const& bitmap)
+		Bitmap::Bitmap(Bitmap && move):
+			m_channel(move.m_channel),
+			m_component(move.m_component),
+			m_size(move.m_size),
+			m_data(move.m_data)
 		{
-			if(&bitmap == this)
-				return *this;
-			bool needs_realloc = getByteSize() < bitmap.getByteSize();
-			if(pixels && needs_realloc)
-			{
-				delete[] pixels;
-				pixels = nullptr;
-			}
+			move.m_data = nullptr;
+		}
 
-			channel = bitmap.channel;
-			width = bitmap.width;
-			height = bitmap.height;
+		Bitmap &Bitmap::operator=(Bitmap const& copy)
+		{
+			RE_DBG_ASSERT(this != &copy);
 
-			size_t size = getByteSize();
-			if(!pixels || needs_realloc)
-				pixels = new byte[size];
+			alloc(
+				copy.m_channel,
+				copy.m_component,
+				copy.m_size);
 
-			memcpy(pixels, bitmap.pixels, size);
+			std::memcpy(
+				m_data,
+				copy.m_data,
+				copy.m_size * size_of(m_channel, m_component));
 
 			return *this;
 		}
 
 		Bitmap &Bitmap::operator=(Bitmap && move)
 		{
-			if(&move == this)
-				return *this;
+			RE_DBG_ASSERT(this != &copy);
 
-			if(pixels)
+			if(exists())
+				free();
+
+			m_channel = move.m_channel;
+			m_component = move.m_component;
+			m_data = move.m_data;
+			m_size = move.m_size;
+
+			move.m_data = nullptr;
 		}
 
-		uint32 Bitmap::getWidth() const
+		Bitmap::~Bitmap()
 		{
-			return width;
+			if(exists())
+				free();
 		}
 
-		uint32 Bitmap::getHeight() const
+		void Bitmap::alloc(
+			Channel channel,
+			Component component,
+			uint32 size)
 		{
-			return height;
+			m_data = realloc(m_data, size * size_of(channel, component));
+			m_size = size;
+			m_channel = channel;
+			m_component = component;
 		}
 
-		ColorChannel Bitmap::getChannel() const
+		void Bitmap::free()
 		{
-			return channel;
-		}
-
-		size_t Bitmap::getByteSize() const
-		{
-			size_t size = width * height;
-
-			switch(channel)
+			if(exists())
 			{
-			case ColorChannel::FLOAT1:
-				{
-					size *= sizeof(float);
-				} break;
-			case ColorChannel::FLOAT2:
-				{
-					size *= sizeof(math::fvec2);
-				} break;
-			case ColorChannel::FLOAT3:
-				{
-					size *= sizeof(math::fvec3);
-				} break;
-			case ColorChannel::FLOAT4:
-				{
-					size *= sizeof(math::fvec4);
-				} break;
-			case ColorChannel::BYTE1:
-				{
-					size *= sizeof(byte);
-				} break;
-			case ColorChannel::BYTE2:
-				{
-					size *= sizeof(math::vec2<byte>);
-				} break;
-			case ColorChannel::BYTE3:
-				{
-					size *= sizeof(math::vec3<byte>);
-				} break;
-			case ColorChannel::BYTE4:
-				{
-					size *= sizeof(math::vec4<byte>);
-				} break;
+				std::free(m_data);
+				m_data = nullptr;
 			}
-
-			return size;
 		}
 
-		void* Bitmap::getBaseAddress()
+		Bitmap1D::Bitmap1D(Channel channel, Component component, uint32 size):
+			Bitmap(channel, component, size)
 		{
-			return pixels;
 		}
 
-		const void* Bitmap::getBaseAddress() const
+		Bitmap2D::Bitmap2D(Channel channel, Component component, uint32 width, uint32 height):
+			Bitmap(channel, component, width * height),
+			m_width(width),
+			m_height(height)
 		{
-			return pixels;
+			RE_DBG_ASSERT(width > 0);
+			RE_DBG_ASSERT(height > 0);
 		}
 
-		float &Bitmap::getFloat1(uint32 x, uint32 y)
+		Bitmap3D::Bitmap3D(
+			Channel channel,
+			Component component,
+			uint32 width,
+			uint32 height,
+			uint32 depth):
+			Bitmap(channel, component, width * height * depth),
+			m_width(width),
+			m_height(height),
+			m_depth(depth)
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT1);
-
-			return static_cast<float*>(pixels)[x+y*width];
+			RE_DBG_ASSERT(width > 0);
+			RE_DBG_ASSERT(height > 0);
+			RE_DBG_ASSERT(depth > 0);
 		}
 
-		math::vec2<float> &Bitmap::getFloat2(uint32 x, uint32 y)
+		Bitmap1D Bitmap1D::create_mipmap_near() const
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT2);
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
 
-			return static_cast<math::vec2<float>*>(pixels)[x+y*width];
+			Bitmap1D mip(channel(), component(), size() >> 1);
+
+			for(uint32 i = mip.size(); i--;)
+				mip.pixel<ch,co>(i) = mip_near<ch,co>(i);
+
+			return std::move(mip);
 		}
 
-		math::vec3<float> &Bitmap::getFloat3(uint32 x, uint32 y)
+		Bitmap1D Bitmap1D::create_mipmap_lin() const
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT3);
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
 
-			return static_cast<math::vec3<float>*>(pixels)[x+y*width];
+			Bitmap1D mip(channel(), component(), size() >> 1);
+
+			for(uint32 i = mip.size(); i--;)
+				mip.pixel<ch,co>(i) = mip_lin<ch,co>(i);
+
+			return std::move(mip);
 		}
 
-		math::vec4<float> &Bitmap::getFloat4(uint32 x, uint32 y)
+		Bitmap2D Bitmap2D::create_mipmap_near() const
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT4);
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
 
-			return static_cast<math::vec4<float>*>(pixels)[x+y*width];
+			uint32 new_width = width() >> 1;
+			if(!new_width)
+				new_width = 1;
+			uint32 new_height = height() >> 1;
+			if(!new_height)
+				new_height = 1;
+
+			Bitmap2D mip(channel(), component(), new_width, new_height);
+
+			for(uint32 x = mip.width(); x--;)
+				for(uint32 y = mip.height(); y--;)
+					mip.pixel<ch,co>(x,y) = mip_near<ch,co>(x,y);
 		}
 
-		ubyte &Bitmap::getByte1(uint32 x, uint32 y)
+		Bitmap2D Bitmap2D::create_mipmap_near() const
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE1);
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
 
-			return static_cast<ubyte*>(pixels)[x+y*width];
+			uint32 new_width = width() >> 1;
+			if(!new_width)
+				new_width = 1;
+			uint32 new_height = height() >> 1;
+			if(!new_height)
+				new_height = 1;
+
+			Bitmap2D mip(channel(), component(), new_width, new_height);
+
+			for(uint32 x = mip.width(); x--;)
+				for(uint32 y = mip.height(); y--;)
+					mip.pixel<ch,co>(x,y) = mip_lin<ch,co>(x,y);
+
+			return std::move(mip);
 		}
 
-		math::vec2<ubyte> &Bitmap::getByte2(uint32 x, uint32 y)
+		Bitmap3D Bitmap3D::create_mipmap_near() const
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE2);
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
 
-			return static_cast<math::vec2<ubyte>*>(pixels)[x+y*width];
+			uint32 new_width = width() >> 1;
+			if(!new_width)
+				new_width = 1;
+			uint32 new_height = height() >> 1;
+			if(!new_height)
+				new_height = 1;
+			uint32 new_depth = depth() >> 1;
+			if(!new_depth)
+				new_depth = 1;
+
+			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
+
+			for(uint32 x = mip.width(); x--;)
+				for(uint32 y = mip.height(); y--;)
+					for(uint32 z = mip.depth(); z--;)
+						mip.pixel<ch,co>(x,y,z) = mip_near<ch,co>(x,y,z);
+
+			return std::move(mip);
 		}
 
-		math::vec3<ubyte> &Bitmap::getByte3(uint32 x, uint32 y)
+		Bitmap3D Bitmap3D::create_mipmap_near() const
 		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE3);
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
 
-			return static_cast<math::vec3<ubyte>*>(pixels)[x+y*width];
+			uint32 new_width = width() >> 1;
+			if(!new_width)
+				new_width = 1;
+			uint32 new_height = height() >> 1;
+			if(!new_height)
+				new_height = 1;
+			uint32 new_depth = depth() >> 1;
+			if(!new_depth)
+				new_depth = 1;
+
+			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
+
+			for(uint32 x = mip.width(); x--;)
+				for(uint32 y = mip.height(); y--;)
+					for(uint32 z = mip.depth(); z--;)
+						mip.pixel<ch,co>(x,y,z) = mip_lin<ch,co>(x,y,z);
+
+			return std::move(mip);
 		}
-
-		math::vec4<ubyte> &Bitmap::getByte4(uint32 x, uint32 y)
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE4);
-			
-			return static_cast<math::vec4<ubyte>*>(pixels)[x+y*width];
-		}
-
-		const float &Bitmap::getFloat1(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT1);
-
-			return static_cast<float*>(pixels)[x+y*width];
-		}
-
-		const math::vec2<float> &Bitmap::getFloat2(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT2);
-
-			return static_cast<math::vec2<float>*>(pixels)[x+y*width];
-		}
-
-		const math::vec3<float> &Bitmap::getFloat3(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT3);
-
-			return static_cast<math::vec3<float>*>(pixels)[x+y*width];
-		}
-
-		const math::vec4<float> &Bitmap::getFloat4(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::FLOAT4);
-
-			return static_cast<math::vec4<float>*>(pixels)[x+y*width];
-		}
-
-		const ubyte &Bitmap::getByte1(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE1);
-
-			return static_cast<ubyte*>(pixels)[x+y*width];
-		}
-
-		const math::vec2<ubyte> &Bitmap::getByte2(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE2);
-
-			return static_cast<math::vec2<ubyte>*>(pixels)[x+y*width];
-		}
-
-		const math::vec3<ubyte> &Bitmap::getByte3(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE3);
-
-			return static_cast<math::vec3<ubyte>*>(pixels)[x+y*width];
-		}
-
-		const math::vec4<ubyte> &Bitmap::getByte4(uint32 x, uint32 y) const
-		{
-			RE_ASSERT(x<width && y<height && channel==ColorChannel::BYTE4);
-			
-			return static_cast<math::vec4<ubyte>*>(pixels)[x+y*width];
-		}
-
-		Bitmap Bitmap::generateMipMap(MipmapFilter filter) const
-		{
-			Bitmap mip(channel, width>>1, height>>1);
-
-			switch(filter)
-			{
-			case MipmapFilter::Center:
-				{
-					switch(channel)
-					{
-					case ColorChannel::BYTE1:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getByte1(x,y) = getByte1(x<<1, y<<1);
-						} break;
-					case ColorChannel::BYTE2:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getByte2(x,y) = getByte2(x<<1,y<<1);
-						} break;
-					case ColorChannel::BYTE3:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getByte3(x,y) = getByte3(x<<1,y<<1);
-						} break;
-					case ColorChannel::BYTE4:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getByte4(x,y) = getByte4(x<<1,y<<1);
-						} break;
-					case ColorChannel::FLOAT1:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getFloat1(x,y) = getFloat1(x<<1,y<<1);
-						} break;
-					case ColorChannel::FLOAT2:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getFloat2(x,y) = getFloat2(x<<1,y<<1);
-						} break;
-					case ColorChannel::FLOAT3:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getFloat3(x,y) = getFloat3(x<<1,y<<1);
-						} break;
-					case ColorChannel::FLOAT4:
-						{
-							for(uint x = 0; x < mip.width; x++)
-								for(uint y = 0; y < mip.height; y++)
-									mip.getFloat4(x,y) = getFloat4(x<<1,y<<1);
-						} break;
-					}
-				} break;
-			case MipmapFilter::Adjacent4:
-				{
-					switch(channel)
-					{
-					case ColorChannel::BYTE1:
-						{
-							uword sum;
-							ubyte v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getByte1(t_x, t_y);
-									// left column
-									if(x != 0)
-										v[0] = getByte1(t_x-1, t_y);
-									else
-										v[0] = v[2];
-
-									// middle column
-									if(y != 0)
-										v[1] = getByte1(t_x, t_y-1);
-									else
-										v[1] = v[2];
-
-
-									if(y+1 < mip.height)
-										v[3] = getByte1(t_x, t_y+1);
-									else
-										v[3] = v[2];
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getByte1(t_x+1, t_y);
-									else
-										v[4] = v[2];
-
-									sum = 0;
-									for(auto val : v)
-										sum = sum + val;
-									sum = sum / 5;
-									mip.getByte1(x,y) = byte(sum);
-								}
-							}
-						} break;
-					case ColorChannel::BYTE2:
-						{
-							math::vec2<uword> sum;
-							math::vec2<ubyte> v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getByte2(t_x, t_y);
-									// left column
-									if(x != 0)
-										v[0] = getByte2(t_x-1, t_y);
-									else
-										v[0] = v[2];
-
-									// middle column
-									if(y != 0)
-										v[1] = getByte2(t_x, t_y-1);
-									else
-										v[1] = v[2];
-
-
-									if(y+1 < mip.height)
-										v[3] = getByte2(t_x, t_y+1);
-									else
-										v[3] = v[2];
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getByte2(t_x+1, t_y);
-									else
-										v[4] = v[2];
-
-									sum = decltype(sum)();
-									for(auto val : v)
-										sum = sum + decltype(sum)(val);
-									sum = sum / 5;
-									mip.getByte2(x,y) = math::vec2<ubyte>(sum);
-								}
-							}
-						} break;
-					case ColorChannel::BYTE3:
-						{
-							math::vec3<uword> sum;
-							math::vec3<ubyte> v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getByte3(t_x, t_y);
-									// left column
-									if(x != 0)
-										v[0] = getByte3(t_x-1, t_y);
-									else
-										v[0] = v[2];
-
-									// middle column
-									if(y != 0)
-										v[1] = getByte3(t_x, t_y-1);
-									else
-										v[1] = v[2];
-
-
-									if(y+1 < mip.height)
-										v[3] = getByte3(t_x, t_y+1);
-									else
-										v[3] = v[2];
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getByte3(t_x+1, t_y);
-									else
-										v[4] = v[2];
-
-									sum = decltype(sum)();
-									for(auto val : v)
-										sum = sum + decltype(sum)(val);
-									sum = sum / 5;
-									mip.getByte3(x,y) = math::vec3<ubyte>(sum);
-								}
-							}
-						} break;
-					case ColorChannel::BYTE4:
-						{
-							math::vec4<uword> sum;
-							math::vec4<ubyte> v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getByte4(t_x, t_y);
-									// left column
-									if(x != 0)
-										v[0] = getByte4(t_x-1, t_y);
-									else
-										v[0] = v[2];
-
-									// middle column
-									if(y != 0)
-										v[1] = getByte4(t_x, t_y-1);
-									else
-										v[1] = v[2];
-
-
-									if(y+1 < mip.height)
-										v[3] = getByte4(t_x, t_y+1);
-									else
-										v[3] = v[2];
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getByte4(t_x+1, t_y);
-									else
-										v[4] = v[2];
-
-									sum = decltype(sum)();
-									for(auto val : v)
-										sum = sum + decltype(sum)(val);
-									sum = sum / 5;
-									mip.getByte4(x,y) = math::vec4<ubyte>(sum);
-								}
-							}
-						} break;
-					case ColorChannel::FLOAT1:
-						{
-							float sum;
-							float v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getFloat1(t_x, t_y);
-									for(float&_:v)_=v[2];
-									// left column
-									if(x != 0)
-										v[0] = getFloat1(t_x-1, t_y);
-
-									// middle column
-									if(y != 0)
-										v[1] = getFloat1(t_x, t_y-1);
-
-
-									if(y+1 < mip.height)
-										v[3] = getFloat1(t_x, t_y+1);
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getFloat1(t_x+1, t_y);
-
-									sum = decltype(sum)();
-
-									for(auto val : v)
-										sum = sum + (val);
-									sum = sum / 5;
-									mip.getFloat1(x,y) = sum;
-								}
-							}
-						} break;
-					case ColorChannel::FLOAT2:
-						{
-							math::fvec2 sum;
-							math::fvec2 v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getFloat2(t_x, t_y);
-									for(auto&_:v)_=v[2];
-									// left column
-									if(x != 0)
-										v[0] = getFloat2(t_x-1, t_y);
-
-									// middle column
-									if(y != 0)
-										v[1] = getFloat2(t_x, t_y-1);
-
-
-									if(y+1 < mip.height)
-										v[3] = getFloat2(t_x, t_y+1);
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getFloat2(t_x+1, t_y);
-
-									sum = decltype(sum)();
-
-									for(auto val : v)
-										sum = sum + (val);
-									sum = sum / 5;
-									mip.getFloat2(x,y) = (sum);
-								}
-							}
-						} break;
-					case ColorChannel::FLOAT3:
-						{
-							math::fvec3 sum;
-							math::fvec3 v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getFloat3(t_x, t_y);
-									for(auto&_:v)_=v[2];
-									// left column
-									if(x != 0)
-										v[0] = getFloat3(t_x-1, t_y);
-
-									// middle column
-									if(y != 0)
-										v[1] = getFloat3(t_x, t_y-1);
-
-
-									if(y+1 < mip.height)
-										v[3] = getFloat3(t_x, t_y+1);
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getFloat3(t_x+1, t_y);
-
-									sum = decltype(sum)();
-
-									for(auto val : v)
-										sum = sum + (val);
-									sum = sum / 5;
-									mip.getFloat3(x,y) = (sum);
-								}
-							}
-						} break;
-					case ColorChannel::FLOAT4:
-						{
-							math::fvec4 sum;
-							math::fvec4 v[5];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[2] = getFloat4(t_x, t_y);
-									for(auto&_:v)_=v[2];
-									// left column
-									if(x != 0)
-										v[0] = getFloat4(t_x-1, t_y);
-
-									// middle column
-									if(y != 0)
-										v[1] = getFloat4(t_x, t_y-1);
-
-
-									if(y+1 < mip.height)
-										v[3] = getFloat4(t_x, t_y+1);
-
-									// right column
-									if(x+1 < mip.width)
-										v[4] = getFloat4(t_x+1, t_y);
-
-									sum = decltype(sum)();
-
-									for(auto val : v)
-										sum = sum + (val);
-									sum = sum / 5;
-									mip.getFloat4(x,y) = (sum);
-								}
-							}
-						} break;
-					}
-				} break;
-			case MipmapFilter::Adjacent8:
-				{
-					switch(channel)
-					{
-					case ColorChannel::BYTE1:
-						{
-							uword sum;
-							ubyte v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getByte1(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getByte1(t_x-1,t_y-1);
-										v[3] = getByte1(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte1(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getByte1(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getByte1(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getByte1(t_x+1, t_y-1);
-										v[5] = getByte1(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte1(t_x+1, t_y+1);
-									}
-									sum = 0;
-									for(auto val : v)
-										sum = sum + val;
-									sum = sum / 9;
-									mip.getByte1(x,y) = byte(sum);
-								}
-
-							}
-						} break;
-						case ColorChannel::BYTE2:
-						{
-							math::vec2<uword> sum;
-							math::vec2<ubyte> v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getByte2(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getByte2(t_x-1,t_y-1);
-										v[3] = getByte2(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte2(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getByte2(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getByte2(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getByte2(t_x+1, t_y-1);
-										v[5] = getByte2(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte2(t_x+1, t_y+1);
-									}
-									sum = math::vec2<uword>();
-									for(auto val : v)
-										sum = sum + math::vec2<uword>(val);
-									sum = sum / 9;
-									mip.getByte2(x,y) = math::vec2<ubyte>(sum);
-								}
-
-							}
-						} break;
-						case ColorChannel::BYTE3:
-						{
-							math::vec3<uword> sum;
-							math::vec3<ubyte> v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getByte3(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getByte3(t_x-1,t_y-1);
-										v[3] = getByte3(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte3(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getByte3(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getByte3(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getByte3(t_x+1, t_y-1);
-										v[5] = getByte3(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte3(t_x+1, t_y+1);
-									}
-									sum = math::vec3<uword>();
-									for(auto val : v)
-										sum = sum + math::vec3<uword>(val);
-									sum = sum / 9;
-									mip.getByte3(x,y) = math::vec3<ubyte>(sum);
-								}
-
-							}
-						} break;
-						case ColorChannel::BYTE4:
-						{
-							math::vec4<uword> sum;
-							math::vec4<ubyte> v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getByte4(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getByte4(t_x-1,t_y-1);
-										v[3] = getByte4(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte4(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getByte4(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getByte4(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getByte4(t_x+1, t_y-1);
-										v[5] = getByte4(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getByte4(t_x+1, t_y+1);
-									}
-									sum = math::vec4<uword>();
-									for(auto val : v)
-										sum = sum + math::vec4<uword>(val);
-									sum = sum / 9;
-									mip.getByte4(x,y) = math::vec4<ubyte>(sum);
-								}
-
-							}
-						} break;
-						case ColorChannel::FLOAT1:
-						{
-							float sum;
-							float v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getFloat1(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getFloat1(t_x-1,t_y-1);
-										v[3] = getFloat1(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat1(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getFloat1(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getFloat1(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getFloat1(t_x+1, t_y-1);
-										v[5] = getFloat1(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat1(t_x+1, t_y+1);
-									}
-									sum = 0;
-									for(auto val : v)
-										sum = sum + val;
-									sum = sum / 9;
-									mip.getFloat1(x,y) = sum;
-								}
-
-							}
-						} break;
-						case ColorChannel::FLOAT2:
-						{
-							math::vec2<float> sum;
-							math::vec2<float> v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getFloat2(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getFloat2(t_x-1,t_y-1);
-										v[3] = getFloat2(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat2(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getFloat2(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getFloat2(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getFloat2(t_x+1, t_y-1);
-										v[5] = getFloat2(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat2(t_x+1, t_y+1);
-									}
-									sum = math::vec2<float>();
-									for(auto val : v)
-										sum = sum + math::vec2<float>(val);
-									sum = sum / 9;
-									mip.getFloat2(x,y) = sum;
-								}
-
-							}
-						} break;
-						case ColorChannel::FLOAT3:
-						{
-							math::vec3<float> sum;
-							math::vec3<float> v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getFloat3(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getFloat3(t_x-1,t_y-1);
-										v[3] = getFloat3(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat3(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getFloat3(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getFloat3(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getFloat3(t_x+1, t_y-1);
-										v[5] = getFloat3(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat3(t_x+1, t_y+1);
-									}
-									sum = math::vec3<float>();
-									for(auto val : v)
-										sum = sum + math::vec3<float>(val);
-									sum = sum / 9;
-									mip.getFloat3(x,y) = sum;
-								}
-
-							}
-						} break;
-						case ColorChannel::FLOAT4:
-						{
-							math::vec4<float> sum;
-							math::vec4<float> v[3*3];
-							for(uint x = 0; x < mip.width; x++)
-							{
-								const uint t_x = x+x;
-								for(uint y = 0; y < mip.height; y++)
-								{
-									const uint t_y = y+y;
-									v[4] = getFloat4(t_x, t_y);
-									for(auto&_:v)_=v[4];
-									// left column
-									if(x != 0)
-									{
-										if(y != 0)
-											v[0] = getFloat4(t_x-1,t_y-1);
-										v[3] = getFloat4(t_x-1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat4(t_x-1, t_y+1);
-									}
-									// middle column
-									if(y != 0)
-										v[1] = getFloat4(t_x, t_y-1);
-									if(y+1 < mip.height)
-										v[7] = getFloat4(t_x, t_y+1);
-									// right column
-									if(x+1 < mip.width)
-									{
-										if(y != 0)
-											v[2] = getFloat4(t_x+1, t_y-1);
-										v[5] = getFloat4(t_x+1, t_y);
-										if(y+1 < mip.height)
-											v[6] = getFloat4(t_x+1, t_y+1);
-									}
-									sum = math::vec4<float>();
-									for(auto val : v)
-										sum = sum + math::vec4<float>(val);
-									sum = sum / 9;
-									mip.getFloat4(x,y) = sum;
-								}
-
-							}
-						} break;
-					}
-				} break;
-			}
-			return mip;
-		}
+		
 	}
 }
