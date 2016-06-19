@@ -55,12 +55,12 @@ namespace re
 
 			template<class U>
 			/** Converts this vector to a vector of the given type. */
-			REIL constexpr explicit operator vec2<U>() const;
+			RECX explicit operator vec2<U>() const;
 
 			/** Converts this vector to a C-style array. */
-			REIL constexpr operator T*();
+			RECX operator T*();
 			/** Converts this vector to a C-style array. */
-			REIL constexpr operator T const*() const;
+			RECX operator T const*() const;
 
 			/** The x (first) coordinate of the vector. */
 			T x;
@@ -129,7 +129,7 @@ namespace re
 		{
 			template<class U>
 			/** Converts this vector to a vector of the given type. */
-			REIL constexpr explicit operator vec3<U>() const;
+			RECX explicit operator vec3<U>() const;
 
 			/** Creates a vector with the given coordinates. */
 			vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z);
@@ -137,9 +137,9 @@ namespace re
 			vec3();
 
 			/** Converts this vector to a C-style array. */
-			REIL constexpr operator const T*() const;
+			RECX operator const T*() const;
 			/** Converts this vector to a C-style array. */
-			REIL constexpr operator T*();
+			RECX operator T*();
 
 			/** The x (first) coordinate of the vector. */
 			T x;

@@ -5,7 +5,7 @@ project(RmbRT_Engine)
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 # Add Lock library include path.
-include_directories(depend/Lock/include);
+include_directories(depend/Lock/include)
 
 # Select all source files.
 file(GLOB_RECURSE re_sources ./src/*.cpp)

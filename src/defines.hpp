@@ -2,19 +2,20 @@
 #define __re_defines_hpp_defined
 
 #if defined(_DEBUG) || defined(QT_QML_DEBUG)
+/** Defined when in debug mode. */
 #define RE_DEBUG
 #endif
 
-/* Inline functions. */
 #ifdef _MSC_VER
+/** Inline functions. */
 #define REIL __forceinline
 #else
+/** Inline functions. */
 #define REIL inline
 #endif
 
-#define RECX constexpr
-
-#define RECX REIL RECX
+/** Constexpr define. */
+#define RECX REIL constexpr
 
 #ifndef _countof
 #define _countof(x) (sizeof(x) / sizeof(*(x)))

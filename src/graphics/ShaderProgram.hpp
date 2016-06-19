@@ -5,7 +5,6 @@
 #include "../math/Vector.hpp"
 #include "../math/Matrix.hpp"
 #include "ShaderType.hpp"
-#include "OpenGL.hpp"
 
 namespace re
 {

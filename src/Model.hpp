@@ -4,8 +4,8 @@
 #include "types.hpp"
 #include "graphics/Material.hpp"
 #include "graphics/ShaderProgram.hpp"
-#include "graphics/Texture.hpp"
-#include "graphics/VertexData.hpp"
+#include "graphics/gl/Texture.hpp"
+#include "graphics/gl/VertexArray.hpp"
 #include "math/AxisAlignedBoundingBox.hpp"
 namespace re
 {
@@ -13,10 +13,10 @@ namespace re
 	{
 		strong_handle<graphics::Material> material;
 		strong_handle<graphics::ShaderProgram> shader;
-		strong_handle<graphics::VertexData> vertexData;
+		strong_handle<graphics::gl::VertexArrayBase> vertexData;
 		strong_handle<graphics::Texture> texture;
 	public:
-		Model(strong_handle<graphics::Material> mat, strong_handle<graphics::ShaderProgram> shader, strong_handle<graphics::VertexData> vertexData, strong_handle<graphics::Texture> texture);
+		Model(strong_handle<graphics::Material> mat, strong_handle<graphics::ShaderProgram> shader, strong_handle<graphics::gl::VertexArrayBase> vertexData, strong_handle<graphics::Texture> texture);
 
 
 
@@ -29,7 +29,7 @@ namespace re
 		const math::fAABB &getAABB() const;
 		/*Returns the VertexData of this Model.*/
 		strong_handle<graphics::VertexData> getVertexData() const;
-		void setVertexData(strong_handle<graphics::VertexData> vertexData);
+		void setVertexData(strong_handle<graphics::gl::VertexArrayBase> vertexData);
 		strong_handle<graphics::Material> getMaterial() const;
 		void setMaterial(strong_handle<graphics::Material> material);
 		strong_handle<graphics::ShaderProgram> getShader() const;
