@@ -73,6 +73,7 @@ namespace re
 #endif
 				m_first->m_next = nullptr;
 				m_first->m_size = size;
+				m_first->m_heap = this;
 				m_first->m_prev = nullptr;
 
 				validateHeader(m_first);
@@ -87,6 +88,7 @@ namespace re
 
 				m_pool->m_next = m_first;
 				m_first->m_prev = m_pool;
+				m_first->m_heap = this;
 				m_first = m_pool;
 #ifdef RE_HEAP_DEBUG
 				m_first->m_magic = heap_magic;
@@ -105,6 +107,7 @@ namespace re
 				header->m_magic = heap_magic;
 #endif
 				header->m_prev = m_last;
+				header->m_heap = this;
 				header->m_size = size;
 				header->m_next = nullptr;
 
@@ -133,6 +136,7 @@ namespace re
 				{	// found a satisfying hole?
 					Header * const header = static_cast<Header *>(it->m_header->end());
 					header->m_prev = it->m_header;
+					header->m_heap = this;
 					header->m_next = it->m_header->m_next;
 					it->m_header->m_next = header;
 					header->m_next->m_prev = header;
@@ -157,53 +161,62 @@ namespace re
 			return nullptr;
 		}
 
-		bool Heap::resize(void const* mem, size_t size)
+		bool Heap::Header::resize(size_t size)
 		{
-			RE_DBG_ASSERT(mem);
-			Header * const header = getHeader(mem);
-			validateHeader(header);
+			RE_DBG_ASSERT(m_heap);
+			m_heap->validateHeader(this);
 
-			if(header->capacity() >= size)
-				header->size = size;
+			if(this == m_heap->m_last)
+			{
+				uintptr_t mem = uintptr_t(this + 1);
+				uintptr_t end = uintptr_t(m_heap->m_pool) + m_heap->m_capacity;
 
-			return true;
+				if(end-mem >= size)
+				{
+					m_size = size;
+					return true;
+				}
+			} else if(capacity() >= size)
+			{
+				m_size = size;
+				return true;
+			}
+
+			return false;
 		}
 
-		void * Heap::realloc(void const * mem, size_t size)
+		void * Heap::Header::realloc(size_t size)
 		{
-			RE_DBG_ASSERT(mem)
-			if(resize(mem))
-				return mem;
-			
-			void * const moved = alloc(size);
-			Header * const header = getHeader(mem);
-			validateHeader(header);
-			memcpy(moved, mem, header->m_size);
+			RE_DBG_ASSERT(m_heap);
+			m_heap->validateHeader(this);
 
-			free(mem);
+			if(resize(size))
+				return this + 1;
+			
+			void * const moved = m_heap->alloc(size);
+			memcpy(moved, this + 1, m_size);
+			free();
 			return moved;
 		}
 
-		void Heap::free(void const * ptr)
+		void Heap::Header::free()
 		{
-			RE_DBG_ASSERT(ptr);
-			Header * const header = getHeader(ptr);
-			validateHeader(header);
+			RE_DBG_ASSERT(m_heap);
+			m_heap->validateHeader(this);
 
-			if(header->m_prev)
-				header->m_prev->m_next = header->m_next;
+			if(m_prev)
+				m_prev->m_next = m_next;
 			else
-				m_first = m_header->m_next;
+				m_heap->m_first = m_next;
 
-			if(header->m_next)
-				header->m_next->m_prev = header->m_prev;
+			if(m_next)
+				m_next->m_prev = m_prev;
 			else
-				m_last = m_header->m_prev;
+				m_heap->m_last = m_prev;
 		}
 
 		void Heap::create(size_t capacity)
 		{
-
 			/** capacity must be multiple of sizeof(Header). */
 			if(capacity & (sizeof(Header)-1))
 				capacity = (capacity + sizeof(Header)) & ~(sizeof(Header)-1);

@@ -8,17 +8,23 @@ namespace re
 
 	void free(void const * mem)
 	{
-		return re::singleton<Heap>().free(mem);
+		Header * header = Heap::getHeader(mem);
+		header->m_heap->validateHeader(header);
+		header->free();
 	}
 
 	bool resize(void const * mem, size_t size)
 	{
-		return re::singleton<Heap>().resize(mem, size);
+		Header * header = Heap::getHeader(mem);
+		header->m_heap->validateHeader(header);
+		return header->resize(size);
 	}
 
 	void * realloc(void const * mem, size_t size)
 	{
-		return re::singleton<Heap>().realloc(mem, size);
+		Header * header = Heap::getHeader(mem);
+		header->m_heap->validateHeader(header);
+		return header->realloc(size);
 	}
 
 	
@@ -63,7 +69,7 @@ namespace re
 			#endif
 		}
 
-		Header * Heap::getHeader(void const * membegin) const
+		Header * Heap::getHeader(void const * membegin)
 		{
 			return static_cast<Header*>(uintptr_t(membegin)) - 1;
 		}

@@ -38,10 +38,15 @@ namespace re
 #endif
 				/** The previous Header, or null if none. */
 				Header * m_prev;
+				/** The heap this Header belongs to.
+					This is used to allow the existence of multiple Heaps, where the deleter function does not have to know what heap a memory block is allocated from. */
+				Heap * m_heap;
 				/** The bytes allocated in this header. */
 				size_t m_size;
 				/** The next used header. */
 				Header * m_next;
+
+				void free();
 
 				/** The*/
 				RECX size_t capacity() const;
@@ -66,8 +71,6 @@ namespace re
 
 			/** In RE_HEAP_DEBUG, validates the header and its pointers. */
 			RECXDA void validateHeader(Header const * header) const;
-			/** Returns the Header address that belongs to the beginning of a memory block. */
-			RECX Header * getHeader(void const * membegin) const;
 
 		public:
 			/** Unallocated Heap. */
@@ -85,8 +88,6 @@ namespace re
 			void * realloc(void const * mem, size_t size);
 			/** Allocates memory. */
 			void * alloc(size_t size);
-			/** Frees memory. */
-			void free(void const * mem);
 
 			/** Whether the memory pool is allocated. */
 			RECX bool exists() const;
@@ -97,6 +98,10 @@ namespace re
 			void create(size_t capcity);
 			/** Deallocates the Heap. */
 			void dealloc();
+
+
+			/** Returns the Header address that belongs to the beginning of a memory block. */
+			static RECX Header * getHeader(void const * membegin);
 		private:
 			/** Invalidates the Heap (for moving). */
 			void invalidate();
