@@ -20,8 +20,10 @@ namespace re
 
 		template<class T>
 		/** Returns a reusable Buffer of the given size.
-		@param[in] count: How many elements to allocate.
-		@return The allocated buffer.
+		@param[in] count:
+			How many elements to allocate.
+		@return
+			The allocated buffer.
 		@important The returned buffer is invalidated after the next call to allocation_buffer. */
 		T * allocation_buffer(size_t count);
 

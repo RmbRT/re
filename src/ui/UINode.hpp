@@ -13,11 +13,11 @@ namespace re
 {
 	namespace ui
 	{
-		/*The base class for all UI elements.
+		/** The base class for all UI elements.
 		Contains a Box Model representation, similar to the one found in HTML / CSS.
 		Contains a list of UINodes as children.
 		@usage:
-			Deriving classes should override the method @[updateModels] to create a custom look.*/
+			Deriving classes should override the method @[updateModels] to create a custom look. */
 		class UINode
 		{
 		protected:
@@ -170,11 +170,11 @@ namespace re
 			// resolves the bottom padding.
 			float absolutePaddingBottom() const;
 
-			/*Resolves the width of the whole box.
-			This contains the border, margin, padding, and content area.*/
+			/** Resolves the width of the whole box.
+			This contains the border, margin, padding, and content area. */
 			float absoluteBoxWidth() const;
-			/*Resolves the height of the whole box.
-			This contains the border, margin, padding, and content area.*/
+			/** Resolves the height of the whole box.
+			This contains the border, margin, padding, and content area. */
 			float absoluteBoxHeight() const;
 
 			// calculates the position of this UINode relative to its parents origin.

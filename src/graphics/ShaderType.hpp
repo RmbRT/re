@@ -7,18 +7,18 @@ namespace re
 {
 	namespace graphics
 	{
-		/*Contains the available shader types.*/
+		/** Contains the available shader types. */
 		enum class ShaderType
 		{
-			/*Vertex shader.*/
+			/** Vertex shader. */
 			ST_VERTEX,
-			/*Fragment (pixel) shader.*/
+			/** Fragment (pixel) shader. */
 			ST_FRAGMENT,
-			/*Geometry shader.*/
+			/** Geometry shader. */
 			ST_GEOMETRY,
-			/*Tesselation control shader.*/
+			/** Tesselation control shader. */
 			ST_TESS_CONTROL,
-			/*Tesselation evaluation shader.*/
+			/** Tesselation evaluation shader. */
 			ST_TESS_EVALUATION
 		};
 

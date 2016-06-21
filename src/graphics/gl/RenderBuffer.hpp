@@ -18,7 +18,7 @@ namespace re
 					m_width,
 					m_height;
 			public:
-				/** */
+				/**  . */
 				RenderBuffer();
 				RenderBuffer(RenderBuffer &&) = default;
 				RenderBuffer &operator=(RenderBuffer &&) = default;

@@ -18,12 +18,24 @@ namespace re
 			T* m_data;
 		public:
 			/** Constructs a non-null pointer.
-			@assert The given pointer must not be null. */
-			NotNull(T *data);
+			@assert
+				The given pointer must not be null. */
+			RECXDA NotNull(T *data);
 
 			/** Returns the pointer held by the structure. */
 			RECX operator T*() const;
 		};
+
+		template<class T>
+		/** Array types of unspecified size are treated as pointers. */
+		struct NotNull<T[]> : private NotNull<T>
+		{
+			using NotNull<T>::NotNull;
+		};
+
+		template<class T>
+		/** Shorthand notation that allows omitting the template argument. */
+		RECX NotNull<T> notNull(T *);
 	}
 }
 

@@ -27,12 +27,12 @@ namespace re
 			Label(Label &&move);
 			Label& operator=(Label &&move);
 
-			/*Sets the Font of the Label and compiles the text to match the new Font.*/
+			/** Sets the Font of the Label and compiles the text to match the new Font. */
 			void setFont(const strong_handle<Font> &font);
 			const strong_handle<Font> &getFont() const;
-			/*Sets he text of the Label and compiles it.*/
+			/** Sets he text of the Label and compiles it. */
 			void setText(const u32string &text);
-			/*Sets the X offset for inline appending labels.*/
+			/** Sets the X offset for inline appending labels. */
 			void setXOffset(float xOffset);
 
 			const u32string &getText() const;

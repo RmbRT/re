@@ -2,7 +2,6 @@
 #include "Error.hpp"
 
 #include <memory>
-#include <cstdlib>
 
 namespace re
 {
@@ -169,7 +168,7 @@ namespace re
 			if(this == m_heap->m_last)
 			{
 				uintptr_t mem = uintptr_t(this + 1);
-				uintptr_t end = uintptr_t(m_heap->m_pool) + m_heap->m_capacity;
+				uintptr_t end = m_heap->end();
 
 				if(end-mem >= size)
 				{
@@ -224,10 +223,9 @@ namespace re
 			RE_DBG_ASSERT(!exists()
 				&& "Tried to allocate heap that is already allocated.");
 
-			RE_CHECKED_LOG(
+			RE_FATAL(
 				m_pool = static_cast<Header *>(std::malloc(capacity))),
-				"pool allocation",
-				exit(EXIT_FAILURE)
+				"util::Heap allocation"
 			);
 
 			m_end = static_cast<Header*>(static_cast<intptr_t>(m_pool) + capacity);

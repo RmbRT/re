@@ -17,8 +17,8 @@ namespace re
 			input::InputManager * inputManager;
 		public:
 
-			/*Updates the mouse position and checks for and generates events
-			for the <root> UIElement and its children.*/
+			/** Updates the mouse position and checks for and generates events
+			for the <root> UIElement and its children. */
 			void update(const math::fvec2 &new_cursor, float delta_time);
 
 		};

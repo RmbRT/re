@@ -28,21 +28,23 @@ namespace re
 		typedef mat3x3<short> short3x3, hmat3x3, mat3x3h;
 		typedef mat4x4<short> short4x4, hmat4x4, mat4x4h;
 
-		/*The element tpye of the matrix.*/
+		/** The element tpye of the matrix. */
 		template<class T>
-		/*Represents a 2x2 matrix. The values are stored column-wise.*/
+		/** Represents a 2x2 matrix. The values are stored column-wise. */
 		struct mat2x2
 		{
-			/*Converts a 2x2 matrix of one type to another.*/
+			/** Converts a 2x2 matrix of one type to another. */
 			template<class U>
 			explicit mat2x2<T>(const mat2x2<U> &m);
 
-			/*Constructs a 2x2 matrix. The values are passed row-wise.*/
+			/** Constructs a 2x2 matrix. The values are passed row-wise. */
 			mat2x2(const T& v00, const T &v10, const T &v01, const T &v11);
 
-			/*Constructs a 2x2 matrix with the given columns.
-			@param[in] v0: the first column of the matrix.
-			@param[in] v1: the second column of the matrix.*/
+			/** Constructs a 2x2 matrix with the given columns.
+			@param[in] v0:
+				the first column of the matrix.
+			@param[in] v1:
+				the second column of the matrix. */
 			mat2x2(const vec2<T> &v0, const vec2<T> &v1);
 
 
@@ -54,31 +56,34 @@ namespace re
 
 			static const mat2x2<T> IDENTITY;
 
-			/*The columns of the matrix.*/
+			/** The columns of the matrix. */
 			vec2<T> v0, v1;
 		};
 
 		template<class T>
 		mat2x2<T> operator*(float a, const mat2x2<T> &b);
 
-		/*The element type of the matrix.*/
+		/** The element type of the matrix. */
 		template<class T>
-		/*Represents a 3x3 matrix. The values are stored column-wise.*/
+		/** Represents a 3x3 matrix. The values are stored column-wise. */
 		struct mat3x3
 		{
-			/*Converts a 3x3 matrix of one type to another.*/
+			/** Converts a 3x3 matrix of one type to another. */
 			template<class U>
 			explicit mat3x3<T>(const mat3x3<U> &m);
 
-			/*Constructs a 3x3 matrix. The values are passed row-wise.*/
+			/** Constructs a 3x3 matrix. The values are passed row-wise. */
 			mat3x3(const T &v00, const T &v10, const T &v20,
 				const T &v01, const T &v11, const T &v21,
 				const T &v02, const T &v12, const T &v22);
 
-			/*Constructs a 3x3 matrix with the given columns.
-			@param[in] v0: the first column of the matrix.
-			@param[in] v1: the second column of the matrix.
-			@param[in] v2: the third column of the matrix.*/
+			/** Constructs a 3x3 matrix with the given columns.
+			@param[in] v0:
+				the first column of the matrix.
+			@param[in] v1:
+				the second column of the matrix.
+			@param[in] v2:
+				the third column of the matrix. */
 			mat3x3(const vec3<T> &v0, const vec3<T> &v1, const vec3<T> &v2);
 
 			mat3x3<T> operator*(const mat3x3<T> &rval) const;
@@ -89,33 +94,37 @@ namespace re
 
 			static const mat3x3<T> IDENTITY;
 
-			/*The columns of the matrix.*/
+			/** The columns of the matrix. */
 			vec3<T> v0, v1, v2;
 		};
 
 		template<class T>
 		mat3x3<T> operator*(float a, const mat3x3<T> &b);
 
-		/*The element type of the matrix.*/
+		/** The element type of the matrix. */
 		template<class T>
-		/*Represents a 4x4 matrix. The values are stored column-wise.*/
+		/** Represents a 4x4 matrix. The values are stored column-wise. */
 		struct mat4x4
 		{
-			/*Converts a 4x4 matrix of one type to another.*/
+			/** Converts a 4x4 matrix of one type to another. */
 			template<class U>
 			explicit mat4x4(const mat4x4<U> &m);
 
-			/*Constructs a 4x4 matrix. The values are passed row-wise.*/
+			/** Constructs a 4x4 matrix. The values are passed row-wise. */
 			mat4x4(const T &v00, const T &v10, const T &v20, const T &v30,
 				const T &v01, const T &v11, const T &v21, const T &v31,
 				const T &v02, const T &v12, const T &v22, const T &v32,
 				const T &v03, const T &v13, const T &v23, const T &v33);
 
-			/*Constructs a 4x4 matrix with the given columns.
-			@param[in] v0: the first column of the matrix.
-			@param[in] v1: the second column of the matrix.
-			@param[in] v2: the third column of the matrix.
-			@param[in] v3: the fourth column of the matrix.*/
+			/** Constructs a 4x4 matrix with the given columns.
+			@param[in] v0:
+				the first column of the matrix.
+			@param[in] v1:
+				the second column of the matrix.
+			@param[in] v2:
+				the third column of the matrix.
+			@param[in] v3:
+				the fourth column of the matrix. */
 			mat4x4(const vec4<T> &v0, const vec4<T> &v1, const vec4<T> &v2, const vec4<T> &v3);
 
 			mat4x4<T> operator*(const mat4x4<T> &rval) const;
@@ -139,12 +148,12 @@ namespace re
 			static mat4x4<T> rotation(const vec3<Angle> &rotation);
 			static mat4x4<T> scaling(const vec3<T> &scaling);
 			static mat4x4<T> transformation(const vec3<T> &position, const vec3<Angle> &rotation, const vec3<T> &scaling);
-			/*Kind of hacky, but works. Also, does not use inverse matrix method. maybe inverse is faster but idk.*/
+			/** Kind of hacky, but works. Also, does not use inverse matrix method. maybe inverse is faster but idk. */
 			static mat4x4<T> inverse_lookAt(const mat4x4<T> &look_at);
 
 			static const mat4x4<T> IDENTITY;
 
-			/*The columns of the matrix.*/
+			/** The columns of the matrix. */
 			vec4<T> v0, v1, v2, v3;
 		};
 
@@ -336,14 +345,14 @@ namespace re
 		template<class T>
 		mat4x4<T> mat4x4<T>::lookAt(const vec3<T> &position, const vec3<T> &forward, const vec3<T> &up)
 		{
-			/*vec3<T> _z(norm(forward));
+			/** vec3<T> _z(norm(forward));
 			vec3<T> _x(norm(cross(up,forward)));
 			vec3<T> _y(norm(cross(forward, _x)));
 			vec4<T> x(_z.x, _z.y, _z.z, -dot(_x,position));
 			return mat4x4<T>(_x.x, _y.x, _z.x, -dot(_x,position),
 							 _x.y, _y.y, _z.y, -dot(_y,position),
 							 _x.z, _y.z, _z.z, -dot(_z,position),
-							 0, 0, 0, 1);*/
+							 0, 0, 0, 1). */
 			vec3<T> _z(norm(forward));
 			vec3<T> _x(norm(cross(up,_z)));
 			vec3<T> _y(norm(cross(_z,_x)));
@@ -431,7 +440,7 @@ namespace re
 		template<class T>
 		mat4x4<T> mat4x4<T>::perspective(const Angle &yFov, T width, T height, T zNear, T zFar)
 		{
-			/*T inv = T(1)/(zNear-zFar);
+			/** T inv = T(1)/(zNear-zFar);
 			T t = (zNear*zFar)*inv;
 			T _tan = T(1)/tan(yFov/T(2));
 			T aspect = height / width;
@@ -440,9 +449,9 @@ namespace re
 			return mat4x4<T>(xFov, 0,    0,                0,
 							 0,    _tan, 0,                0,
 							 0,    0,    (zFar+zNear)*inv, T(2)*(zNear*zFar)*inv,
-							 0,    0,    1,                0);*/
+							 0,    0,    1,                0). */
 
-			/*const T ar = height / width;
+			/** const T ar = height / width;
 			const T tanHalfFOV = T(1)/tan(yFov/T(2));
 			const T zRange = T(1)/(zNear - zFar);
 
@@ -450,7 +459,7 @@ namespace re
 				vec4<T>(ar*tanHalfFOV, T(0), T(0), T(0)),
 				vec4<T>(T(0), tanHalfFOV, T(0), T(0)),
 				vec4<T>(T(0), T(0), T(-zNear-zFar)*zRange, T(2)*zFar*zNear*zRange),
-				vec4<T>(T(0), T(0), T(1), T(0)));*/
+				vec4<T>(T(0), T(0), T(1), T(0))). */
 
 			const T _tan = T(1)/tan(rad(yFov.rad() * T(0.5)));
 			const T AR = height / width;

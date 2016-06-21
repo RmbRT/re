@@ -23,20 +23,20 @@ namespace re
 				/** The FrameBuffer currently used for write operations. */
 				static Binding bound_write;
 				
-				/**@{
+				/** @{
 					The bounds of the FrameBuffer. */
 				uint32
 					m_width,
 					m_height;
-				/**@}*/
+				/** @. */
 
-				/**@{
+				/** @{
 					The attachments of the FrameBuffer. */
 				Texture2D m_color;
 				RenderBuffer m_depth;
 				RenderBuffer m_stencil;
 				RenderBuffer m_depth_stencil;
-				/**@}*/
+				/** @. */
 				
 			public:
 				/** Creates an empty FrameBuffer Handle. */
@@ -61,13 +61,17 @@ namespace re
 
 				/** Allocates the given FrameBuffers.
 				@important: None of the given FrameBuffers must exist.
-				@param[in] objects: The FrameBuffers to allocate.
-				@param[in] count: The count of the FrameBuffers. */
+				@param[in] objects:
+					The FrameBuffers to allocate.
+				@param[in] count:
+					The count of the FrameBuffers. */
 				static void alloc(FrameBuffer * objects, size_t count);
 				/** Destroys the given FrameBuffers.
 				@important: All of the given FrameBuffers must exist.
-				@param[in] objects: The FrameBuffers to destroy.
-				@param[in] count: The count of the FrameBuffers. */
+				@param[in] objects:
+					The FrameBuffers to destroy.
+				@param[in] count:
+					The count of the FrameBuffers. */
 				static void destroy(FrameBuffer * objects, size_t count);
 
 				/** buffer = null to use default (= window) buffer. */

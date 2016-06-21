@@ -33,7 +33,7 @@ namespace re
 
 		bool isLoaded() const;
 
-		/*Used for constructing Resources before writing them to a file.*/
+		/** Used for constructing Resources before writing them to a file. */
 		strong_handle<lock::ThreadSafe<ModelAsset>> addModel(ModelAsset &&asset);
 		strong_handle<lock::ThreadSafe<TextAsset>> addText(TextAsset &&asset);
 		strong_handle<lock::ThreadSafe<BitmapAsset>> addBitmap(BitmapAsset &&asset);

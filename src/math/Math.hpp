@@ -3,7 +3,7 @@
 
 namespace re
 {
-	/*Contains classes and functions for mathematical calculations.*/
+	/** Contains classes and functions for mathematical calculations. */
 	namespace math
 	{
 	}

@@ -9,14 +9,14 @@ namespace re
 	{
 		struct Light
 		{
-			/*Used for describing the position of point lights.
-			Ignored for directional global lights.*/
+			/** Used for describing the position of point lights.
+			Ignored for directional global lights. */
 			math::fvec3 position;
-			/*The direction of spot lights and directional global lights.*/
+			/** The direction of spot lights and directional global lights. */
 			math::fvec3 direction;
-			/*The angle for spot lights. If zero, the light is considered as shining into all directions.*/
+			/** The angle for spot lights. If zero, the light is considered as shining into all directions. */
 			float angle;
-			/*The light color.*/
+			/** The light color. */
 			math::fvec3 color;
 		};
 	}

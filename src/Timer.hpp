@@ -6,7 +6,7 @@
 
 namespace re
 {
-	/*Represents a continuous timer that counts the time since it was created, in seconds.*/
+	/** Represents a continuous timer that counts the time since it was created, in seconds. */
 	class ContinuousTimer
 	{
 	protected:
@@ -17,10 +17,10 @@ namespace re
 	public:
 		ContinuousTimer();
 
-		/*Returns the time in seconds that passed between the last two update calls.*/
+		/** Returns the time in seconds that passed between the last two update calls. */
 		REIL double delta() const;
 
-		/*Returns the time in seconds that passed since the timer was created.*/
+		/** Returns the time in seconds that passed since the timer was created. */
 		REIL double age() const;
 
 		void update();

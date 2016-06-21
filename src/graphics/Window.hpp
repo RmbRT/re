@@ -97,7 +97,8 @@ namespace re
 			RECXDA bool visible() const;
 			
 			/** Returns the Cursor position relative to the client area of the window.
-			@return: the Cursor position relative to the client are of the window, in screen coordinates. */
+			@return
+				the Cursor position relative to the client are of the window, in screen coordinates. */
 			RECXDA math::double2 const& cursor() const;
 
 			/** Requests the Window to close.
@@ -106,7 +107,7 @@ namespace re
 
 			/** Returns the Context of the Window.
 			@assert The Window must exist. */
-			RECXDA Context & context();
+			RECXDA14 Context & context();
 			/** Returns the Context of the Window.
 			@assert The Window must exist. */
 			RECXDA Context const& context() const;
@@ -115,10 +116,14 @@ namespace re
 
 			/** Creates the Window handle with the given arguments.
 			@assert The Window must not yet exist.
-			@param[in] window: The hints controlling the Window creation.
-			@param[in] framebuffer: The hints controlling the framebuffer creation.
-			@param[in] context: The hints controlling the Context creation.
-			@return Whether the Window was created successfully. */
+			@param[in] window:
+				The hints controlling the Window creation.
+			@param[in] framebuffer:
+				The hints controlling the framebuffer creation.
+			@param[in] context:
+				The hints controlling the Context creation.
+			@return
+				Whether the Window was created successfully. */
 			bool create(
 				string title,
 				WindowHints const& window,
@@ -127,7 +132,8 @@ namespace re
 
 			/** Creates the Window and shares the Context with the given Window.
 			@assert The Window must not yet exist.
-			@param[in] hints: The hints controlling */
+			@param[in] hints:
+				The hints controllin. */
 			bool create(
 				string title,
 				WindowHints const& window,
@@ -136,9 +142,12 @@ namespace re
 
 			/** Recreates the Window handle, keeping the old context.
 			@assert The Window must exist.
-			@param[in] window: The new WindowHints.
-			@param[in] framebuffer: The new FramebufferHints.
-			@return: Whether the new Window could be created. If it failed, the old window is kept. */
+			@param[in] window:
+				The new WindowHints.
+			@param[in] framebuffer:
+				The new FramebufferHints.
+			@return
+				Whether the new Window could be created. If it failed, the old window is kept. */
 			bool recreate(
 				string title,
 				WindowHints const& window,
@@ -155,20 +164,26 @@ namespace re
 			void hide();
 
 			/** Sets the Cursor position relative to the client area of the window.
-			@param[in] pos: the new Cursor position relative to the client area of the window, in screen coordinates. */
+			@param[in] pos:
+				the new Cursor position relative to the client area of the window, in screen coordinates. */
 			void set_cursor(math::double2 const& pos);
 
 			/** Sets the position of the window.
-			@param[in] x: the X coordinate of the client area of the window, in screen coordinates.
-			@param[in] y: the Y coordinate of the client area of the window, in screen coordinates. */
+			@param[in] x:
+				the X coordinate of the client area of the window, in screen coordinates.
+			@param[in] y:
+				the Y coordinate of the client area of the window, in screen coordinates. */
 			void set_position(int x, int y);
 			/** Sets the size of the window.
-			@param[in] w: the width of the client area of the window, in screen coordinates.
-			@param[in] h: the height of the client area of the window, in screen coordinates. */
+			@param[in] w:
+				the width of the client area of the window, in screen coordinates.
+			@param[in] h:
+				the height of the client area of the window, in screen coordinates. */
 			void set_size(int w, int h);
 
 			/** Sets the title of the window.
-			@param[in] title: the title of the window. */
+			@param[in] title:
+				the title of the window. */
 			void set_title(string title);
 
 			/** Makes the context of the window current, enabling rendering to the window.
@@ -192,74 +207,97 @@ namespace re
 			virtual Context * create_context(ContextHints const&, gl::Version const&) = 0;
 
 			/** Called when the Window receives an unicode character.
-			@param[in] codepoint: the unicode value of the character. */
+			@param[in] codepoint:
+				the unicode value of the character. */
 			virtual void onCharacter(uint codepoint) = 0;
 				
 			/** Called when the cursor enters or leaves the window.
-			@param[in] entered: true if the cursor entered, false if it left the window. */
+			@param[in] entered:
+				true if the cursor entered, false if it left the window. */
 			virtual void onCursorEnter(bool entered) = 0;
 				
 			/** Called when the cursor moves.
-			@param[in] x: the x coordinate of the cursor, relative to the top left corner of the window (in pixels).
-			@param[in] y: the y coordinate of the cursor, relative to the top left corner of the window (in pixels). */
+			@param[in] x:
+				the x coordinate of the cursor, relative to the top left corner of the window (in pixels).
+			@param[in] y:
+				the y coordinate of the cursor, relative to the top left corner of the window (in pixels). */
 			virtual void onCursorMove(double x, double y) = 0;
 
 			/** Called when a key is pressed, released, or repeated.
-			@param[in] key: the virtual key code of the key.
-			@param[in] scancode: the scancode the key has on the keyboard.
-			@param[in] pressed: whether the key was pressed or released.
-			@param[in] mods: modifier key flags.
+			@param[in] key:
+				the virtual key code of the key.
+			@param[in] scancode:
+				the scancode the key has on the keyboard.
+			@param[in] pressed:
+				whether the key was pressed or released.
+			@param[in] mods:
+				modifier key flags.
 			@note:
-				The default implementation calls re::messaging::Emitter<re::input::KeyEvent>::emit(key, pressed).*/
+				The default implementation calls re::messaging::Emitter<re::input::KeyEvent>::emit(key, pressed). */
 			virtual void onKey(input::Key key, int scancode, bool pressed, int mods) = 0;
 
 			/** Called when a mouse button is pressed or released.
-			@param[in] button: the button that was pressed or released.
-			@param[in] action: whether the button was pressed or released.
-			@param[in] mods: modifier key flags.
+			@param[in] button:
+				the button that was pressed or released.
+			@param[in] action:
+				whether the button was pressed or released.
+			@param[in] mods:
+				modifier key flags.
 			@note:
 				The default implementation calls re::messaging::Emitter<re::input::KeyEvent>::emit(button, pressed). */
 			virtual void onMouseButton(input::Key button, bool pressed, int mods) = 0;
 
 			/** Called when the size of the framebuffer changed.
-			@param[in] width: the new width (in pixels) of the framebuffer.
-			@param[in] height: the new height (in pixels) of the framebuffer. */
+			@param[in] width:
+				the new width (in pixels) of the framebuffer.
+			@param[in] height:
+				the new height (in pixels) of the framebuffer. */
 			virtual void onFramebufferSizeChanged(int width, int height) = 0;
 
 			/** Called when the user attempts to close the Window.
 				Use this function to decide how the Window reacts when the user requests it to close.
 				If the close request is accepted, the Window is destroyed afterwards.
-			@return True, if the close request should be accepted, and false, if denied. */
+			@return
+				True, if the close request should be accepted, and false, if denied. */
 			virtual bool onCloseRequest() = 0;
 
 			/** Called when the window gains or looses focus.
-			@param[in] focus: true if the window gained focus, false if it lost focus. */
+			@param[in] focus:
+				true if the window gained focus, false if it lost focus. */
 			virtual void onFocusChanged(bool focus) = 0;
 
 			/** Called when the window becomes minimized or restored.
-			@param[in] iconified: true if the window was minimized, false if it was restored. */
+			@param[in] iconified:
+				true if the window was minimized, false if it was restored. */
 			virtual void onIconify(bool iconified) = 0;
 				
 			/** Called when the window position changes.
-			@param[in] x: the new window x coordinate (in pixels).
-			@param[in] y: the new window y coordinate (in pixels). */
+			@param[in] x:
+				the new window x coordinate (in pixels).
+			@param[in] y:
+				the new window y coordinate (in pixels). */
 			virtual void onPositionChanged(int x, int y) = 0;
 
-			/** Called when the window should refresh.*/
+			/** Called when the window should refresh. */
 			virtual void onRefresh() = 0;
 
 			/** Called when the window got resized.
-			@param[in] width: the new width of the window.
-			@param[in] height: the new height of the window. */
+			@param[in] width:
+				the new width of the window.
+			@param[in] height:
+				the new height of the window. */
 			virtual void onSizeChanged(int width, int height) = 0;
 
 			/** Gets called by Window::show() and Window::hide().
-			@param[in] shown: true if the window became visible, false if it became hidden. */
+			@param[in] shown:
+				true if the window became visible, false if it became hidden. */
 			virtual void onVisibilityChanged(bool shown) = 0;
 				
 			/** Gets called upon scrolling.
-			@param[in] xoffset: the amount of pixels scrolled in x axis.
-			@param[in] yoffset: the amount of pixels scrolled in y axis. */
+			@param[in] xoffset:
+				the amount of pixels scrolled in x axis.
+			@param[in] yoffset:
+				the amount of pixels scrolled in y axis. */
 			virtual void onScroll(double xoffset, double yoffset) = 0;
 		};
 	}

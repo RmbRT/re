@@ -29,7 +29,7 @@ namespace re
 		}
 
 		template<class T>
-		void RefCount<T>::unreference()
+		size_t RefCount<T>::unreference()
 		{
 			return --m_count;
 		}

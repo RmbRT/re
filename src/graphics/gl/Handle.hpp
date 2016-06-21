@@ -28,7 +28,7 @@ namespace re
 				/** Moves the ownership of the handle from one Handle to another. */
 				REIL Handle(Handle &&);
 				/** Moves the ownership of the handle from one Handle to another. */
-				RECXDA Handle &operator=(Handle &&);
+				RECXDA14 Handle &operator=(Handle &&);
 				/** Asserts that the Handle must not exist anymore. */
 				RECXDA ~Handle();
 
@@ -37,9 +37,9 @@ namespace re
 					The handle must not exist already.
 				@param[in] handle:
 					The new value of the Handle. */
-				RECXDA void set_handle(handle_t handle);
+				RECXDA14 void set_handle(handle_t handle);
 				/** Use to release the Handle value. */
-				RECXDA void null_handle();
+				RECXDA14 void null_handle();
 
 				/** Returns whether a Handle exists / was allocated. */
 				RECX bool exists() const;

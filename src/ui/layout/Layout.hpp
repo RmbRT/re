@@ -12,7 +12,7 @@ namespace re
 		namespace layout
 		{
 
-			RE_ENUM (Align)
+			enum class Align
 			{
 				// Aligning to the negative axis direction.
 				Negative,
@@ -34,13 +34,13 @@ namespace re
 				{ return { absolute-other.absolute, relative-other.relative }; }
 			};
 
-			RE_ENUM (Repeat)
+			enum class Repeat
 			{
 				Tile,
 				Fit
 			};
 
-			RE_ENUM (Display)
+			enum class Display
 			{
 				Block,
 				Inline
@@ -85,7 +85,7 @@ namespace re
 				strong_handle<graphics::VertexData> model;
 			};
 
-			RE_ENUM (ScrollBarVisibility)
+			enum class ScrollBarVisibility
 			{
 				Always,
 				Never,

@@ -6,7 +6,7 @@
 namespace re
 {
 
-	/*A TextAsset contains a string. It can be used for localization and other cases of text loading.*/
+	/** A TextAsset contains a string. It can be used for localization and other cases of text loading. */
 	class TextAsset: public AssetBase
 	{	friend class Resource;
 		string content;

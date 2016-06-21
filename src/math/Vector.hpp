@@ -58,13 +58,13 @@ namespace re
 			RECX explicit operator vec2<U>() const;
 
 			/** Converts this vector to a C-style array. */
-			RECX operator T*();
+			RECX14 operator T*();
 			/** Converts this vector to a C-style array. */
 			RECX operator T const*() const;
 
 			/** The x (first) coordinate of the vector. */
 			T x;
-			/** The y (second) coordinate of the vector.*/
+			/** The y (second) coordinate of the vector. */
 			T y;
 		};
 
@@ -139,7 +139,7 @@ namespace re
 			/** Converts this vector to a C-style array. */
 			RECX operator const T*() const;
 			/** Converts this vector to a C-style array. */
-			RECX operator T*();
+			RECX14 operator T*();
 
 			/** The x (first) coordinate of the vector. */
 			T x;
@@ -191,8 +191,10 @@ namespace re
 			explicit vec4(vec4<U> const& v);
 
 			/** Creates a 4-dimensional vector with the given coordinates.
-				@param[in] xyz: The first three coordinates of the vector.
-				@param[in] w: The fourth coordinate of the vector. */
+				@param[in] xyz:
+					The first three coordinates of the vector.
+				@param[in] w:
+					The fourth coordinate of the vector. */
 			vec4(vec3<T> const& xyz, copy_arg_t<T> w);
 			/** Creates a 4-dimensional vector with the given coordinates. */
 			vec4(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z, copy_arg_t<T> w);

@@ -57,19 +57,19 @@ namespace re
 				Entry(string key, string content, string comment, int parsed);
 				/** Creates an Entry with the given key and the given float as value.
 				@param[in] key:
-				The name of the property stored by this Entry.
+					The name of the property stored by this Entry.
 				@param[in] content:
-				The value of the property stored by this Entry, as it is written in the IniFile.
+					The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
-				The parsed float value of the property stored by this Entry. */
+					The parsed float value of the property stored by this Entry. */
 				Entry(string key, string content, string comment, float parsed);
 				/** Creates an Entry with the given key and the given bool as value.
 				@param[in] key:
-				The name of the property stored by this Entry.
+					The name of the property stored by this Entry.
 				@param[in] content:
-				The value of the property stored by this Entry, as it is written in the IniFile.
+					The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
-				The parsed bool value of the property stored by this Entry. */
+					The parsed bool value of the property stored by this Entry. */
 				Entry(string key, string content, string comment, bool parsed);
 
 				/** Determines what type the value of this Entry has. */
@@ -97,8 +97,10 @@ namespace re
 				/** Retrieves the stored value into the given bool.
 					If the stored value is an int or float, sets out to true, when the stored value is not 0.
 					If the stored value is a string, fails.
-				@param[out] out: Where the output should be stored.
-				@return True, if the value could be read, otherwise false. */
+				@param[out] out:
+					Where the output should be stored.
+				@return
+					Whether the value could be read. */
 				bool to_bool(bool & out) const;
 
 				/** Retrieves the stored value as it was written in the file. */
@@ -134,7 +136,7 @@ namespace re
 					If an Entry with a matching name was found, returns its address, otherwise null. */
 				Entry const* find_entry(char const * name) const;
 				/** @see find_entry. */
-				RECX Entry * operator[](char const * name);
+				RECX14 Entry * operator[](char const * name);
 				/** @see find_entry. */
 				RECX Entry const* operator[](char const * name) const;
 			};
@@ -148,13 +150,16 @@ namespace re
 				std::vector<Section> m_sections;
 
 				/** Reads a Section out of the given lines.
-				@return The number of lines consumed. */
+				@return
+					The number of lines consumed. */
 				int section(std::vector<string> const& lines, const int current_line, Section & out);
 				/** Reads an Entry out of the given lines.
-				@return The number of lines consumed. */
+				@return
+					The number of lines consumed. */
 				int entry(std::vector<string> const& lines, const int current_line, Entry & out);
 				/** Reads a comment out of the given lines.
-				@return The number of lines consumed. */
+				@return
+					The number of lines consumed. */
 				int comment(std::vector<string> const& lines, const int current_line, string & out);
 
 			public:
@@ -166,13 +171,13 @@ namespace re
 					Pass "" for the unnamed section. */
 				Section const* find_section(char const * name) const;
 				/** Tries to find the Section with the given name.
-					Pass "" for the unnamed section.*/
-				RECX Section * operator[](char const * name);
+					Pass "" for the unnamed section. */
+				RECX14 Section * operator[](char const * name);
 				/** Tries to find the Section with the given name.
-					Pass "" for the unnamed section.*/
-				RECX Section const* operator[](char const *  name) const;
+					Pass "" for the unnamed section. */
+				RECX Section const* operator[](char const * name) const;
 				/** Returns the unnamed / default Section of the file. */
-				RECX Section & unnamed_section();
+				RECX14 Section & unnamed_section();
 				/** Returns the unnamed / default Section of the file. */
 				RECX Section const& unnamed_section() const;
 

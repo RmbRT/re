@@ -13,70 +13,70 @@ namespace re
 {
 	namespace math
 	{
-		/*The precision of the AxisAlignedBoundingBox.*/
+		/** The precision of the AxisAlignedBoundingBox. */
 		template<class T>
-		/*Represents an AxisAligned BoundingBox.*/
+		/** Represents an AxisAligned BoundingBox. */
 		class AxisAlignedBoundingBox
 		{
 			bool _empty;
 			vec3<T> _min, _max;
 		public:
 
-			/*Constructs a BoundingBox containing only @<point>.*/
+			/** Constructs a BoundingBox containing only @<point>. */
 			AxisAlignedBoundingBox(const vec3<T> &point);
-			/*Constructs a BoundingBox with the @<min> and @<max> values.*/
+			/** Constructs a BoundingBox with the @<min> and @<max> values. */
 			AxisAlignedBoundingBox(const vec3<T> &min, const vec3<T> &max);
-			/*Constructs an empy BoundingBox.*/
+			/** Constructs an empy BoundingBox. */
 			AxisAlignedBoundingBox(empty_t);
 
 
-			/*Returns whether @<position> is contained within this BoundingBox.*/
+			/** Returns whether @<position> is contained within this BoundingBox. */
 			bool contains(const vec3<T> &position) const;
 
-			/*Returns a BoundingBox containing all points that are contained in @<this> AND in @<other>.
-			If there are no such points, an empty BoundingBox is returned.*/
+			/** Returns a BoundingBox containing all points that are contained in @<this> AND in @<other>.
+			If there are no such points, an empty BoundingBox is returned. */
 			AxisAlignedBoundingBox<T> operator&(const AxisAlignedBoundingBox<T> &other) const;
-			/*Shrinks the BoundingBox to contain all the points that are contained in @<this> AND in @<other>.
-			If there are no such points, @<this> becomes empty.*/
+			/** Shrinks the BoundingBox to contain all the points that are contained in @<this> AND in @<other>.
+			If there are no such points, @<this> becomes empty. */
 			AxisAlignedBoundingBox<T> &operator&=(const AxisAlignedBoundingBox<T> &other);
 
-			/*Returns a BoundingBox containing all the points that are contained in @<this> OR in @<other>.
-			Note that the resulting BoundingBox may contain additional points in order to satisfy this condition.*/
+			/** Returns a BoundingBox containing all the points that are contained in @<this> OR in @<other>.
+			Note that the resulting BoundingBox may contain additional points in order to satisfy this condition. */
 			AxisAlignedBoundingBox<T> operator|(const AxisAlignedBoundingBox<T> &other) const;
-			/*Expands the BoundingBox so that it contains @<other>. If it already did contain @<other>, does nothing.*/
+			/** Expands the BoundingBox so that it contains @<other>. If it already did contain @<other>, does nothing. */
 			AxisAlignedBoundingBox<T> &operator|=(const AxisAlignedBoundingBox<T> &other);
-			/*Returns a BoundingBox containing all points contained by @<this> AND @<point>.*/
+			/** Returns a BoundingBox containing all points contained by @<this> AND @<point>. */
 			AxisAlignedBoundingBox<T> operator|(const vec3<T> &point) const;
-			/*Expands the BoundingBox so that it contains @<point>. If it already did contain @<point>, does nothing.*/
+			/** Expands the BoundingBox so that it contains @<point>. If it already did contain @<point>, does nothing. */
 			AxisAlignedBoundingBox<T> &operator|=(const vec3<T> &point);
 
-			/*Returns whether the BoundingBox is empty.*/
+			/** Returns whether the BoundingBox is empty. */
 			bool empty() const;
-			/*Returns the min value of the BoundingBox.*/
+			/** Returns the min value of the BoundingBox. */
 			const vec3<T> &min() const;
-			/*Returns the max value of the boundingBox.*/
+			/** Returns the max value of the boundingBox. */
 			const vec3<T> &max() const;
 
-			/*Returns the x difference between the min and max point of @<this>.
-			If @<this> is empty, returns a negative value.*/
+			/** Returns the x difference between the min and max point of @<this>.
+			If @<this> is empty, returns a negative value. */
 			T sizeX() const;
-			/*Returns the y difference between the min and max point of @<this>.
-			If @<this> is empty, returns a negative value.*/
+			/** Returns the y difference between the min and max point of @<this>.
+			If @<this> is empty, returns a negative value. */
 			T sizeY() const;
-			/*Returns the z difference between the min and max point of @<this>.
-			If @<this> is empty, returns a negative value.*/
+			/** Returns the z difference between the min and max point of @<this>.
+			If @<this> is empty, returns a negative value. */
 			T sizeZ() const;
-			/*Returns the difference between the min and max point of @<this>.
-			If @<this> is empty, returns a negative value.*/
+			/** Returns the difference between the min and max point of @<this>.
+			If @<this> is empty, returns a negative value. */
 			vec3<T> size() const;
 			
-			/*Extends the BoundingBox to contain @<position>.*/
+			/** Extends the BoundingBox to contain @<position>. */
 			void makeContain(const vec3<T> &position);
-			/*Sets the BoundingBox to only contain @<point>.*/
+			/** Sets the BoundingBox to only contain @<point>. */
 			void setToPoint(const vec3<T> &point);
-			/*Sets the BoundingBox to only contain a box defined by the @<min> and @<max> bounds.*/
+			/** Sets the BoundingBox to only contain a box defined by the @<min> and @<max> bounds. */
 			void setToBox(const vec3<T> &min, const vec3<T> &max);
-			/*Sets the BoundingBox to be empty.*/
+			/** Sets the BoundingBox to be empty. */
 			void setToEmpty();
 		};
 

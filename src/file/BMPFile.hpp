@@ -8,7 +8,14 @@ namespace re
 {
 	namespace file
 	{
-		/** Loads a Bitmap from the given file. */
+		/** Loads a Bitmap from the given file.
+			The file must be a bitmap file. The data is stored in the out parameter, if the file was loaded successfully.
+		@param[in] filename:
+			The name of the bitmap file that is to be loaded.
+		@param[out] out:
+			The data contained in the file.
+		@return
+			Whether the file was successfully loaded. */
 		bool loadBMP(char const* filename, Bitmap2D &out);
 	}
 }

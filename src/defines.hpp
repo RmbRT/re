@@ -17,6 +17,7 @@
 /** Constexpr define. */
 #define RECX REIL constexpr
 
+
 #ifndef _countof
 #define _countof(x) (sizeof(x) / sizeof(*(x)))
 #endif
@@ -36,5 +37,19 @@
 
 /** Constexpr with debug assertions. */
 #define RECXDA RESWITCH(REIL,REIL RECX)
+
+
+#define CXX11 201103L
+#if __cplusplus < CXX11
+#error Needs C++11 or higher.
+#endif
+
+#if __cplusplus > CXX11
+#define RECX14 RECX
+#define RECXDA14 RECXDA
+#else
+#define RECX14 REIL
+#define RECXDA14 REIL
+#endif
 
 #endif

@@ -110,8 +110,10 @@ namespace re
 				@param[in] vertexType:
 					An array of VertexElement descriptors,
 					describing the fields of the input type.
-				@param[in] element_count: The size of the array.
-				@param[in] type_size: The size of the input type. */
+				@param[in] element_count:
+					The size of the array.
+				@param[in] type_size:
+					The size of the input type. */
 				void configure(
 					VertexElement const * vertexType,
 					size_t element_count,

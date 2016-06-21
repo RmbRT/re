@@ -8,7 +8,7 @@ namespace re
 	namespace math
 	{
 		template<class T>
-		/*Represents a plane consisting of a position and the normal vector of the plane.*/
+		/** Represents a plane consisting of a position and the normal vector of the plane. */
 		struct NormalPlane
 		{
 			NormalPlane(const vec3<T> &position, const vec3<T> &normal): position(position), normal(normal) { }
@@ -21,7 +21,7 @@ namespace re
 		};
 
 		template<class T>
-		/*Represents a plane consisting of a position, and two axis.*/
+		/** Represents a plane consisting of a position, and two axis. */
 		struct STPlane
 		{
 			STPlane() : position(), s(), t() { }

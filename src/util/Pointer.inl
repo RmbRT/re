@@ -67,10 +67,11 @@ namespace re
 		{
 			if(m_obj)
 			{
-				m_obj->unreference();
-				if(!m_obj->count())
-					m_obj->~T(),
+				if(!m_obj->unreference())
+				{
+					m_obj->~T();
 					re::free(m_obj);
+				}
 			}
 		}
 
@@ -109,11 +110,92 @@ namespace re
 		template<class T>
 		Auto<T> &Auto<T>::operator=(Auto<T> && move)
 		{
-			if(this != &move)
-			{
-				delete move;
-			}
+			RE_DBG_ASSERT(&move != this
+				&& "tried to move to self.");
+
+			if(m_obj)
+				dealloc(m_obj);
+			m_obj = move.m_obj;
+			move.m_obj = nullptr;
+
 			return *this;
+		}
+
+		template<class T>
+		Auto<T> &Auto<T>::operator=(T * ptr)
+		{
+			RE_DBG_ASSERT(!m_obj || m_obj != ptr
+				&& "cannot reassign the same pointer value!");
+
+			if(m_obj)
+				dealloc(m_obj);
+			m_obj = ptr;
+
+			return *this;
+		}
+
+		template<class T>
+		Auto<T>::Auto(T * ptr):
+			m_obj(ptr)
+		{
+		}
+
+		template<class T>
+		Auto<T>::~Auto()
+		{
+			if(m_obj)
+				dealloc(m_obj);
+		}
+
+
+		template<class T>
+		Auto<T[]>::Auto(T * ptr):
+			Auto<T>(ptr)
+		{
+		}
+
+		template<class T>
+		Auto<T>::operator T*() const
+		{
+			return m_obj;
+		}
+
+
+		template<class T>
+		Auto<T[]> &Auto<T[]>::operator=(Auto<T[]> && move)
+		{
+			RE_DBG_ASSERT(&move != this
+				&& "tried to move to self.");
+
+			if(m_obj)
+				array_dealloc(m_obj);
+
+			m_obj = move.m_obj;
+			move.m_obj = nullptr;
+
+			return *this;
+		}
+
+		template<class T>
+		Auto<T[]> &Auto<T[]>::operator=(T * ptr)
+		{
+			RE_DBG_ASSERT(!m_obj || m_obj != ptr
+				&& "cannot reassign the same pointer value!");
+
+			if(m_obj)
+				array_dealloc(m_obj);
+
+			m_obj = move.m_obj;
+			move.m_obj = nullptr;
+
+			return *this;
+		}
+
+		template<class T>
+		Auto<T[]>::~Auto()
+		{
+			if(m_obj)
+				array_dealloc(m_obj), m_obj = nullptr;
 		}
 	}
 }

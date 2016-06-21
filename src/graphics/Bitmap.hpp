@@ -67,9 +67,12 @@ namespace re
 			/** Constructs a non-allocated Bitmap. */
 			Bitmap();
 			/** Constructs an allocated Bitmap with he given Channel and Component and size.
-			@param[in] channel: The number of channels the Bitmap should have.
-			@param[in] component: The component type the Bitmap should have.
-			@param[in] size: The pixel count the Bitmap should have. */
+			@param[in] channel:
+				The number of channels the Bitmap should have.
+			@param[in] component:
+				The component type the Bitmap should have.
+			@param[in] size:
+				The pixel count the Bitmap should have. */
 			Bitmap(Channel channel, Component component, uint32_t size);
 			Bitmap(Bitmap const&);
 			Bitmap(Bitmap &&);
@@ -78,7 +81,7 @@ namespace re
 			/** Frees the Bitmap if it was still allocated. */
 			~Bitmap();
 
-			/** Allocates the image data with the given channels and bounds.*/
+			/** Allocates the image data with the given channels and bounds. */
 			void alloc(Channel channel, Component component, uint32_t size);
 			/** Frees the image data. */
 			void free();
@@ -100,7 +103,7 @@ namespace re
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert index must be within the Bitmap's bounds. */
 			template<Channel c, Component co>
-			RECXDA pixel_t<c,co> & pixel(uint32_t index);
+			RECXDA14 pixel_t<c,co> & pixel(uint32_t index);
 			/** Returns the pixel of the Bitmap at the given index.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
@@ -164,7 +167,7 @@ namespace re
 			@assert The indices must be within the Bitmap's bounds.
 			@see Bitmap::pixel. */
 			template<Channel c, Component co>
-			RECXDA pixel_t<c,co> & pixel(uint32_t x, uint32_t y);
+			RECXDA14 pixel_t<c,co> & pixel(uint32_t x, uint32_t y);
 			/** Returns the pixel of the Bitmap at the given indices.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
@@ -238,7 +241,7 @@ namespace re
 			@assert The indices must be within the Bitmap's bounds.
 			@see Bitmap::pixel. */
 			template<Channel c, Component co>
-			RECXDA pixel_t<c,co> & pixel(uint32_t x, uint32_t y, uint32_t z);
+			RECXDA14 pixel_t<c,co> & pixel(uint32_t x, uint32_t y, uint32_t z);
 			/** Returns the pixel of the Bitmap at the given indices.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.

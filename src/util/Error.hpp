@@ -4,6 +4,7 @@
 #include <string>
 #include <type_traits>
 #include <iostream>
+#include <cstdlib>
 
 #include "Argument.hpp"
 
@@ -82,12 +83,17 @@ namespace re
 #define RE_CRITICAL(x, errcode) RE_CHECKED(x, { return errcode; })
 #define RE_CRITICAL_LOG(x, name, errcode) RE_CHECKED_LOG(x, name, { return errcode; })
 
+#define RE_FATAL(x) RE_CHECKED(x, { RE_SWITCH(std::abort(),std::exit(EXIT_FAILURE)); })
+#define RE_FATAL_LOG(x, name) RE_CHECKED_LOG(x, name, { RE_SWITCH(std::abort(),std::exit(EXIT_FAILURE)); })
+
 #ifdef RE_DEBUG
 	#define RE_CHECKED_DBG_LOG RE_CHECKED_LOG
 	#define RE_CRITICAL_DBG_LOG RE_CRITICAL_LOG
+	#define RE_FATAL_DBG_LOG RE_FATAL_LOG
 #else
 	#define RE_CHECKED_DBG_LOG(x, name, errcode) RE_CHECKED(x, errcode)
 	#define RE_CRITICAL_DBG_LOG(x, name, errcode) RE_CRITICAL(x, errcode)
+	#define RE_FATAL_DBG_LOG(x, name) RE_FATAL(x)
 #endif
 
 

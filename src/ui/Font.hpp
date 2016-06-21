@@ -11,40 +11,40 @@ namespace re
 {
 	namespace ui
 	{
-		RE_ENUM (TextOrientation)
+		enum class TextOrientation
 		{
 			Horizontal,
 			Vertical
 		};
-		RE_ENUM (TextDirection)
+		enum class TextDirection
 		{
 			Right,
 			Left
 		};
-		RE_ENUM (TextAlign)
+		enum class TextAlign
 		{
 			Left,
 			Right
 		};
 
-		/*Parameters for customizing texts.*/
+		/** Parameters for customizing texts. */
 		struct FontSettings
 		{
 			FontSettings();
 			FontSettings(const math::fvec4 &color, float size, float letterSpacing, float lineHeight, TextDirection direction, TextOrientation orientation, TextAlign align);
-			/*Text color.*/
+			/** Text color. */
 			math::fvec4 color;
-			/*Overal scaling factor for the text.*/
+			/** Overal scaling factor for the text. */
 			float size;
-			/*Additional margin between the letters (in text coordinates).*/
+			/** Additional margin between the letters (in text coordinates). */
 			float letterSpacing;
-			/*Scaling factor for the line height.*/
+			/** Scaling factor for the line height. */
 			float lineHeight;
-			/*Text reading direction*/
+			/** Text reading directio. */
 			TextDirection direction;
-			/*Horizontal / Vertical text.*/
+			/** Horizontal / Vertical text. */
 			TextOrientation orientation;
-			/*Text align.*/
+			/** Text align. */
 			TextAlign align;
 		};
 
@@ -53,18 +53,18 @@ namespace re
 		public:
 			struct Entry
 			{
-				/*the Unicode codepoint for this entry.*/
+				/** the Unicode codepoint for this entry. */
 				uint32 codepoint;
 
-				/*The upper left corner of the glyph in the texture (in pixels).*/
+				/** The upper left corner of the glyph in the texture (in pixels). */
 				math::uivec2 tex_origin;
-				/*The upper left corner of the glyph relative to the pen position.*/
+				/** The upper left corner of the glyph relative to the pen position. */
 				math::hvec2 bearing_h;
-				/*The upper left corner of the glyph relative to the pen position.*/
+				/** The upper left corner of the glyph relative to the pen position. */
 				math::hvec2 bearing_v;
-				/*The width and height of the glyph (in pixels).*/
+				/** The width and height of the glyph (in pixels). */
 				math::hvec2 size;
-				/*How much the pen position is moved after this character.*/
+				/** How much the pen position is moved after this character. */
 				math::hvec2 advance;
 
 				Entry(uint32 codepoint, const math::uivec2 &tex_origin, const math::hvec2 &bearing_h, const math::hvec2 &bearing_v, const math::hvec2 &size, const math::hvec2 &advance);
@@ -75,9 +75,9 @@ namespace re
 			std::unordered_map<uint32, Entry> entries;
 			uint32 defaultEntry;
 
-			/*Default line height (in text coordinates)*/
+			/** Default line height (in text coordinates. */
 			int lineHeight;
-			/*Horizontal distance of lines in vertical text mode.*/
+			/** Horizontal distance of lines in vertical text mode. */
 			uint lineWidth;
 			uint tabWidth;
 			uint spaceWidth;

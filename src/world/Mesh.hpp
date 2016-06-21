@@ -24,23 +24,23 @@ namespace re
 			std::shared_ptr<graphics::Material> material;
 			std::shared_ptr<graphics::VertexData> vertexData;
 			
-			/*The BoundingBox containing the boundaries of the mesh.*/
+			/** The BoundingBox containing the boundaries of the mesh. */
 			mutable math::fAABB boundingBox;
 		public:
 
-			/*Calculates the AxisAlignedBoundingBox of this Mesh.*/
+			/** Calculates the AxisAlignedBoundingBox of this Mesh. */
 			void calcBoundingBox() const;
 
 
-			/*Returns the AxisAlignedBoundingBox of this Mesh.
-			@note: This does not calculate the BoundingBox. Call @[re::world::Mesh::calcBoundingBox]before*/
+			/** Returns the AxisAlignedBoundingBox of this Mesh.
+			@note: This does not calculate the BoundingBox. Call @[re::world::Mesh::calcBoundingBox]befor. */
 			const math::fAABB &getBoundingBox() const;
-			/*Returns the ShaderProgram that is used by this Mesh.*/
+			/** Returns the ShaderProgram that is used by this Mesh. */
 			const std::shared_ptr<graphics::ShaderProgram> &getShader() const;
-			/*Returns the VertexData used by the Mesh.*/
+			/** Returns the VertexData used by the Mesh. */
 			const std::shared_ptr<graphics::VertexData> &getVertexData() const;
 
-			/*Creates a wireframed version of the Mesh.*/
+			/** Creates a wireframed version of the Mesh. */
 			std::shared_ptr<Mesh> createWireFrame() const;
 
 

@@ -18,7 +18,7 @@ namespace re
 
 			RECX operator bool () const;
 
-			RECX T& operator*();
+			RECX14 T& operator*();
 			RECX T const& operator*() const;
 
 			RECX T const& operator() (T const& default_val) const;

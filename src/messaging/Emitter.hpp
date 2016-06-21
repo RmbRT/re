@@ -16,11 +16,11 @@ namespace re
 			std::vector<Emitter<T>*> emitters;
 		public:
 			virtual void onReceive(const T &obj) {}
-			/*Creates a Receiver object that does not listen to anything yet.*/
+			/** Creates a Receiver object that does not listen to anything yet. */
 			Receiver();
-			/*Creates a Receiver object and registers it to the given Emitter.*/
+			/** Creates a Receiver object and registers it to the given Emitter. */
 			explicit Receiver(Emitter<T> &emitter);
-			/*Unlistens from all currently listened Emitters.*/
+			/** Unlistens from all currently listened Emitters. */
 			~Receiver();
 
 			void listen(Emitter<T> &emitter);
@@ -28,21 +28,21 @@ namespace re
 		};
 		
 		template<class T>
-		/*A class for broadcasting objects to registered callback receivers.
+		/** A class for broadcasting objects to registered callback receivers.
 		Callbacks registered via @[re::messaging::Emitter<T>::registerListener] are called upon invoking @[re::messaging::Emitter<T>::emit].
 		@param[class] T
 			The type of the object that is to be passed on via @[re::messaging::Emitter<T>::emit].
-			Note that a const reference type will be passed on.*/
+			Note that a const reference type will be passed on. */
 		class Emitter
 		{	friend class Receiver<T>;
-			/*The list of all receivers that are currently registered.*/
+			/** The list of all receivers that are currently registered. */
 			std::vector<Receiver<T>*> recvs;
 		public:
-			/*Destroys the Emitter and removes all listening Receivers*/
+			/** Destroys the Emitter and removes all listening Receiver. */
 			~Emitter();
-			/*Broadcasts the given argument to all registered callbacks
+			/** Broadcasts the given argument to all registered callbacks
 			@param[in] obj
-				The object to be broadcasted.*/
+				The object to be broadcasted. */
 			void emit(const T &obj);
 		};
 

@@ -5,7 +5,7 @@ namespace re
 {
 	namespace math
 	{
-		/*Used for constructing an empty AxisAlignedBoundingBox.*/
+		/** Used for constructing an empty AxisAlignedBoundingBox. */
 		const struct empty_t {} empty;
 	}
 }

@@ -28,9 +28,9 @@ namespace re
 	/** The header structure of an Asset that is written into the file before the Asset. */
 	struct AssetFileHeader
 	{
-		/** The name of the Asset.*/
+		/** The name of the Asset. */
 		string name;
-		/** The type of the Asset.*/
+		/** The type of the Asset. */
 		AssetType type;
 	};
 
@@ -55,7 +55,7 @@ namespace re
 		AssetBase &operator=(AssetBase &&) = default;
 		virtual ~AssetBase() = 0;
 
-		/** @return: The name of this Asset. */
+		/** @return 	The name of this Asset. */
 		string const& name() const;
 		/** Sets the name of this Asset. */
 		void set_name(string const& name);

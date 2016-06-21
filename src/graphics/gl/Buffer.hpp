@@ -82,9 +82,12 @@ namespace re
 
 				/** Sets the data stored on the GPU.
 				@important The Buffer must exist.
-				@param[in] data: the data that is to be stored on the GPU.
-				@param[in] elements: the count of elements in data.
-				@param[in] element_size: the type size of the elements in data. */
+				@param[in] data:
+					the data that is to be stored on the GPU.
+				@param[in] elements:
+					the count of elements in data.
+				@param[in] element_size:
+					the type size of the elements in data. */
 				void data(void const* data, size_t elements, size_t element_size) &;
 
 			private:

@@ -10,13 +10,18 @@ namespace re
 	namespace math
 	{
 		template<class T>
-		/*Computes the intersection of a Ray and a Plane, as well as different representations for the intersection.
-		@param[in] ray: the Ray to collide with the Plane.
-		@param[in] plane: the Plane to collide with the Ray.
-		@param[out] u: the coordinate on the first axis of the Plane, relative to the length of the axis vector.
-		@param[out] v: the coordinate on the second axis of the Plane, relative to the length of the axis vector.
-		@param[out] dist: the coordinate on the ray, relative to the direction vector of the ray.
-		@note: If you pass null, then the value for that argument will not be calculated.*/
+		/** Computes the intersection of a Ray and a Plane, as well as different representations for the intersection.
+		@param[in] ray:
+			the Ray to collide with the Plane.
+		@param[in] plane:
+			the Plane to collide with the Ray.
+		@param[out] u:
+			the coordinate on the first axis of the Plane, relative to the length of the axis vector.
+		@param[out] v:
+			the coordinate on the second axis of the Plane, relative to the length of the axis vector.
+		@param[out] dist:
+			the coordinate on the ray, relative to the direction vector of the ray.
+		@note: If you pass null, then the value for that argument will not be calculated. */
 		bool intersect(const Ray<T> &ray, const STPlane<T> &plane, float *u, float *v, float *dist)
 		{
 

@@ -55,7 +55,7 @@ namespace re
 		/** Transformst the string into a lower case string. */
 		String<C> &make_lower();
 
-		/** Reserves the given count of */
+		/** Reserves the given count o. */
 		void reserve(size_t capacity);
 		/** Empties the string. */
 		void clear();

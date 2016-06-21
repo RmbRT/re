@@ -20,14 +20,14 @@ namespace re
 
 
 
-		/*Passes the material properties to the shader. This binds the shader.*/
+		/** Passes the material properties to the shader. This binds the shader. */
 		void passMaterial() const;
-		/*Draws the VertexData.*/
+		/** Draws the VertexData. */
 		void draw(const math::fmat4x4 &mvp) const;
 	
-		/*Returns the BoundingBox of the VertexData.*/
+		/** Returns the BoundingBox of the VertexData. */
 		const math::fAABB &getAABB() const;
-		/*Returns the VertexData of this Model.*/
+		/** Returns the VertexData of this Model. */
 		strong_handle<graphics::VertexData> getVertexData() const;
 		void setVertexData(strong_handle<graphics::gl::VertexArrayBase> vertexData);
 		strong_handle<graphics::Material> getMaterial() const;
