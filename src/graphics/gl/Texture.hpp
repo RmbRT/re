@@ -5,6 +5,7 @@
 #include "../../types.hpp"
 
 #include "Handle.hpp"
+#include "Binding.hpp"
 #include "../Bitmap.hpp"
 
 namespace re
@@ -35,11 +36,11 @@ namespace re
 				static Binding s_binding[RE_COUNT(TextureType)];
 
 				TextureType m_type;
-				RECX Texture(TextureType);
+				REIL Texture(TextureType);
 			private:
 				/** Whether the Texture is bound.
 				@assert The Texture must exist. */
-				RECXDA bool bound() const;
+				REIL bool bound() const;
 			public:
 				Texture(Texture &&) = default;
 				Texture &operator=(Texture &&) = default;
@@ -48,7 +49,7 @@ namespace re
 				using Handle::exists;
 
 				/** Used to identify the deriving class of Texture. */
-				RECX TextureType type() const;
+				REIL TextureType type() const;
 				
 
 				/** Allocates the given Textures.
@@ -91,7 +92,7 @@ namespace re
 
 				/** Returns the size of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t size() const;
+				REIL uint_t size() const;
 
 				/** Resizes the Texture to match the size of the given Bitmap, and sets the given Bitmap as image. */
 				void set_texels(Bitmap const& texels, uint_t lod);
@@ -114,10 +115,10 @@ namespace re
 
 				/** Returns the width of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t width() const;
+				REIL uint_t width() const;
 				/** Returns the height of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t width() const;
+				REIL uint_t height() const;
 
 				/** Unbinds the currently bound Texture2D, if any. */
 				static void unbind();
@@ -136,13 +137,13 @@ namespace re
 
 				/** Returns the width of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t width() const;
+				REIL uint_t width() const;
 				/** Returns the height of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t height() const;
+				REIL uint_t height() const;
 				/** Returns the depth of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t depth() const;
+				REIL uint_t depth() const;
 
 				/** Unbinds the currently bound Texture3D, if any. */
 				static void unbind();
@@ -161,13 +162,13 @@ namespace re
 
 				/** Returns the width of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t width() const;
+				REIL uint_t width() const;
 				/** Returns the height of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t height() const;
+				REIL uint_t height() const;
 				/** Returns the samples of the Texture.
 				@assert The Texture must exist. */
-				RECXDA uint_t samples() const;
+				REIL uint_t samples() const;
 
 				/** unbinds the currently bound Texture2DMultisample, if any. */
 				static void unbind();
@@ -183,8 +184,8 @@ namespace re
 				Texture1DArray(Texture1DArray &&) = default;
 				Texture1DArray &operator=(Texture1DArray &&) = default;
 
-				RECXDA uint_t size() const;
-				RECXDA uint_t layers() const;
+				REIL uint_t size() const;
+				REIL uint_t layers() const;
 
 				static void unbind();
 			};
@@ -200,9 +201,9 @@ namespace re
 				Texture2DArray(Texture2DArray &&) = default;
 				Texture2DArray &operator=(Texture2DArray &&) = default;
 				
-				RECXDA uint_t width() const;
-				RECXDA uint_t height() const;
-				RECXDA uint_t layers() const;
+				REIL uint_t width() const;
+				REIL uint_t height() const;
+				REIL uint_t layers() const;
 
 				static void unbind();
 			};
@@ -220,10 +221,10 @@ namespace re
 				Texture2DMultisampleArray(Texture2DMultisampleArray &&) = default;
 				Texture2DMultisampleArray &operator=(Texture2DMultisampleArray &&) = default;
 
-				RECXDA uint_t width() const;
-				RECXDA uint_t height() const;
-				RECXDA uint_t samples() const;
-				RECXDA uint_t layers() const;
+				REIL uint_t width() const;
+				REIL uint_t height() const;
+				REIL uint_t samples() const;
+				REIL uint_t layers() const;
 
 				static void unbind();
 			};
@@ -236,10 +237,10 @@ namespace re
 			public:
 				TextureRectangle();
 				TextureRectangle(TextureRectangle &&) = default;
-				TextureRectangle &operator=(Texturerectangle &&) = default;
+				TextureRectangle &operator=(TextureRectangle &&) = default;
 
-				RECXDA uint_t width() const;
-				RECXDA uint_t height() const;
+				REIL uint_t width() const;
+				REIL uint_t height() const;
 
 				static void unbind();
 			};

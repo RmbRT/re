@@ -31,12 +31,12 @@ namespace re
 		class ShaderProgram
 		{
 			/** The handle of the shader program. */
-			uint32 id;
+			uint32_t id;
 			/** The handles of the shaders used by the program. */
-			uint32 shaders[ST_COUNT];
+			uint32_t shaders[ST_COUNT];
 		public:
 			/** The type representing the offset of the uniform variable in the shader program. */
-			typedef int32 uniform_t;
+			typedef int32_t uniform_t;
 
 			/** Constructs a shader program and sets its handle and shaders to none. */
 			ShaderProgram();
@@ -105,9 +105,9 @@ namespace re
 
 			/** Finds the uniform with the given name and sets it to the given value.
 			If it does not exist, this will do nothing. */
-			bool setUniform(const char* uniform, int32 val);
+			bool setUniform(const char* uniform, int32_t val);
 			/** Sets the given uniform to the given value. */
-			bool setUniform(uniform_t uniform, int32 val);
+			bool setUniform(uniform_t uniform, int32_t val);
 
 			/** Finds the uniform with the given name and sets it to the given value.
 			If it does not exist, this will do nothing. */
@@ -150,7 +150,7 @@ namespace re
 			void invalidate();
 
 			/** The currently used shader program. This is used to preven. */
-			static uint32 used;
+			static uint32_t used;
 		};
 	}
 }

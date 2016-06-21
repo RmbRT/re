@@ -54,7 +54,7 @@ namespace re
 			struct Entry
 			{
 				/** the Unicode codepoint for this entry. */
-				uint32 codepoint;
+				uint32_t codepoint;
 
 				/** The upper left corner of the glyph in the texture (in pixels). */
 				math::uivec2 tex_origin;
@@ -67,27 +67,27 @@ namespace re
 				/** How much the pen position is moved after this character. */
 				math::hvec2 advance;
 
-				Entry(uint32 codepoint, const math::uivec2 &tex_origin, const math::hvec2 &bearing_h, const math::hvec2 &bearing_v, const math::hvec2 &size, const math::hvec2 &advance);
+				Entry(uint32_t codepoint, const math::uivec2 &tex_origin, const math::hvec2 &bearing_h, const math::hvec2 &bearing_v, const math::hvec2 &size, const math::hvec2 &advance);
 				Entry();
 			};
 		private:
 			strong_handle<graphics::Texture> atlas;
-			std::unordered_map<uint32, Entry> entries;
-			uint32 defaultEntry;
+			std::unordered_map<uint32_t, Entry> entries;
+			uint32_t defaultEntry;
 
 			/** Default line height (in text coordinates. */
 			int lineHeight;
 			/** Horizontal distance of lines in vertical text mode. */
-			uint lineWidth;
-			uint tabWidth;
-			uint spaceWidth;
+			uint_t lineWidth;
+			uint_t tabWidth;
+			uint_t spaceWidth;
 		public:
-			Font(const strong_handle<graphics::Texture> &atlas, std::unordered_map<uint32, Entry> &&entries, uint32 defaultEntry, uint lineHeight, uint tabWidth, uint spaceWidth);
+			Font(const strong_handle<graphics::Texture> &atlas, std::unordered_map<uint32_t, Entry> &&entries, uint32_t defaultEntry, uint_t lineHeight, uint_t tabWidth, uint_t spaceWidth);
 			Font(Font &&move);
 
 			Font &operator=(Font &&move);
 
-			NotNull<const Entry> getEntry(uint32 codepoint) const;
+			NotNull<const Entry> getEntry(uint32_t codepoint) const;
 
 			unique_handle<graphics::VertexData> compile(const string &text, const FontSettings &settings, math::fvec2 &pen_position) const;
 			unique_handle<graphics::VertexData> compile(const u32string &text, const FontSettings &settings, math::fvec2 &pen_position) const;
@@ -99,7 +99,7 @@ namespace re
 
 			static size_t renderables(const string &text);
 			static size_t renderables(const u32string &text);
-			static bool renderable(uint32 codepoint);
+			static bool renderable(uint32_t codepoint);
 
 			static u32string toU32(const string &text);
 		};

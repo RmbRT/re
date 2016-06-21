@@ -10,11 +10,11 @@ namespace re
 		FontSettings::FontSettings(const math::fvec4 &color, float size, float letterSpacing, float lineHeight, TextDirection direction, TextOrientation orientation, TextAlign align)
 			: color(color), size(size), letterSpacing(letterSpacing), lineHeight(lineHeight), direction(direction), orientation(orientation), align(align) {}
 		typedef Font::Entry Entry;
-		Font::Entry::Entry(uint32 codepoint, const math::uivec2 &tex_origin, const math::hvec2 &bearing_h, const math::hvec2 &bearing_v, const math::hvec2 &size, const math::hvec2 &advance)
+		Font::Entry::Entry(uint32_t codepoint, const math::uivec2 &tex_origin, const math::hvec2 &bearing_h, const math::hvec2 &bearing_v, const math::hvec2 &size, const math::hvec2 &advance)
 			: codepoint(codepoint), tex_origin(tex_origin), bearing_h(bearing_h), bearing_v(bearing_v), size(size), advance(advance) { }
 		Font::Entry::Entry() : codepoint(), tex_origin(), bearing_h(), bearing_v(), size(), advance() { }
 
-		Font::Font(const strong_handle<graphics::Texture> &atlas, std::unordered_map<uint32, Entry> &&entries, uint32 defaultEntry, uint lineHeight, uint tabWidth, uint spaceWidth):
+		Font::Font(const strong_handle<graphics::Texture> &atlas, std::unordered_map<uint32_t, Entry> &&entries, uint32_t defaultEntry, uint_t lineHeight, uint_t tabWidth, uint_t spaceWidth):
 			atlas(atlas), entries(entries), defaultEntry(defaultEntry), lineHeight(lineHeight), tabWidth(tabWidth), spaceWidth(spaceWidth) { }
 
 		Font::Font(Font &&move) : entries(std::move(move.entries)), atlas(std::move(move.atlas)), defaultEntry(move.defaultEntry), spaceWidth(move.spaceWidth), lineHeight(move.lineHeight), tabWidth(move.tabWidth) { }
@@ -31,7 +31,7 @@ namespace re
 			return *this;
 		}
 
-		NotNull<const Entry> Font::getEntry(uint32 codepoint) const
+		NotNull<const Entry> Font::getEntry(uint32_t codepoint) const
 		{
 			auto it = entries.find(codepoint);
 			if(it == entries.end())
@@ -82,7 +82,7 @@ namespace re
 					default:
 						{
 							auto entry = getEntry(text[i]);
-							uint tw = atlas->getWidth(), th = atlas->getHeight();
+							uint_t tw = atlas->getWidth(), th = atlas->getHeight();
 					
 
 							const math::fvec2 pos_o(pen.x+entry->bearing_h.x, pen.y-entry->bearing_h.y);
@@ -153,7 +153,7 @@ namespace re
 					default:
 						{
 							auto entry = getEntry(text[i]);
-							uint tw = atlas->getWidth(), th = atlas->getHeight();
+							uint_t tw = atlas->getWidth(), th = atlas->getHeight();
 							math::fvec2 tex_o(entry->tex_origin);
 							math::fvec2 tex_t(math::hvec2(entry->tex_origin)+entry->size);
 					
@@ -201,7 +201,7 @@ namespace re
 			return text.length()-count;
 		}
 
-		bool Font::renderable(uint32 codepoint)
+		bool Font::renderable(uint32_t codepoint)
 		{
 			switch(codepoint)
 			{

@@ -2,18 +2,18 @@ namespace re
 {
 	namespace graphics
 	{
-		Version::Version(uint major, uint minor):
+		Version::Version(uint_t major, uint_t minor):
 			m_major(major),
 			m_minor(minor)
 		{
 		}
 
-		uint Version::major() const
+		uint_t Version::major() const
 		{
 			return m_major;
 		}
 
-		uint Version::minor() const
+		uint_t Version::minor() const
 		{
 			return m_minor;
 		}

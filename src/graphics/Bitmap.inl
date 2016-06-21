@@ -7,7 +7,7 @@ namespace re
 			return m_data;
 		}
 
-		uint32 Bitmap::size() const
+		uint32_t Bitmap::size() const
 		{
 			RE_DBG_ASSERT(exists());
 			return m_size;
@@ -26,7 +26,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> & Bitmap::pixel(uint32 index)
+		pixel_t<ch,co> & Bitmap::pixel(uint32_t index)
 		{
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(index < m_size);
@@ -37,7 +37,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& Bitmap::pixel(uint32 index) const
+		pixel_t<ch,co> const& Bitmap::pixel(uint32_t index) const
 		{
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(index < m_size);
@@ -48,13 +48,13 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& Bitmap1D::mip_near(uint32 index) const
+		pixel_t<ch,co> const& Bitmap1D::mip_near(uint32_t index) const
 		{
 			return pixel<ch,co>(index << 1);
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> Bitmap1D::mip_lin(uint32 index) const
+		pixel_t<ch,co> Bitmap1D::mip_lin(uint32_t index) const
 		{
 			index <<= 1;
 			if(index+1 < size())
@@ -66,7 +66,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> & Bitmap2D::pixel(uint32 x, uint32 y)
+		pixel_t<ch,co> & Bitmap2D::pixel(uint32_t x, uint32_t y)
 		{
 			RE_DBG_ASSERT(x < m_width);
 			RE_DBG_ASSERT(y < m_height);
@@ -75,7 +75,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& Bitmap2D::pixel(uint32 x, uint32 y) const
+		pixel_t<ch,co> const& Bitmap2D::pixel(uint32_t x, uint32_t y) const
 		{
 			RE_DBG_ASSERT(x < m_width);
 			RE_DBG_ASSERT(y < m_height);
@@ -86,8 +86,8 @@ namespace re
 		void Bitmap2D::alloc(
 			Channel channel,
 			Component component,
-			uint32 width,
-			uint32 height)
+			uint32_t width,
+			uint32_t height)
 		{
 			alloc(
 				channel,
@@ -95,24 +95,24 @@ namespace re
 				width * height);
 		}
 
-		uint32 Bitmap2D::width() const
+		uint32_t Bitmap2D::width() const
 		{
 			return m_width;
 		}
 
-		uint32 Bitmap2D::height() const
+		uint32_t Bitmap2D::height() const
 		{
 			return m_height;
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& mip_near(uint32 x, uint32 y) const
+		pixel_t<ch,co> const& mip_near(uint32_t x, uint32_t y) const
 		{
 			return pixel<ch,co>(x<<1, y<<1);
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> Bitmap2D::mip_lin(uint32 x, uint32 y) const
+		pixel_t<ch,co> Bitmap2D::mip_lin(uint32_t x, uint32_t y) const
 		{
 			x <<= 1;
 			y <<= 1;
@@ -138,7 +138,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> & Bitmap3D::pixel(uint32 x, uint32 y, uint32 z)
+		pixel_t<ch,co> & Bitmap3D::pixel(uint32_t x, uint32_t y, uint32_t z)
 		{
 			RE_DBG_ASSERT(x < width());
 			RE_DBG_ASSERT(y < height());
@@ -148,7 +148,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& Bitmap3D::pixel(uint32 x, uint32 y, uint32 z) const
+		pixel_t<ch,co> const& Bitmap3D::pixel(uint32_t x, uint32_t y, uint32_t z) const
 		{
 			RE_DBG_ASSERT(x < width());
 			RE_DBG_ASSERT(y < height());
@@ -160,36 +160,36 @@ namespace re
 		void Bitmap3D::alloc(
 			Channel channel,
 			Component component,
-			uint32 width,
-			uint32 height,
-			uint32 depth)
+			uint32_t width,
+			uint32_t height,
+			uint32_t depth)
 		{
 			alloc(channel, component, width * height * depth);
 		}
 
-		uint32 Bitmap3D::width() const
+		uint32_t Bitmap3D::width() const
 		{
 			return m_width;
 		}
 
-		uint32 Bitmap3D::height() const
+		uint32_t Bitmap3D::height() const
 		{
 			return m_height;
 		}
 
-		uint32 Bitmap3D::depth() const
+		uint32_t Bitmap3D::depth() const
 		{
 			return m_depth;
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& Bitmap3D::mip_near(uint32 x, uint32 y, uint32 z) const
+		pixel_t<ch,co> const& Bitmap3D::mip_near(uint32_t x, uint32_t y, uint32_t z) const
 		{
 			return pixel<ch,co>(x<<1, y<<1, z<<1);
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> Bitmap3D::mip_lin(uint32 x, uint32 y, uint32 z) const
+		pixel_t<ch,co> Bitmap3D::mip_lin(uint32_t x, uint32_t y, uint32_t z) const
 		{
 			x <<= 1;
 			y <<= 1;

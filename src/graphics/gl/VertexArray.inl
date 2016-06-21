@@ -5,7 +5,7 @@ namespace re
 		namespace gl
 		{
 
-			VertexElement::VertexElement(
+			RECX VertexElement::VertexElement(
 				ElementType type,
 				size_t elements,
 				size_t offset):
@@ -21,7 +21,7 @@ namespace re
 			}
 
 			template<class Vertex>
-			VertexArray<Vertex>::VertexArray(
+			RECX VertexArray<Vertex>::VertexArray(
 				BufferAccess access,
 				BufferUsage usage):
 				VertexArrayBase(access, usage)
@@ -66,7 +66,7 @@ namespace re
 					->set_data(
 						vertex_data,
 						vertices,
-						sizeof(Vertrex),
+						sizeof(Vertex),
 						render_mode);
 			}
 
@@ -85,7 +85,7 @@ namespace re
 						->set_data(
 							vertex_data,
 							vertices,
-							sizeof(Vertrex),
+							sizeof(Vertex),
 							render_mode,
 							index_data,
 							indices);

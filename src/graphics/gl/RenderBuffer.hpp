@@ -14,7 +14,7 @@ namespace re
 			{
 				static handle_t bound;
 
-				uint32
+				uint32_t
 					m_width,
 					m_height;
 			public:
@@ -29,9 +29,9 @@ namespace re
 				static void alloc(RenderBuffer * objects, size_t count);
 				static void destroy(RenderBuffer * objects, size_t count);
 
-				void resize(uint32 width, uint32 height);
-				REIL uint32 width() const;
-				REIL uint32 height() const;
+				void resize(uint32_t width, uint32_t height);
+				REIL uint32_t width() const;
+				REIL uint32_t height() const;
 
 				using Handle::handle;
 				using Handle::exists;

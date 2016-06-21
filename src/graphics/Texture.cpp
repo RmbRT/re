@@ -4,7 +4,7 @@
 #include "../LogFile.hpp"
 #include "../modules/GLObjectManager.hpp"
 
-re::uint32 re::graphics::Texture::bound = 0;
+re::uint32_t re::graphics::Texture::bound = 0;
 
 namespace re
 {
@@ -158,22 +158,22 @@ namespace re
 			}
 		}
 
-		uint32 Texture::getWidth() const
+		uint32_t Texture::getWidth() const
 		{
 			return width;
 		}
 
-		uint32 Texture::getHeight() const
+		uint32_t Texture::getHeight() const
 		{
 			return height;
 		}
 
-		uint32 Texture::getDepth() const
+		uint32_t Texture::getDepth() const
 		{
 			return depth;
 		}
 
-		uint32 Texture::getId() const
+		uint32_t Texture::getId() const
 		{
 			return id;
 		}
@@ -440,7 +440,7 @@ namespace re
 			_setTexImage(bmp, 0);
 		}
 
-		void Texture::setBounds(uint width, uint height)
+		void Texture::setBounds(uint_t width, uint_t height)
 		{
 			if(this->width == width && this->height == height)
 				return;

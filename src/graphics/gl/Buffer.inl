@@ -4,7 +4,7 @@ namespace re
 	{
 		namespace gl
 		{
-			Buffer::Buffer(
+			RECX Buffer::Buffer(
 				BufferType type,
 				BufferAccess access,
 				BufferUsage usage):

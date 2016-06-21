@@ -4,6 +4,7 @@
 #include <math.h>
 #include "../defines.hpp"
 #include "../base_types.hpp"
+#include <array>
 
 namespace re
 {
@@ -16,12 +17,12 @@ namespace re
 		template<class T>
 		struct vec4;
 
-		typedef vec2<byte> byte2, bvec2, vec2b;
-		typedef vec3<byte> byte3, bvec3, vec3b;
-		typedef vec4<byte> byte4, bvec4, vec4b;
-		typedef vec2<ubyte> ubyte2, ubvec2, vec2ub;
-		typedef vec3<ubyte> ubyte3, ubvec3, vec3ub;
-		typedef vec4<ubyte> ubyte4, ubvec4, vec4ub;
+		typedef vec2<byte_t> byte2, bvec2, vec2b;
+		typedef vec3<byte_t> byte3, bvec3, vec3b;
+		typedef vec4<byte_t> byte4, bvec4, vec4b;
+		typedef vec2<ubyte_t> ubyte2, ubvec2, vec2ub;
+		typedef vec3<ubyte_t> ubyte3, ubvec3, vec3ub;
+		typedef vec4<ubyte_t> ubyte4, ubvec4, vec4ub;
 
 		typedef vec2<float> float2, fvec2, vec2f;
 		typedef vec3<float> float3, fvec3, vec3f;
@@ -49,9 +50,9 @@ namespace re
 		struct vec2
 		{
 			/** Creates a zero-vector. */
-			vec2();
+			RECX vec2();
 			/** Creates a vector with the given coordinates. */
-			vec2(copy_arg_t<T> x, copy_arg_t<T> y);
+			RECX vec2(re::util::copy_arg_t<T> x, re::util::copy_arg_t<T> y);
 
 			template<class U>
 			/** Converts this vector to a vector of the given type. */
@@ -69,54 +70,54 @@ namespace re
 		};
 
 		template<class T>
-		bool operator==(vec2<T> const& a, vec2<T> const& b);
+		RECX bool operator==(vec2<T> const& a, vec2<T> const& b);
 		template<class T>
-		bool operator!=(vec2<T> const& a, vec2<T> const& b);
+		RECX bool operator!=(vec2<T> const& a, vec2<T> const& b);
 		template<class T>
-		vec2<T> operator+(vec2<T> const& a, vec2<T> const& b);
+		RECX vec2<T> operator+(vec2<T> const& a, vec2<T> const& b);
 		template<class T>
-		vec2<T> operator-(vec2<T> const& a, vec2<T> const& b);
+		RECX vec2<T> operator-(vec2<T> const& a, vec2<T> const& b);
 		template<class T>
-		vec2<T> operator*(vec2<T> const& a, float b);
+		RECX vec2<T> operator*(vec2<T> const& a, float b);
 		template<class T>
-		vec2<T> operator*(vec2<T> const& a, double b);
+		RECX vec2<T> operator*(vec2<T> const& a, double b);
 		template<class T>
-		vec2<T> operator*(vec2<T> const& a, int b);
+		RECX vec2<T> operator*(vec2<T> const& a, int b);
 		template<class T>
-		vec2<T> operator*(float a, vec2<T> const&b);
+		RECX vec2<T> operator*(float a, vec2<T> const&b);
 		template<class T>
-		vec2<T> operator*(double a, vec2<T> const& b);
+		RECX vec2<T> operator*(double a, vec2<T> const& b);
 		template<class T>
-		vec2<T> operator*(int a, vec2<T> const& b);
+		RECX vec2<T> operator*(int a, vec2<T> const& b);
 
 		template<class T>
 		/** Scales the given vector by the multiplicative inverse of the given number. */
-		vec2<T> operator / (vec2<T> const& a, float b);
+		RECX vec2<T> operator / (vec2<T> const& a, float b);
 		template<class T>
 		/** Scales the given vector by the multiplicative inverse of the given number. */
-		vec2<T> operator / (vec2<T> const& a, double b);
+		RECX vec2<T> operator / (vec2<T> const& a, double b);
 		template<class T>
 		/** Scales the given vector by the multiplicative inverse of the given number. */
-		vec2<T> operator / (vec2<T> const& a, int b);
+		RECX vec2<T> operator / (vec2<T> const& a, int b);
 		template<class T>
 		/** Calculates the dot product of the given vectors as a double. */
-		double dotd(vec2<T> const& a, vec2<T> const& b);
+		RECX double dotd(vec2<T> const& a, vec2<T> const& b);
 		template<class T>
 		/** Calculates the dot product of the given vectors as a float. */
-		float dotf(vec2<T> const& a, vec2<T> const& b);
+		RECX float dotf(vec2<T> const& a, vec2<T> const& b);
 		template<class T>
 		/** Calculates the dot product of the given vectors as the element type of the vectors. */
-		T dot(vec2<T> const& a, vec2<T> const& b);
+		RECX T dot(vec2<T> const& a, vec2<T> const& b);
 
 		template<class T>
 		/** Calculates the length of a vector as a double. */
-		double abs(vec2<T> const& v);
+		REIL double abs(vec2<T> const& v);
 		template<class T>
 		/** Calculates the length of a vector as a float. */
-		float absf(vec2<T> const& v);
+		REIL float absf(vec2<T> const& v);
 		template<class T>
 		/** Divides the given vector by its length. */
-		vec2<T> norm(vec2<T> const& a);
+		RECX vec2<T> norm(vec2<T> const& a);
 
 		template<class T, size_t sz>
 		vec2<T> avg(std::array<vec2<T>, sz> const&);
@@ -132,9 +133,9 @@ namespace re
 			RECX explicit operator vec3<U>() const;
 
 			/** Creates a vector with the given coordinates. */
-			vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z);
+			RECX vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z);
 			/** Creates a zero-vector. */
-			vec3();
+			RECX vec3();
 
 			/** Converts this vector to a C-style array. */
 			RECX operator const T*() const;
@@ -188,23 +189,28 @@ namespace re
 		struct vec4
 		{
 			template<class U>
-			explicit vec4(vec4<U> const& v);
+			RECX explicit operator vec4<U>() const;
 
 			/** Creates a 4-dimensional vector with the given coordinates.
 				@param[in] xyz:
 					The first three coordinates of the vector.
 				@param[in] w:
 					The fourth coordinate of the vector. */
-			vec4(vec3<T> const& xyz, copy_arg_t<T> w);
+			RECX vec4(vec3<T> const& xyz, copy_arg_t<T> w);
 			/** Creates a 4-dimensional vector with the given coordinates. */
-			vec4(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z, copy_arg_t<T> w);
+			RECX vec4(
+				copy_arg_t<T> x,
+				copy_arg_t<T> y,
+				copy_arg_t<T> z,
+				copy_arg_t<T> w);
+
 			/** Creates a zero-vector. */
-			vec4();
+			RECX vec4();
 
 			/** Converts this vector to a C-style array. */
-			operator const T*() const;
+			RECX operator const T*() const;
 			/** Converts this vector to a C-style array. */
-			operator T*();
+			RECX14 operator T*();
 
 			/** The x (first) coordinate of the vector. */
 			T x;

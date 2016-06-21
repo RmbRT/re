@@ -5,10 +5,11 @@
 #include "defines.hpp"
 #include "base_types.hpp"
 
-#define RE_LOG(X,...) re::LogFile::GetInst()->writefln("%s: " X, __FUNCTION__, ##__VA_ARGS__)
-#define RE_ASSERTION_FAILURE(X) re::LogFile::GetInst()->assertion_failure(X, __FILE__, __LINE__, __FUNCTION__)
+#define RE_LOG(X,...) re::singleton<re::LogFile>().writefln("%s: " X, __FUNCTION__, ##__VA_ARGS__)
+#define RE_ASSERTION_FAILURE(X) re::singleton<re::LogFile>().assertion_failure(X, __FILE__, __LINE__, __FUNCTION__)
 #define RE_ASSERT(X) void((!(X))?(RE_ASSERTION_FAILURE(#X),0):0)
-#define RE_TEST(X) re::LogFile::GetInst()->test((X), #X, __FILE__, __LINE__)
+#define RE_TEST(X) re::singleton<re::LogFile>.test((X), #X, __FILE__, __LINE__)
+
 
 #ifdef RE_DEBUG
 #define RE_DBG_LOG RE_LOG
@@ -16,15 +17,15 @@
 #define RE_DBG_TEST RE_TEST
 #else
 // produces no executable code.
-#define RE_DBG_LOG(X,...) void(0)
+#define RE_DBG_LOG(X,...)
 // produces no executable code.
-#define RE_DBG_ASSERT(X) void(0)
+#define RE_DBG_ASSERT(X)
 // produces no executable code.
-#define RE_DBG_TEST(X) void(0)
+#define RE_DBG_TEST(X)
 #endif
 namespace re
 {
-	class LogFile: public Singleton<LogFile>
+	class LogFile
 	{
 		std::FILE* logFile;
 		const char* name;

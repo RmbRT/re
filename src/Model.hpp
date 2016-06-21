@@ -11,10 +11,10 @@ namespace re
 {
 	class Model
 	{
-		StrongHandle<graphics::Material> material;
-		StrongHandle<graphics::ShaderProgram> shader;
-		StrongHandle<graphics::gl::VertexArrayBase> vertexData;
-		StrongHandle<graphics::Texture> texture;
+		Shared<graphics::Material> material;
+		Shared<graphics::gl::ShaderProgram> shader;
+		Shared<graphics::gl::VertexArrayBase> vertexData;
+		Shared<graphics::gl::Texture> texture;
 	public:
 		Model(strong_handle<graphics::Material> mat, strong_handle<graphics::ShaderProgram> shader, strong_handle<graphics::gl::VertexArrayBase> vertexData, strong_handle<graphics::Texture> texture);
 

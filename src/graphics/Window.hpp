@@ -209,7 +209,7 @@ namespace re
 			/** Called when the Window receives an unicode character.
 			@param[in] codepoint:
 				the unicode value of the character. */
-			virtual void onCharacter(uint codepoint) = 0;
+			virtual void onCharacter(uint_t codepoint) = 0;
 				
 			/** Called when the cursor enters or leaves the window.
 			@param[in] entered:

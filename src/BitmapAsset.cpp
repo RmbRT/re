@@ -14,7 +14,7 @@ namespace re
 		if(!file.is_open() || file.eof())
 			return false;
 
-		uint32 width, height;
+		uint32_t width, height;
 		int channel;
 
 		file.read((char*)&width, sizeof(width));
@@ -72,7 +72,7 @@ namespace re
 	{
 		RE_ASSERT(file.is_open());
 
-		uint32 width = content.getWidth(), height = content.getHeight();
+		uint32_t width = content.getWidth(), height = content.getHeight();
 		int channel = (int) content.getChannel();
 		
 		writeAssetFileHeader(file);

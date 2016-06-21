@@ -13,14 +13,14 @@ namespace re
 		{
 			class Version
 			{
-				uint m_major;
-				uint m_minor;
+				uint_t m_major;
+				uint_t m_minor;
 
 			public:
-				RECX Version(uint major, uint minor);
+				RECX Version(uint_t major, uint_t minor);
 
-				RECX uint major() const;
-				RECX uint minor() const;
+				RECX uint_t major() const;
+				RECX uint_t minor() const;
 
 				RECX bool operator<(Version const& rhs) const;
 				RECX bool operator>=(Version const& rhs) const;

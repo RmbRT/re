@@ -33,7 +33,7 @@ namespace re
 			Version m_version;
 
 			/** How many Windows are sharing this Context. */
-			uint m_references;
+			uint_t m_references;
 
 			/** The hints used to create this Context. */
 			ContextHints m_hints;
@@ -51,7 +51,7 @@ namespace re
 			/** Whether the Context is current in the active thread. */
 			RECX bool current() const;
 			/** Returns how many Windows reference this Context. */
-			RECX uint references() const;
+			RECX uint_t references() const;
 
 			RECX ContextHints const& hints() const;
 		};

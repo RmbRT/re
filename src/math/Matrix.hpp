@@ -111,10 +111,11 @@ namespace re
 			explicit mat4x4(const mat4x4<U> &m);
 
 			/** Constructs a 4x4 matrix. The values are passed row-wise. */
-			mat4x4(const T &v00, const T &v10, const T &v20, const T &v30,
-				const T &v01, const T &v11, const T &v21, const T &v31,
-				const T &v02, const T &v12, const T &v22, const T &v32,
-				const T &v03, const T &v13, const T &v23, const T &v33);
+			mat4x4(
+				T v00, T v10, T v20, T v30,
+				T v01, T v11, T v21, T v31,
+				T v02, T v12, T v22, T v32,
+				T v03, T v13, T v23, T v33);
 
 			/** Constructs a 4x4 matrix with the given columns.
 			@param[in] v0:
@@ -204,11 +205,17 @@ namespace re
 		mat4x4<T>::mat4x4(const mat4x4<U> &m): v0(m.v0), v1(m.v1), v2(m.v2), v3(m.v3)	{	}
 
 		template<class T>
-		mat4x4<T>::mat4x4(const T &v00, const T &v10, const T &v20, const T &v30,
-			const T &v01, const T &v11, const T &v21, const T &v31,
-			const T &v02, const T &v12, const T &v22, const T &v32,
-			const T &v03, const T &v13, const T &v23, const T &v33)
-			: v0(v00, v01, v02, v03), v1(v10, v11, v12, v13), v2(v20, v21, v22, v23), v3(v30, v31, v32, v33)	{	}
+		mat4x4<T>::mat4x4(
+			T v00, T v10, T v20, T v30,
+			T v01, T v11, T v21, T v31,
+			T v02, T v12, T v22, T v32,
+			T v03, T v13, T v23, T v33):
+			v0(v00, v01, v02, v03),
+			v1(v10, v11, v12, v13),
+			v2(v20, v21, v22, v23),
+			v3(v30, v31, v32, v33)
+		{
+		}
 
 		template<class T>
 		mat4x4<T>::mat4x4(const vec4<T> &v0, const vec4<T> &v1, const vec4<T> &v2, const vec4<T> &v3): v0(v0), v1(v1), v2(v2), v3(v3)	{	}

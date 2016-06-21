@@ -5,13 +5,13 @@ namespace re
 		// VECTOR II
 
 		template<class T>
-		vec2<T>::vec2():
+		RECX vec2<T>::vec2():
 			x(0),
 			y(0)
 		{
 		}
 		template<class T>
-		vec2<T>::vec2(copy_arg_t<T> x, copy_arg_t<T> y) :
+		RECX vec2<T>::vec2(copy_arg_t<T> x, copy_arg_t<T> y) :
 			x(x),
 			y(y)
 		{
@@ -19,111 +19,106 @@ namespace re
 
 		template<class T>
 		template<class U>
-		vec2<T>::operator vec2<U>() const
+		RECX vec2<T>::operator vec2<U>() const
 		{
 			return vec2<U>(static_cast<U>(x), static_cast<U>(y));
 		}
 
 		template<class T>
-		vec2<T>::operator T const*() const
+		RECX vec2<T>::operator T const*() const
 		{
 			return reinterpret_cast<T const*>(this);
 		}
 
 		template<class T>
-		vec2<T>::operator T *()
+		RECX14 vec2<T>::operator T *()
 		{
 			return reinterpret_cast<T*>(this);
 		}
-
+		
 		template<class T>
-		vec2<T>::vec2(copy_arg<T> x, copy_arg<T> y) : x(), y()	{	}
-		template<class T>
-		vec2<T>::vec2(const T v[2]): x(v[0]), y(v[1])	{	}
-
-		template<class T>
-		bool operator==(vec2<T> const& a, vec2<T> const& b)
+		RECX bool operator==(vec2<T> const& a, vec2<T> const& b)
 		{
 			return a.x == b.x && a.y == b.y;
 		}
 		template<class T>
-		bool operator!=(vec2<T> const& a, vec2<T> const& b)
+		RECX bool operator!=(vec2<T> const& a, vec2<T> const& b)
 		{
 			return a.x != b.x || a.y != b.y;
 		}
 
 		template<class T>
-		vec2<T> operator + (vec2<T> const& a, vec2<T> const& b)
+		RECX vec2<T> operator + (vec2<T> const& a, vec2<T> const& b)
 		{
 			return vec2<T>(a.x+b.x, a.y+b.y);
 		}
 
 		template<class T>
-		vec2<T> operator - (vec2<T> const& a, vec2<T> const& b)
+		RECX vec2<T> operator - (vec2<T> const& a, vec2<T> const& b)
 		{
 			return vec2<T>(a.x-b.x, a.y-b.y);
 		}
 
 		template<class T>
-		vec2<T> operator * (vec2<T> const& a, float b)
+		RECX vec2<T> operator * (vec2<T> const& a, float b)
 		{
 			return vec2<T>(a.x*b, a.y*b);
 		}
 		template<class T>
-		vec2<T> operator * (vec2<T> const& a, double b)
+		RECX vec2<T> operator * (vec2<T> const& a, double b)
 		{
 			return vec2<T>(a.x*b, a.y*b);
 		}
 		template<class T>
-		vec2<T> operator * (vec2<T> const& a, int b)
+		RECX vec2<T> operator * (vec2<T> const& a, int b)
 		{
 			return vec2<T>(a.x*b, a.y*b);
 		}
 
 		template<class T>
-		vec2<T> operator * (float a, vec2<T> const& b)
+		RECX vec2<T> operator * (float a, vec2<T> const& b)
 		{
 			return vec2<T>(a*b.x, a*b.y);
 		}
 		template<class T>
-		vec2<T> operator * (double a, vec2<T> const& b)
+		RECX vec2<T> operator * (double a, vec2<T> const& b)
 		{
 			return vec2<T>(a*b.x, a*b.y);
 		}
 		template<class T>
-		vec2<T> operator * (int a, vec2<T> const& b)
+		RECX vec2<T> operator * (int a, vec2<T> const& b)
 		{
 			return vec2<T>(a*b.x, a*b.y);
 		}
 
 		template<class T>
-		vec2<T> operator / (vec2<T> const& a, float b)
+		RECX vec2<T> operator / (vec2<T> const& a, float b)
 		{
 			return vec2<T>(a.x/b, a.y/b);
 		}
 		template<class T>
-		vec2<T> operator / (vec2<T> const& a, double b)
+		RECX vec2<T> operator / (vec2<T> const& a, double b)
 		{
 			return vec2<T>(a.x/b, a.y/b);
 		}
 		template<class T>
-		vec2<T> operator / (vec2<T> const& a, int b)
+		RECX vec2<T> operator / (vec2<T> const& a, int b)
 		{
 			return vec2<T>(a.x/b, a.y/b);
 		}
 		template<class T>
-		double dotd(vec2<T> const& a, vec2<T> const& b)
+		RECX double dotd(vec2<T> const& a, vec2<T> const& b)
 		{
 			return double(a.x)*double(b.x) + double(a.y)*double(b.y);
 		}
 		template<class T>
-		float dotf(vec2<T> const& a, vec2<T> const& b)
+		RECX float dotf(vec2<T> const& a, vec2<T> const& b)
 		{
 			return float(a.x)*float(b.x) + float(a.y)*float(b.y);
 		}
 
 		template<class T>
-		T dot(vec2<T> const& a, vec2<T> const& b)
+		RECX T dot(vec2<T> const& a, vec2<T> const& b)
 		{
 			return a.x*b.x + a.y*b.y;
 		}
@@ -139,28 +134,15 @@ namespace re
 			return sqrtf(dotf(v,v));
 		}
 		template<class T>
-		vec2<T> norm(vec2<T> const& a)
+		RECX vec2<T> norm(vec2<T> const& a)
 		{
-			if(a.x || a.y)
-				return a/abs(a);
-			else
-				return a;
+			return a.x || a.y ? a/abs(a) : a;
 		}
 
 		namespace detail
 		{
 			template<class T>
-			typedef T avg_accum_t;
-
-			template<>
-			typedef short avg_accum_t<char>;
-			template<>
-			typedef unsigned short avg_accum_t<unsigned char>;
-
-			template<>
-			typedef long avg_accum_t<short>;
-			template<>
-			typedef unsigned long avg_accum_t<unsigned short>;
+			using avg_accum_t = decltype(T()+T());
 		}
 
 
@@ -168,7 +150,7 @@ namespace re
 		template<class T, size_t sz>
 		vec2<T> avg(std::array<vec2<T>, sz> const& arr)
 		{
-			avg_accum_t<T> accx(0), accy(0);
+			detail::avg_accum_t<T> accx(0), accy(0);
 			for(size_t i = sz; i--;)
 			{
 				accx += arr[i].x;
@@ -183,7 +165,7 @@ namespace re
 		template<class T, size_t sz>
 		vec3<T> avg(std::array<vec3<T>, sz> const& arr)
 		{
-			avg_accum_t<T> accx(0), accy(0), accz(0);
+			detail::avg_accum_t<T> accx(0), accy(0), accz(0);
 			for(size_t i = sz; i--;)
 			{
 				accx += arr[i].x;
@@ -199,7 +181,7 @@ namespace re
 		template<class T, size_t sz>
 		vec4<T> avg(std::array<vec4<T>, sz> const& arr)
 		{
-			avg_accum_t<T> accx(0), accy(0), accz(0), accw(0);
+			detail::avg_accum_t<T> accx(0), accy(0), accz(0), accw(0);
 			for(size_t i = sz; i--;)
 			{
 				accx += arr[i].x;
@@ -217,18 +199,22 @@ namespace re
 
 
 		template<class T>
-		vec3<T>::operator const T *() const
+		RECX vec3<T>::operator const T *() const
 		{
 			return reinterpret_cast<const T*>(this);
 		}
 		template<class T>
-		vec3<T>::operator T*()
+		RECX14 vec3<T>::operator T*()
 		{
 			return reinterpret_cast<T*>(this);
 		}
 
+		
 		template<class T>
-		vec3<T>::vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z):
+		RECX vec3<T>::vec3(
+			copy_arg_t<T> x,
+			copy_arg_t<T> y,
+			copy_arg_t<T> z):
 			x(x),
 			y(y),
 			z(z)
@@ -237,15 +223,13 @@ namespace re
 
 		template<class T>
 		template<class U>
-		vec3<T>::vec3(vec3<U> const& rval) : x(rval.x), y(rval.y), z(rval.z) {	}
-		template<class T>
-		vec3<T>::vec3(copy_arg_t<T> x, copy_arg_t<T> y, T z) : x(x), y(y), z(z) {	}
+		RECX vec3<T>::operator vec3<U>() const
+		{
+			return {x,y,z};
+		}
 
 		template<class T>
-		vec3<T>::vec3(const T v[3]) : x(v[0]), y(v[1]), z(v[2]) {	}
-
-		template<class T>
-		vec3<T>::vec3() : x(), y(), z() {	}
+		RECX vec3<T>::vec3() : x(), y(), z() {	}
 
 		template<class T>
 		bool operator==(vec3<T> const& a, vec3<T> const& b)
@@ -381,27 +365,38 @@ namespace re
 
 
 		template<class T>
-		vec4<T>::operator const T *() const
+		RECX vec4<T>::operator const T *() const
 		{
 			return reinterpret_cast<const T*>(this);
 		}
 		template<class T>
-		vec4<T>::operator T*()
+		RECX14 vec4<T>::operator T*()
 		{
 			return reinterpret_cast<T*>(this);
 		}
 		template<class T>
 		template<class U>
-		vec4<T>::vec4(vec4<U> const& rval) : x(rval.x), y(rval.y), z(rval.z), w(rval.w) {	}
+		RECX vec4<T>::operator vec4<U>(void) const
+		{
+			return vec4<U>(x,y,z,w);
+		}
 		template<class T>
-		vec4<T>::vec4(vec3<T> const& xyz, copy_arg_t<T> w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {	}
+		RECX vec4<T>::vec4(vec3<T> const& xyz, copy_arg_t<T> w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {	}
 		template<class T>
-		vec4<T>::vec4() : x(), y(), z(), w() {	}
+		RECX vec4<T>::vec4() : x(), y(), z(), w() {	}
+		
 		template<class T>
-		vec4<T>::vec4(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z, copy_arg_t<T> w):
-			x(x), y(y), z(z), w(w) {	}
-		template<class T>
-		vec4<T>::vec4(const T v[4]) : x(v[0]), y(v[1]), z(v[2]), w(v[3]) {	}
+		RECX vec4<T>::vec4(
+			copy_arg_t<T> x,
+			copy_arg_t<T> y,
+			copy_arg_t<T> z,
+			copy_arg_t<T> w):
+			x(x),
+			y(y),
+			z(z),
+			w(w)
+		{
+		}
 
 
 		template<class T>

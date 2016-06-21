@@ -58,7 +58,7 @@ namespace re
 				}
 			}
 
-			void RenderBuffer::resize(uint32 width, uint32 height)
+			void RenderBuffer::resize(uint32_t width, uint32_t height)
 			{
 				RE_DBG_ASSERT(exists() && "Tried to resize nonexisting render buffer!");
 

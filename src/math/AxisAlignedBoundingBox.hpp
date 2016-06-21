@@ -178,7 +178,7 @@ namespace re
 		{
 			if(_empty)
 				return *this=other;
-			if(_other._empty)
+			if(other._empty)
 				return *this;
 			
 			_min.x = math::min(_min.x, other._min.x);
@@ -263,22 +263,22 @@ namespace re
 		template<class T>
 		void AxisAlignedBoundingBox<T>::makeContain(const vec3<T> &position)
 		{
-			operator|=(position);
+			*this|=(position);
 		}
 		template<class T>
 		void AxisAlignedBoundingBox<T>::setToPoint(const vec3<T> &position)
 		{
-			operator=(position);
+			*this = position;
 		}
 		template<class T>
 		void AxisAlignedBoundingBox<T>::setToBox(const vec3<T> &min, const vec3<T> &max)
 		{
-			operator=(AxisAlignedBoundingBox<T>(min,max));
+			*this = AxisAlignedBoundingBox<T>(min,max);
 		}
 		template<class T>
 		void AxisAlignedBoundingBox<T>::setToEmpty()
 		{
-			operator=(math::empty);
+			*this = math::empty;
 		}
 	}
 }

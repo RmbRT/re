@@ -5,7 +5,7 @@ namespace re
 	namespace util
 	{
 		template<class T>
-		NotNull<T>::NotNull(T *data):
+		RECXDA NotNull<T>::NotNull(T *data):
 			m_data(data)
 		{
 			RE_DBG_ASSERT(m_data
@@ -13,13 +13,25 @@ namespace re
 		}
 
 		template<class T>
-		NotNull<T>::operator T*() const
+		RECX NotNull<T>::operator T*() const
 		{
 			return m_data;
 		}
 
 		template<class T>
-		NotNull<T> notNull(T * data)
+		RECX T * NotNull<T>::operator->() const
+		{
+			return m_data;
+		}
+
+		template<class T>
+		RECX T & NotNull<T>::operator*() const
+		{
+			return *m_data;
+		}
+
+		template<class T>
+		RECX NotNull<T> notNull(T * data)
 		{
 			return data;
 		}

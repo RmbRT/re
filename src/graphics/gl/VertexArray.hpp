@@ -141,10 +141,9 @@ namespace re
 			class VertexArray : VertexArrayBase
 			{
 			public:
-				VertexArray(BufferAccess access, BufferUsage usage);
+				RECX VertexArray(BufferAccess access, BufferUsage usage);
 				VertexArray(VertexArray<Vertex> &&) = default;
 				VertexArray<Vertex> &operator=(VertexArray<Vertex> &&) = default;
-				~VertexArray();
 
 				VertexArray(VertexArray<Vertex> const&) = delete;
 				VertexArray<Vertex> &operator=(VertexArray<Vertex> const&) = delete;

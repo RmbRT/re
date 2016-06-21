@@ -60,8 +60,8 @@ namespace re
 
 			if(border.top.image.texture)
 			{
-				uint32 tex_w = border.top.image.texture->getWidth();
-				uint32 tex_h = border.top.image.texture->getHeight();
+				uint32_t tex_w = border.top.image.texture->getWidth();
+				uint32_t tex_h = border.top.image.texture->getHeight();
 
 				if(border.top.image.repeat.x == layout::Repeat::Tile)
 					t_top_s = inner_size.x / tex_w;
@@ -70,8 +70,8 @@ namespace re
 			}
 			if(border.right.image.texture)
 			{
-				uint32 tex_w = border.right.image.texture->getWidth();
-				uint32 tex_h = border.right.image.texture->getHeight();
+				uint32_t tex_w = border.right.image.texture->getWidth();
+				uint32_t tex_h = border.right.image.texture->getHeight();
 
 				if(border.right.image.repeat.x == layout::Repeat::Tile)
 					t_right_s = inner_size.y / tex_w;
@@ -80,8 +80,8 @@ namespace re
 			}
 			if(border.bottom.image.texture)
 			{
-				uint32 tex_w = border.bottom.image.texture->getWidth();
-				uint32 tex_h = border.bottom.image.texture->getHeight();
+				uint32_t tex_w = border.bottom.image.texture->getWidth();
+				uint32_t tex_h = border.bottom.image.texture->getHeight();
 
 				if(border.bottom.image.repeat.x == layout::Repeat::Tile)
 					t_bot_s = inner_size.x / tex_w;
@@ -90,8 +90,8 @@ namespace re
 			}
 			if(border.left.image.texture)
 			{
-				uint32 tex_w = border.left.image.texture->getWidth();
-				uint32 tex_h = border.left.image.texture->getHeight();
+				uint32_t tex_w = border.left.image.texture->getWidth();
+				uint32_t tex_h = border.left.image.texture->getHeight();
 
 				if(border.left.image.repeat.x == layout::Repeat::Tile)
 					t_left_s = inner_size.x / tex_w;
@@ -149,8 +149,8 @@ namespace re
 
 			if(border_corner_top_left.texture)
 			{
-				uint32 tex_w = border_corner_top_left.texture->getWidth();
-				uint32 tex_h = border_corner_top_left.texture->getHeight();
+				uint32_t tex_w = border_corner_top_left.texture->getWidth();
+				uint32_t tex_h = border_corner_top_left.texture->getHeight();
 
 				if(border_corner_top_left.repeat.x == layout::Repeat::Tile)
 					t_tl_s = border.left.width / tex_w;
@@ -159,8 +159,8 @@ namespace re
 			}
 			if(border_corner_top_right.texture)
 			{
-				uint32 tex_w = border_corner_top_right.texture->getWidth();
-				uint32 tex_h = border_corner_top_right.texture->getHeight();
+				uint32_t tex_w = border_corner_top_right.texture->getWidth();
+				uint32_t tex_h = border_corner_top_right.texture->getHeight();
 
 				if(border_corner_top_right.repeat.x == layout::Repeat::Tile)
 					t_tr_s = border.right.width / tex_w;
@@ -169,8 +169,8 @@ namespace re
 			}
 			if(border_corner_bottom_left.texture)
 			{
-				uint32 tex_w = border_corner_bottom_left.texture->getWidth();
-				uint32 tex_h = border_corner_bottom_left.texture->getHeight();
+				uint32_t tex_w = border_corner_bottom_left.texture->getWidth();
+				uint32_t tex_h = border_corner_bottom_left.texture->getHeight();
 
 				if(border_corner_bottom_left.repeat.x == layout::Repeat::Tile)
 					t_bl_s = border.left.width / tex_w;
@@ -179,8 +179,8 @@ namespace re
 			}
 			if(border_corner_bottom_right.texture)
 			{
-				uint32 tex_w = border_corner_bottom_right.texture->getWidth();
-				uint32 tex_h = border_corner_bottom_right.texture->getHeight();
+				uint32_t tex_w = border_corner_bottom_right.texture->getWidth();
+				uint32_t tex_h = border_corner_bottom_right.texture->getHeight();
 
 				if(border_corner_bottom_right.repeat.x == layout::Repeat::Tile)
 					t_br_s = border.right.width / tex_w;
@@ -259,8 +259,8 @@ namespace re
 
 			if(background.texture)
 			{
-				uint32 tex_w = background.texture->getWidth();
-				uint32 tex_h = background.texture->getHeight();
+				uint32_t tex_w = background.texture->getWidth();
+				uint32_t tex_h = background.texture->getHeight();
 
 				if(background.repeat.x == layout::Repeat::Tile)
 					t_s = inner_size.x / tex_w;

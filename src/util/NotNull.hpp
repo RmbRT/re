@@ -24,6 +24,9 @@ namespace re
 
 			/** Returns the pointer held by the structure. */
 			RECX operator T*() const;
+
+			RECX T * operator->() const;
+			RECX T & operator*() const;
 		};
 
 		template<class T>
@@ -31,6 +34,9 @@ namespace re
 		struct NotNull<T[]> : private NotNull<T>
 		{
 			using NotNull<T>::NotNull;
+			using NotNull<T>::operator T*;
+			using NotNull<T>::operator->;
+			using NotNull<T>::operator*;
 		};
 
 		template<class T>

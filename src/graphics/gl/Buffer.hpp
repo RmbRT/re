@@ -30,7 +30,7 @@ namespace re
 				ShaderStorage,
 				Texture,
 				TransformFeedback,
-				Uniform
+				RE_LAST(Uniform)
 			};
 
 			bool is_available(BufferType type, int gl_major, int gl_minor);

@@ -68,7 +68,7 @@ namespace re
 			/** The min and max LOD values for this Texture. */
 			float min_lod, max_lod;
 			/** The base and max level. */
-			int32 base_level, max_level;
+			int32_t base_level, max_level;
 			math::fvec4 border_color;
 			float priority;
 			TextureCompareMode compare_mode;
@@ -81,9 +81,9 @@ namespace re
 		/** Describes a Texture as used by OpenGL. */
 		class Texture
 		{
-			uint32 id;
+			uint32_t id;
 			uint8 dimension;
-			uint32 width, height, depth;
+			uint32_t width, height, depth;
 			TextureParameters parameters;
 			Bitmap data;
 			std::vector<Bitmap> mipmaps;
@@ -116,13 +116,13 @@ namespace re
 			/** Returns whether this Texture is currently bound to the rendering pipeline. */
 			bool isBound() const;
 			/** Returns the width of the Texture in pixels. */
-			uint32 getWidth() const;
+			uint32_t getWidth() const;
 			/** Returns the height of the Texture in pixels. */
-			uint32 getHeight() const;
+			uint32_t getHeight() const;
 			/** Returns the depth of the Texture in pixels. */
-			uint32 getDepth() const;
+			uint32_t getDepth() const;
 
-			uint32 getId() const;
+			uint32_t getId() const;
 
 			/** Returns the dimension of the Texture. */
 			uint8 getDimension() const;
@@ -138,7 +138,7 @@ namespace re
 			void setData(const Bitmap &);
 
 			/** Sets the bounds of the Texture. The content of the texture is empty. */
-			void setBounds(uint width, uint height);
+			void setBounds(uint_t width, uint_t height);
 			/** Calculates and uploads the mipmaps for this Texture.
 			@param[in] filter:
 				the MipMap generation filter.
@@ -155,7 +155,7 @@ namespace re
 			void _setTexImage(const Bitmap &, size_t level) const;
 
 			/** The currently bound texture. This is used to reduce redundant calls to the GPU. */
-			static uint32 bound;
+			static uint32_t bound;
 		};
 	}
 }

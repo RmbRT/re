@@ -14,7 +14,7 @@ namespace re
 			T m_instance;
 		public:
 			template<class ...Args>
-			RefCount(Args && ... args);
+			REIL RefCount(Args && ... args);
 
 			RECX14 T & get();
 			RECX T const& get() const;

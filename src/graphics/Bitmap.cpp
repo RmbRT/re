@@ -11,7 +11,7 @@ namespace re
 		{
 		}
 
-		Bitmap::Bitmap(Channel channel, Component component, uint32 size):
+		Bitmap::Bitmap(Channel channel, Component component, uint32_t size):
 			m_channel(channel),
 			m_component(component),
 			m_size(0),
@@ -96,7 +96,7 @@ namespace re
 		void Bitmap::alloc(
 			Channel channel,
 			Component component,
-			uint32 size)
+			uint32_t size)
 		{
 			m_data = realloc(m_data, size * size_of(channel, component));
 			m_size = size;
@@ -113,12 +113,12 @@ namespace re
 			}
 		}
 
-		Bitmap1D::Bitmap1D(Channel channel, Component component, uint32 size):
+		Bitmap1D::Bitmap1D(Channel channel, Component component, uint32_t size):
 			Bitmap(channel, component, size)
 		{
 		}
 
-		Bitmap2D::Bitmap2D(Channel channel, Component component, uint32 width, uint32 height):
+		Bitmap2D::Bitmap2D(Channel channel, Component component, uint32_t width, uint32_t height):
 			Bitmap(channel, component, width * height),
 			m_width(width),
 			m_height(height)
@@ -130,9 +130,9 @@ namespace re
 		Bitmap3D::Bitmap3D(
 			Channel channel,
 			Component component,
-			uint32 width,
-			uint32 height,
-			uint32 depth):
+			uint32_t width,
+			uint32_t height,
+			uint32_t depth):
 			Bitmap(channel, component, width * height * depth),
 			m_width(width),
 			m_height(height),
@@ -150,7 +150,7 @@ namespace re
 
 			Bitmap1D mip(channel(), component(), size() >> 1);
 
-			for(uint32 i = mip.size(); i--;)
+			for(uint32_t i = mip.size(); i--;)
 				mip.pixel<ch,co>(i) = mip_near<ch,co>(i);
 
 			return std::move(mip);
@@ -163,7 +163,7 @@ namespace re
 
 			Bitmap1D mip(channel(), component(), size() >> 1);
 
-			for(uint32 i = mip.size(); i--;)
+			for(uint32_t i = mip.size(); i--;)
 				mip.pixel<ch,co>(i) = mip_lin<ch,co>(i);
 
 			return std::move(mip);
@@ -174,17 +174,17 @@ namespace re
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(size() > 1);
 
-			uint32 new_width = width() >> 1;
+			uint32_t new_width = width() >> 1;
 			if(!new_width)
 				new_width = 1;
-			uint32 new_height = height() >> 1;
+			uint32_t new_height = height() >> 1;
 			if(!new_height)
 				new_height = 1;
 
 			Bitmap2D mip(channel(), component(), new_width, new_height);
 
-			for(uint32 x = mip.width(); x--;)
-				for(uint32 y = mip.height(); y--;)
+			for(uint32_t x = mip.width(); x--;)
+				for(uint32_t y = mip.height(); y--;)
 					mip.pixel<ch,co>(x,y) = mip_near<ch,co>(x,y);
 		}
 
@@ -193,17 +193,17 @@ namespace re
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(size() > 1);
 
-			uint32 new_width = width() >> 1;
+			uint32_t new_width = width() >> 1;
 			if(!new_width)
 				new_width = 1;
-			uint32 new_height = height() >> 1;
+			uint32_t new_height = height() >> 1;
 			if(!new_height)
 				new_height = 1;
 
 			Bitmap2D mip(channel(), component(), new_width, new_height);
 
-			for(uint32 x = mip.width(); x--;)
-				for(uint32 y = mip.height(); y--;)
+			for(uint32_t x = mip.width(); x--;)
+				for(uint32_t y = mip.height(); y--;)
 					mip.pixel<ch,co>(x,y) = mip_lin<ch,co>(x,y);
 
 			return std::move(mip);
@@ -214,21 +214,21 @@ namespace re
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(size() > 1);
 
-			uint32 new_width = width() >> 1;
+			uint32_t new_width = width() >> 1;
 			if(!new_width)
 				new_width = 1;
-			uint32 new_height = height() >> 1;
+			uint32_t new_height = height() >> 1;
 			if(!new_height)
 				new_height = 1;
-			uint32 new_depth = depth() >> 1;
+			uint32_t new_depth = depth() >> 1;
 			if(!new_depth)
 				new_depth = 1;
 
 			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
 
-			for(uint32 x = mip.width(); x--;)
-				for(uint32 y = mip.height(); y--;)
-					for(uint32 z = mip.depth(); z--;)
+			for(uint32_t x = mip.width(); x--;)
+				for(uint32_t y = mip.height(); y--;)
+					for(uint32_t z = mip.depth(); z--;)
 						mip.pixel<ch,co>(x,y,z) = mip_near<ch,co>(x,y,z);
 
 			return std::move(mip);
@@ -239,21 +239,21 @@ namespace re
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(size() > 1);
 
-			uint32 new_width = width() >> 1;
+			uint32_t new_width = width() >> 1;
 			if(!new_width)
 				new_width = 1;
-			uint32 new_height = height() >> 1;
+			uint32_t new_height = height() >> 1;
 			if(!new_height)
 				new_height = 1;
-			uint32 new_depth = depth() >> 1;
+			uint32_t new_depth = depth() >> 1;
 			if(!new_depth)
 				new_depth = 1;
 
 			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
 
-			for(uint32 x = mip.width(); x--;)
-				for(uint32 y = mip.height(); y--;)
-					for(uint32 z = mip.depth(); z--;)
+			for(uint32_t x = mip.width(); x--;)
+				for(uint32_t y = mip.height(); y--;)
+					for(uint32_t z = mip.depth(); z--;)
 						mip.pixel<ch,co>(x,y,z) = mip_lin<ch,co>(x,y,z);
 
 			return std::move(mip);

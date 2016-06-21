@@ -36,7 +36,7 @@
 #define RE_COUNT(Enum) size_t(Enum::__re_last_field)
 
 /** Constexpr with debug assertions. */
-#define RECXDA RESWITCH(REIL,REIL RECX)
+#define RECXDA RE_SWITCH(REIL,RECX)
 
 
 #define CXX11 201103L

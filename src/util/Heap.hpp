@@ -41,9 +41,9 @@ namespace re
 			/** 0xfeffefee for 32 bit, 0xbabbabaafeffefee for 64 bit. */
 			size_t const heap_magic = ((size_t(0xbabbabaa) << 32) | size_t(0xfeffefee))
 #endif
-
+public:
 			struct Header;
-
+private:
 			/** The allocated memory of the Heap. */
 			Header * m_pool;
 			/** The capacity of the heap. */
@@ -54,9 +54,9 @@ namespace re
 			Header * m_last;
 
 			/** The first address that is outside the Heap. */
-			RECXDA uintptr_t end() const;
+			REIL uintptr_t end() const;
 			/** In RE_HEAP_DEBUG, checks for valid address position. */
-			RECX bool isValidHeaderAddress(Header const * header) const;
+			REIL bool isValidHeaderAddress(Header const * header) const;
 		public:
 			/** Unallocated Heap. */
 			Heap();
@@ -92,9 +92,9 @@ namespace re
 			REIL T * array_alloc(size_t size);
 
 			/** Whether the memory pool is allocated. */
-			RECX bool exists() const;
+			REIL bool exists() const;
 			/** Whether there are allocated blocks within the Heap. */
-			RECX bool used() const;
+			REIL bool used() const;
 
 			/** Allocates the Heap. */
 			void create(size_t capcity);
@@ -103,10 +103,10 @@ namespace re
 
 
 			/** Returns the Header address that belongs to the beginning of a memory block. */
-			static RECX14 Header * getHeader(void const * membegin);
+			static RECX Header * getHeader(void const * membegin);
 			
 			/** In RE_HEAP_DEBUG, validates the header and its pointers. */
-			RECXDA void validateHeader(Header const * header) const;
+			REIL void validateHeader(Header const * header) const;
 
 			/** The Header structure that describes a block of allocated memory. */
 			struct Header
@@ -128,10 +128,10 @@ namespace re
 				bool resize(size_t size);
 				void * realloc(size_t size);
 				/** The capacity of the memory block. */
-				RECX size_t capacity() const;
+				REIL size_t capacity() const;
 				/** The size of the hole between this one and the next one. */
-				RECX size_t hole() const;
-				RECX uintptr_t end() const;
+				REIL size_t hole() const;
+				REIL uintptr_t end() const;
 			};
 
 		private:

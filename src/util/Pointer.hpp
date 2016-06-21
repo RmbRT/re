@@ -1,6 +1,7 @@
 #ifndef __re_util_pointer_hpp_defined
 #define __re_util_pointer_hpp_defined
 
+#include "../base_types.hpp"
 #include "RefCount.hpp"
 #include "Heap.hpp"
 

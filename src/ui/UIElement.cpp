@@ -190,7 +190,7 @@ namespace re
 			for(const auto &child : _children)
 				child->onKey(event);
 		}
-		void UIElement::onInput(uint32 codepoint)
+		void UIElement::onInput(uint32_t codepoint)
 		{
 			for(const auto &child : _children)
 				child->onInput(codepoint);
@@ -525,8 +525,8 @@ namespace re
 				float t_v_t = 1; // vertical border vertical tex coord
 				if(_border_texture)
 				{
-					uint32 tex_w = _border_texture->getWidth();
-					uint32 tex_h = _border_texture->getHeight();
+					uint32_t tex_w = _border_texture->getWidth();
+					uint32_t tex_h = _border_texture->getHeight();
 
 					if(_border_image_x_repeat_mode == ImageRepetition::Tile)
 					{

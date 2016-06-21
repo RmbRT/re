@@ -9,7 +9,7 @@
 
 #define RE_MAT_TRANSPOSE false
 
-re::uint32 re::graphics::ShaderProgram::used = 0;
+re::uint32_t re::graphics::ShaderProgram::used = 0;
 
 namespace re
 {
@@ -261,7 +261,7 @@ namespace re
 		}
 
 		/*Int32*/
-		bool ShaderProgram::setUniform(const char* uniform, int32 val)
+		bool ShaderProgram::setUniform(const char* uniform, int32_t val)
 		{
 			if(!isUsed())
 				return false;
@@ -272,7 +272,7 @@ namespace re
 			return true;
 		}
 
-		bool ShaderProgram::setUniform(ShaderProgram::uniform_t uniform, int32 val)
+		bool ShaderProgram::setUniform(ShaderProgram::uniform_t uniform, int32_t val)
 		{
 			if(!isUsed() || (-1 == uniform))
 				return false;

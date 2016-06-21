@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include <cstddef>
 #include "util/Argument.hpp"
 
 namespace re

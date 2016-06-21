@@ -7,7 +7,7 @@ namespace re
 		void Button::onKey(UIElement &sender, const input::KeyEvent &event)
 		{	}
 
-		void Button::onInput(UIElement &sender, uint32 codepoint)
+		void Button::onInput(UIElement &sender, uint32_t codepoint)
 		{
 		}
 

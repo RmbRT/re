@@ -32,7 +32,7 @@ namespace re
 			the UIElement that caused this event.
 		@param[in] codepoint:
 			the unicode codepoint of the input character. */
-		typedef void (*InputCallback)(UIElement &sender, uint32 codepoint);
+		typedef void (*InputCallback)(UIElement &sender, uint32_t codepoint);
 		/** Callback function signature for key events.
 		@param[inout] sender:
 			the UIElement that caused this event.
@@ -188,7 +188,7 @@ namespace re
 			UIElement(const UIElement &copy) = delete;
 
 			/** Calls the input event callbacks with the given codepoint as argument. */
-			void onInput(uint32 codepoint);
+			void onInput(uint32_t codepoint);
 			/** Calls the key event callbacks with the given KeyEvent as argument. */
 			void onKey(const input::KeyEvent &event);
 			/** Calls the cursor move event callbacks with the given cursor position as argument.

@@ -11,7 +11,7 @@ namespace re
 		namespace gl
 		{
 			/** The type used by OpenGL to store object handles. */
-			typedef uint handle_t;
+			typedef uint_t handle_t;
 
 			
 			/** Represents a handle to a resource managed by OpenGL.
@@ -24,28 +24,28 @@ namespace re
 				handle_t m_handle;
 			public:
 				/** Creates a Handle that is set to empty. */
-				REIL Handle();
+				RECX Handle();
 				/** Moves the ownership of the handle from one Handle to another. */
 				REIL Handle(Handle &&);
 				/** Moves the ownership of the handle from one Handle to another. */
-				RECXDA14 Handle &operator=(Handle &&);
+				REIL Handle &operator=(Handle &&);
 				/** Asserts that the Handle must not exist anymore. */
-				RECXDA ~Handle();
+				RE_DBG(REIL ~Handle();)
 
 				/** Use to set the Handle value.
 				@important
 					The handle must not exist already.
 				@param[in] handle:
 					The new value of the Handle. */
-				RECXDA14 void set_handle(handle_t handle);
+				REIL void set_handle(handle_t handle);
 				/** Use to release the Handle value. */
-				RECXDA14 void null_handle();
+				REIL void null_handle();
 
 				/** Returns whether a Handle exists / was allocated. */
-				RECX bool exists() const;
+				RECXDA bool exists() const;
 
 				/** Returns the handle to this Handle. */
-				RECX handle_t handle() const;
+				RECXDA handle_t handle() const;
 			};
 		}
 	}

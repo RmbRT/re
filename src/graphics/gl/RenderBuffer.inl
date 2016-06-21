@@ -4,12 +4,12 @@ namespace re
 	{
 		namespace gl
 		{
-			uint32 RenderBuffer::width() const
+			uint32_t RenderBuffer::width() const
 			{
 				return m_width;
 			}
 
-			uint32 RenderBuffer::height() const
+			uint32_t RenderBuffer::height() const
 			{
 				return m_height;
 			}

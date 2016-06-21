@@ -13,7 +13,7 @@ namespace re
 			~Button() = delete;
 		public:
 			static void onKey(UIElement &sender, const input::KeyEvent &event);
-			static void onInput(UIElement &sender, uint32 codepoint);
+			static void onInput(UIElement &sender, uint32_t codepoint);
 			static void onCursorMove(UIElement &sender, const math::fvec2 &cursor);
 			static void onCursorEnter(UIElement &sender);
 			static void onCursorLeave(UIElement &sender);

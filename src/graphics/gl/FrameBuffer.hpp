@@ -25,7 +25,7 @@ namespace re
 				
 				/** @{
 					The bounds of the FrameBuffer. */
-				uint32
+				uint32_t
 					m_width,
 					m_height;
 				/** @. */
@@ -112,7 +112,7 @@ namespace re
 				REIL bool has_depth_stencil() const;
 
 				/** Resizes the FrameBuffer and all its attachments to the given size. */
-				void resize(uint32 width, uint32 height) &;
+				void resize(uint32_t width, uint32_t height) &;
 			};
 		}
 	}

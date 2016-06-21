@@ -3,17 +3,28 @@
 
 #include <type_traits>
 
+
+
 namespace re
 {
 	namespace util
 	{
 		template<class T>
-		using copy_t = std::add_lvalue_reference_t<std::add_const_t<T>>;
+		using copy_t = typename std::add_lvalue_reference<typename std::add_const<T>::type>::type;
 		template<class T>
-		using move_t = std::add_rvalue_reference_t<std::remove_const_t<T>>;
+		using move_t = typename std::add_rvalue_reference<typename std::remove_const<T>::type>::type;
+
+
+#if defined(__GNUC__) && defined(__GNUC__) && __GNUG__ && __GNUC__ < 5
+		// g++ 4.8 does not properly support the type checks, so we have to assume the worst case.
+		template<class T>
+		using copy_arg_t = copy_t<T>;
 
 		template<class T>
-		using copy_arg_t = std::_If<
+		using move_arg_t = move_t<T>;
+#else
+		template<class T>
+		using copy_arg_t = typename std::conditional<
 			sizeof(T) <= sizeof(void*)
 			&& std::is_trivially_copy_constructible<T>::value
 			&& std::is_trivially_move_constructible<T>::value,
@@ -22,13 +33,16 @@ namespace re
 				::type;
 
 		template<class T>
-		using move_arg_t = std::_If<
+		using move_arg_t = std::conditional<
 			sizeof(T) <= sizeof(void*)
-			&& std::is_trivially_move_constructible<T>::value
-			&& std::is_trivially_copy_constructible<T>::value,
+			&& std::is_trivially_copy_constructible<T>::value
+			&& std::is_trivially_move_constructible<T>::value,
 			T,
 			move_t<T>>
 				::type;
+#endif
+
+		
 	}
 }
 

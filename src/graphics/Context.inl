@@ -78,7 +78,7 @@ namespace re
 				return m_current;
 			}
 
-			uint Context::references() const
+			uint_t Context::references() const
 			{
 				return m_references;
 			}

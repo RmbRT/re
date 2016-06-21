@@ -28,7 +28,7 @@ namespace re
 				REIL Binding &operator=(Binding &&) &;
 				/** @assert
 					The Binding must be empty. */
-				REIL ~Binding();
+				RE_DBG(REIL ~Binding();)
 
 				/** Returns whether the given Handle is bound.
 				@assert
@@ -37,7 +37,7 @@ namespace re
 					The Handle in question. */
 				RECXDA bool bound(handle_t handle) const&;
 				/** Returns whether there is a bound Handle. */
-				RECX bool empty() const&;
+				RECXDA bool empty() const&;
 				/** Binds the given Handle.
 				@assert
 					The given Handle must be valid.

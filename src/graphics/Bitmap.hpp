@@ -44,11 +44,11 @@ namespace re
 			template<Component comp>
 			struct Pixel<Channel::R, comp> { typedef component_t<comp> type; };
 			template<Component comp>
-			struct Pixel<Channel::RG, comp> { typedef math::vec2<component_t<comp>> type; };
+			struct Pixel<Channel::Rg, comp> { typedef math::vec2<component_t<comp>> type; };
 			template<Component comp>
-			struct Pixel<Channel::RGB, comp> { typedef math::vec3<component_t<comp>> type; };
+			struct Pixel<Channel::Rgb, comp> { typedef math::vec3<component_t<comp>> type; };
 			template<Component comp>
-			struct Pixel<Channel::RGBA, comp> { typedef math::vec4<component_t<comp>> type; };
+			struct Pixel<Channel::Rgba, comp> { typedef math::vec4<component_t<comp>> type; };
 
 		}
 
@@ -87,29 +87,29 @@ namespace re
 			void free();
 
 			/** Returns whether the Bitmap contains image data. */
-			RECX bool exists() const;
+			REIL bool exists() const;
 			/** Returns the pixel count of the Bitmap's image data, not the byte count.
 			@assert The Bitmap must exist. */
-			RECXDA uint32_t size() const;
+			REIL uint32_t size() const;
 			/** Returns the Channel of this Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA Channel channel() const;
+			REIL Channel channel() const;
 			/** Returns the Component of this Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA Component component() const;
+			REIL Component component() const;
 
 			/** Returns the pixel of the Bitmap at the given index.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert index must be within the Bitmap's bounds. */
 			template<Channel c, Component co>
-			RECXDA14 pixel_t<c,co> & pixel(uint32_t index);
+			REIL pixel_t<c,co> & pixel(uint32_t index);
 			/** Returns the pixel of the Bitmap at the given index.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert index must be within the Bitmap's bounds. */
 			template<Channel c, Component co>
-			RECXDA pixel_t<c,co> const& pixel(uint32_t index) const;
+			REIL pixel_t<c,co> const& pixel(uint32_t index) const;
 		};
 
 		/** Represents a one dimensional image. */
@@ -140,11 +140,11 @@ namespace re
 			/** Returns the mipmap's pixel at the given index using nearest filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			RECXDA pixel_t<ch,co> const& mip_near(uint32_t index) const;
+			REIL pixel_t<ch,co> const& mip_near(uint32_t index) const;
 			/** Returns the mipmap's pixel at the given index using linear filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			RECXDA pixel_t<ch,co> mip_lin(uint32_t index) const;
+			REIL pixel_t<ch,co> mip_lin(uint32_t index) const;
 		};
 
 		/** Represents a two dimensional image. */
@@ -167,14 +167,14 @@ namespace re
 			@assert The indices must be within the Bitmap's bounds.
 			@see Bitmap::pixel. */
 			template<Channel c, Component co>
-			RECXDA14 pixel_t<c,co> & pixel(uint32_t x, uint32_t y);
+			REIL pixel_t<c,co> & pixel(uint32_t x, uint32_t y);
 			/** Returns the pixel of the Bitmap at the given indices.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert The indices must be within the Bitmap's bounds.
 			@see Bitmap::pixel. */
 			template<Channel c, Component co>
-			RECXDA pixel_t<c,co> const& pixel(uint32_t x, uint32_t y) const;
+			REIL pixel_t<c,co> const& pixel(uint32_t x, uint32_t y) const;
 
 
 			using Bitmap::exists;
@@ -183,7 +183,7 @@ namespace re
 
 			/** Allocates the image data.
 			@see Bitmap::alloc. */
-			REINL void alloc(
+			REIL void alloc(
 				Channel channel,
 				Component component,
 				uint32_t width,
@@ -193,10 +193,10 @@ namespace re
 
 			/** Returns the width of the Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA uint32_t width() const;
+			REIL uint32_t width() const;
 			/** Returns the height of the Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA uint32_t height() const;
+			REIL uint32_t height() const;
 
 			/** Creates a mipmap using nearest filtering.
 			@assert The Bitmap must exist.
@@ -210,11 +210,11 @@ namespace re
 			/** Returns the mipmap's pixel at the given index using nearest filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			RECXDA pixel_t<ch,co> const& mip_near(uint32_t x, uint32_t y) const;
+			REIL pixel_t<ch,co> const& mip_near(uint32_t x, uint32_t y) const;
 			/** Returns the mipmap's pixel at the given index using linear filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			RECXDA pixel_t<ch,co> mip_lin(uint32_t x, uint32_t y) const;
+			REIL pixel_t<ch,co> mip_lin(uint32_t x, uint32_t y) const;
 
 		};
 
@@ -241,14 +241,14 @@ namespace re
 			@assert The indices must be within the Bitmap's bounds.
 			@see Bitmap::pixel. */
 			template<Channel c, Component co>
-			RECXDA14 pixel_t<c,co> & pixel(uint32_t x, uint32_t y, uint32_t z);
+			REIL pixel_t<c,co> & pixel(uint32_t x, uint32_t y, uint32_t z);
 			/** Returns the pixel of the Bitmap at the given indices.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert The indices must be within the Bitmap's bounds.
 			@see Bitmap::pixel. */
 			template<Channel c, Component co>
-			RECXDA pixel_t<c,co> const& pixel(uint32_t x, uint32_t y, uint32_t z) const;
+			REIL pixel_t<c,co> const& pixel(uint32_t x, uint32_t y, uint32_t z) const;
 
 			using Bitmap::exists;
 			using Bitmap::size;
@@ -256,7 +256,7 @@ namespace re
 
 			/** Allocates the image data.
 			@see Bitmap::alloc. */
-			REINL void alloc(
+			REIL void alloc(
 				Channel channel,
 				Component component,
 				uint32_t width,
@@ -267,13 +267,13 @@ namespace re
 
 			/** Returns the width of the Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA uint32_t width() const;
+			REIL uint32_t width() const;
 			/** Returns the height of the Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA uint32_t height() const;
+			REIL uint32_t height() const;
 			/** Returns the depth of the Bitmap.
 			@assert The Bitmap must exist. */
-			RECXDA uint32_t depth() const;
+			REIL uint32_t depth() const;
 
 			/** Creates a mipmap using nearest filtering.
 			@assert The Bitmap must exist.
@@ -287,11 +287,11 @@ namespace re
 			/** Returns the mipmap's pixel at the given index using nearest filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			RECXDA pixel_t<ch,co> const& mip_near(uint32_t x, uint32_t y, uint32_t z) const;
+			REIL pixel_t<ch,co> const& mip_near(uint32_t x, uint32_t y, uint32_t z) const;
 			/** Returns the mipmap's pixel at the given index using linear filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			RECXDA pixel_t<ch,co> mip_lin(uint32_t x, uint32_t y, uint32_t z) const;
+			REIL pixel_t<ch,co> mip_lin(uint32_t x, uint32_t y, uint32_t z) const;
 		};
 	}
 }
