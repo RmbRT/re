@@ -18,6 +18,28 @@ namespace re
 		}
 
 		template<class T>
+		RECX vec2<T>::vec2(vec3<T> const& v):
+			x(v.x),
+			y(v.y)
+		{
+		}
+
+		template<class T>
+		RECX vec2<T>::vec2(vec4<T> const& v):
+			x(v.x),
+			y(v.y)
+		{
+		}
+
+		template<class T>
+		RECX vec3<T>::vec3(vec4<T> const& v):
+			x(v.x),
+			y(v.y),
+			z(v.z)
+		{
+		}
+
+		template<class T>
 		template<class U>
 		RECX vec2<T>::operator vec2<U>() const
 		{

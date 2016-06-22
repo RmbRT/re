@@ -54,6 +54,9 @@ namespace re
 			/** Creates a vector with the given coordinates. */
 			RECX vec2(re::util::copy_arg_t<T> x, re::util::copy_arg_t<T> y);
 
+			RECX vec2(vec3<T> const& v);
+			RECX vec2(vec4<T> const& v);
+
 			template<class U>
 			/** Converts this vector to a vector of the given type. */
 			RECX explicit operator vec2<U>() const;
@@ -136,6 +139,8 @@ namespace re
 			RECX vec3(copy_arg_t<T> x, copy_arg_t<T> y, copy_arg_t<T> z);
 			/** Creates a zero-vector. */
 			RECX vec3();
+
+			RECX vec3(vec4<T> const& v);
 
 			/** Converts this vector to a C-style array. */
 			RECX operator const T*() const;

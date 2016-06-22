@@ -8,11 +8,11 @@
 #include "util/NotNull.hpp"
 #include "util/Delegate.hpp"
 #include "util/Pointer.hpp"
+#include "String.hpp"
 #include <Lock/Lock.hpp>
 
 namespace re
 {
-
 	using re::util::NotNull;
 	using re::util::Delegate;
 	using re::util::Shared;

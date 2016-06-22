@@ -29,7 +29,7 @@ namespace re
 	struct AssetFileHeader
 	{
 		/** The name of the Asset. */
-		string name;
+		Utf8String name;
 		/** The type of the Asset. */
 		AssetType type;
 	};
@@ -38,27 +38,24 @@ namespace re
 	class AssetBase
 	{	friend class Resource;
 		/** The name of the Asset. */
-		string m_name;
+		Utf8String m_name;
 	public:
 		/** Constructs an Asset with the given name and the given type.
 		@param[in] name:
-			The name of the Asset.
-		@param[in] type:
-			The AssetType corresponding to the deriving class. */
-		AssetBase(string name, AssetType type);
-		/** Constructs an unnamed Asset of the given type.
-		@param[in] type:
-			The AssetType corresponding to the deriving class. */
-		AssetBase(AssetType type);
+			The name of the Asset.*/
+		REIL AssetBase(Utf8String name);
+
+		/** Constructs an unnamed asset. */
+		RECX AssetBase();
 
 		AssetBase(AssetBase && move) = default;
 		AssetBase &operator=(AssetBase &&) = default;
 		virtual ~AssetBase() = 0;
 
 		/** @return 	The name of this Asset. */
-		string const& name() const;
+		Utf8String const& name() const;
 		/** Sets the name of this Asset. */
-		void set_name(string const& name);
+		void set_name(Utf8String name);
 		/** Whether this Asset has a name. */
 		bool has_name() const;
 

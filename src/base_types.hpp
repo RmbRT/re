@@ -20,10 +20,6 @@ namespace re
 
 	typedef std::size_t size_t;
 
-	using std::string;
-	using std::u16string;
-	using std::u32string;
-
 	using util::copy_arg_t;
 	using util::move_arg_t;
 }

@@ -10,7 +10,7 @@ namespace re
 		template<class T>
 		struct Ray
 		{
-			Ray(vec3<T> &position, vec3<T> &direction) : position(position), direction(direction) { }
+			Ray(vec3<T> const& position, vec3<T> const& direction) : position(position), direction(direction) { }
 
 			vec3<T> position;
 			vec3<T> direction;
