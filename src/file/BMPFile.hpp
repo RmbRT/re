@@ -16,7 +16,7 @@ namespace re
 			The data contained in the file.
 		@return
 			Whether the file was successfully loaded. */
-		bool loadBMP(char const* filename, Bitmap2D &out);
+		bool load_bmp(char const* filename, Bitmap2D &out);
 	}
 }
 

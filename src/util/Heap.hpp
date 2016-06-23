@@ -23,13 +23,13 @@ namespace re
 	REIL T * alloc(Args && ...);
 
 	template<class T>
-	REIL T * array_alloc(size_t count);
+	REIL T * arrayAlloc(size_t count);
 
 	template<class T>
 	REIL void dealloc(T * ptr);
 
 	template<class T>
-	REIL void array_dealloc(T * ptr);
+	REIL void arrayDealloc(T * ptr);
 
 	namespace util
 	{
@@ -89,7 +89,7 @@ private:
 				The element count of the array.
 			@return
 				The allocated array or null. */
-			REIL T * array_alloc(size_t size);
+			REIL T * arrayAlloc(size_t size);
 
 			/** Whether the memory pool is allocated. */
 			REIL bool exists() const;

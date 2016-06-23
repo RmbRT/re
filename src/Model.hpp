@@ -11,31 +11,33 @@ namespace re
 {
 	class Model
 	{
-		Shared<graphics::Material> material;
-		Shared<graphics::gl::ShaderProgram> shader;
-		Shared<graphics::gl::VertexArrayBase> vertexData;
-		Shared<graphics::gl::Texture> texture;
+		Shared<graphics::Material> m_material;
+		Shared<graphics::gl::ShaderProgram> m_shader;
+		Shared<graphics::gl::VertexArrayBase> m_vertex_data;
+		Shared<graphics::gl::Texture> m_texture;
 	public:
-		Model(strong_handle<graphics::Material> mat, strong_handle<graphics::ShaderProgram> shader, strong_handle<graphics::gl::VertexArrayBase> vertexData, strong_handle<graphics::Texture> texture);
-
-
+		Model(
+			Shared<graphics::Material> mat,
+			Shared<graphics::gl::ShaderProgram> shader,
+			Shared<graphics::gl::VertexArrayBase> vertex_data,
+			Shared<graphics::Texture> texture);
 
 		/** Passes the material properties to the shader. This binds the shader. */
 		void passMaterial() const;
 		/** Draws the VertexData. */
-		void draw(const math::fmat4x4 &mvp) const;
+		void draw(math::fmat4x4 const& mvp) const;
 	
 		/** Returns the BoundingBox of the VertexData. */
-		const math::fAABB &getAABB() const;
+		math::fAABB const& getAABB() const;
 		/** Returns the VertexData of this Model. */
-		strong_handle<graphics::VertexData> getVertexData() const;
-		void setVertexData(strong_handle<graphics::gl::VertexArrayBase> vertexData);
-		strong_handle<graphics::Material> getMaterial() const;
-		void setMaterial(strong_handle<graphics::Material> material);
-		strong_handle<graphics::ShaderProgram> getShader() const;
-		void setShader(strong_handle<graphics::ShaderProgram> shader);
-		strong_handle<graphics::Texture> getTexture() const;
-		void setTexture(strong_handle<graphics::Texture> texture);
+		Shared<graphics::gl::VertexArrayBase> const& vertexData() const&;
+		void setVertexData(Shared<graphics::gl::VertexArrayBase> vertex_data);
+		Shared<graphics::Material> const& material() const;
+		void setMaterial(Shared<graphics::Material> material);
+		Shared<graphics::ShaderProgram> const& shader() const;
+		void setShader(Shared<graphics::gl::ShaderProgram> shader);
+		Shared<graphics::Texture> const& texture() const;
+		void setTexture(Shared<graphics::gl::Texture> texture);
 	};
 }
 

@@ -54,7 +54,7 @@ namespace re
 				move.m_current = nullptr;
 
 				if(current())
-				*m_current->writeLock() = this;
+					*m_current->writeLock() = this;
 
 				return *this;
 			}

@@ -28,7 +28,7 @@ namespace re
 				/** The key. */
 				string m_key;
 				/** Determines what field to use as value. */
-				EntryValue m_value_t;
+				EntryValue m_value_type;
 				/** Compact storage of the parsed value. */
 				union
 				{

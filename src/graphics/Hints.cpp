@@ -14,7 +14,7 @@ namespace re
 			monitor(&monitor)
 		{
 			VideoMode vm;
-			monitor.getCurrentVideoMode(vm);
+			monitor.current_video_mode(vm);
 
 			width = vm.width;
 			height = vm.height;

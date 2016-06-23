@@ -3,7 +3,7 @@
 #include <fstream>
 #include <vector>
 
-namespace re
+namespace file
 {
 	namespace file
 	{
@@ -13,14 +13,14 @@ namespace re
 				m_key(),
 				m_parsed(),
 				m_content(),
-				m_value_t(EntryValue::String)
+				m_value_type(EntryValue::String)
 			{
 			}
 			
 			Entry::Entry(string key, string parsed, string comment):
 				m_key(std::move(key)),
 				m_content(std::move(parsed)),
-				m_value_t(EntryValue::String),
+				m_value_type(EntryValue::String),
 				m_comment(std::move(comment))
 			{
 			}
@@ -28,7 +28,7 @@ namespace re
 			Entry::Entry(string key, string content, string comment, int parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
-				m_value_t(EntryValue::Int),
+				m_value_type(EntryValue::Int),
 				m_comment(std::move(comment))
 			{
 				m_parsed.Int = parsed;
@@ -37,7 +37,7 @@ namespace re
 			Entry::Entry(string key, string content, string comment, float parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
-				m_value_t(EntryValue::Float),
+				m_value_type(EntryValue::Float),
 				m_comment(std::move(comment))
 			{
 				m_parsed.Float = parsed;
@@ -46,7 +46,7 @@ namespace re
 			Entry::Entry(string key, string content, string comment, bool parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
-				m_value_t(EntryValue::Bool),
+				m_value_type(EntryValue::Bool),
 				m_comment(std::move(comment))
 			{
 				m_parsed.Bool = parsed;
@@ -54,15 +54,15 @@ namespace re
 
 			bool Entry::to_float(float &out) const
 			{
-				if(m_value_t == EntryValue::Bool)
+				if(m_value_type == EntryValue::Bool)
 				{
 					out = m_parsed.Bool ? 1.f : 0.f;
 					return true;
-				} else if(m_value_t == EntryValue::Float)
+				} else if(m_value_type == EntryValue::Float)
 				{
 					out = m_parsed.Float;
 					return true;
-				} else if(m_value_t == EntryValue::Int)
+				} else if(m_value_type == EntryValue::Int)
 				{
 					out = m_parsed.Int;
 					return true;
@@ -72,15 +72,15 @@ namespace re
 
 			bool Entry::to_int(int &out) const
 			{
-				if(m_value_t == EntryValue::Bool)
+				if(m_value_type == EntryValue::Bool)
 				{
 					out = m_parsed.Bool ? 1 : 0;
 					return true;
-				} else if(m_value_t == EntryValue::Int)
+				} else if(m_value_type == EntryValue::Int)
 				{
 					out = m_parsed.Int;
 					return true;
-				} else if(m_value_t == EntryValue::Float)
+				} else if(m_value_type == EntryValue::Float)
 				{
 					out = m_parsed.Float;
 					return true;
@@ -89,11 +89,11 @@ namespace re
 			}
 			bool Entry::to_bool(bool &out) const
 			{
-				if(m_value_t == EntryValue::Bool)
+				if(m_value_type == EntryValue::Bool)
 					out = m_parsed.Bool;
-				else if(m_value_t == EntryValue::Float)
+				else if(m_value_type == EntryValue::Float)
 					out = m_parsed.Float;
-				else if(m_value_t == EntryValue::Int)
+				else if(m_value_type == EntryValue::Int)
 					out = m_parsed.Int;
 				else return false;
 
@@ -244,7 +244,7 @@ namespace re
 				Section section;
 				while(int temp = this->section(lines, current_line, section))
 				{
-					if(Section const* sect = findSection(section.name))
+					if(Section const* sect = find_section(section.name))
 					{
 						for(Entry & entry : section.entries)
 						{

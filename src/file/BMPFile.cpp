@@ -18,7 +18,7 @@ namespace re
 			uint16_t m_type; // "BM" (0x42 0x4d, 19778)
 			uint32_t m_size; // size in bytes
 			uint32_t m_reserved; //
-			uint32_t m_offBits; //offset of image data.
+			uint32_t m_off_bits; //offset of image data.
 		};
 
 		struct BitmapInfoHeader
@@ -27,19 +27,19 @@ namespace re
 			int32_t m_width;
 			int32_t m_height;
 			uint16_t m_planes;
-			uint16_t m_bitCount;
+			uint16_t m_bit_count;
 			uint32_t m_compression;
-			uint32_t m_sizeImage;
-			int32_t m_xPelsPerMeter;
-			int32_t m_yPelsPerMeter;
-			uint32_t m_clrUsed;
-			uint32_t m_clrImportant;
+			uint32_t m_size_image;
+			int32_t m_x_pels_per_meter;
+			int32_t m_y_pels_per_meter;
+			uint32_t m_clr_used;
+			uint32_t m_clr_important;
 		};
 
 #define _addr(X) &reinterpret_cast<char&>(X)
 #define _readobj(X) read(_addr(X), sizeof(X))
 
-		bool loadBMP(char const* file, Bitmap2D & out)
+		bool load_bmp(char const* file, Bitmap2D & out)
 		{
 			std::ifstream is(file, std::ios::binary | std::ios::in);
 
@@ -61,13 +61,13 @@ namespace re
 				CRITICAL_DBG_LOG(is._readobj(skip),
 					"skip unused bytes", false);
 
-			CRITICAL_DBG_LOG(header.m_bitCount == 8 || header.m_bitCount >= 24,
+			CRITICAL_DBG_LOG(header.m_bit_count == 8 || header.m_bit_count >= 24,
 				"unsupported bitmap bits", false);
 
 			CRITICAL_DBG_LOG(header.m_compression == Compression::Rgb,
 				"check for supported compression", false);
 
-			switch(header.m_BitCount)
+			switch(header.m_bit_count)
 			{
 			case 8:
 				{
@@ -132,11 +132,11 @@ namespace re
 					size_t const row_w = header.m_width<<2;
 
 					std::vector<ubyte_t> row(row_w);
-					for(size_t y = 0; y < header.m_Height; y++)
+					for(size_t y = 0; y < header.m_height; y++)
 					{
 						CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
 							"read pixel row", false);
-						for(size_t x = 0; x<header.m_Width; x++)
+						for(size_t x = 0; x<header.m_width; x++)
 						{
 							const size_t base_off = x<<2;
 							byte a = row[base_off+3];

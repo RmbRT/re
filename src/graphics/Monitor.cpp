@@ -5,20 +5,24 @@ namespace re
 {
 	namespace graphics
 	{
-		Monitor::Monitor(GLFWmonitor *monitor) : monitor(monitor) { }
-		const char* Monitor::getName() const
+		Monitor::Monitor(GLFWmonitor *monitor):
+			monitor(monitor)
+		{
+		}
+
+		char const* Monitor::name() const
 		{
 			return glfwGetMonitorName(monitor);
 		}
 
-		void Monitor::getVirtualPosition(int *x, int *y) const
+		void Monitor::virtual_position(int *x, int *y) const
 		{
 			glfwGetMonitorPos(monitor, x, y);
 		}
 
-		void Monitor::getCurrentVideoMode(VideoMode *mode) const
+		void Monitor::current_video_mode(VideoMode *mode) const
 		{
-			const auto *vmode = glfwGetVideoMode(monitor);
+			auto const * vmode = glfwGetVideoMode(monitor);
 			mode->width = vmode->width;
 			mode->height = vmode->height;
 			mode->frequency = vmode->refreshRate;

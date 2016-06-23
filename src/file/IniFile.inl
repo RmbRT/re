@@ -6,7 +6,7 @@ namespace re
 		{
 			EntryValue Entry::value_type() const
 			{
-				return m_value_t;
+				return m_value_type;
 			}
 
 			string const& Entry::content() const

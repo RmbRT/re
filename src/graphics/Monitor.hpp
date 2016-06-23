@@ -9,17 +9,12 @@
 
 namespace re
 {
-	namespace modules
-	{
-		/** See ..\modules\MonitorManager.hp. */
-		class MonitorManager;
-	}
 	class Window;
 	namespace graphics
 	{
 		/** Represents a monitor attached to the machine. */
 		class Monitor
-		{	friend class re::modules::MonitorManager;
+		{
 			friend class re::Window;
 			/** The glfw monitor that represents the attached monitor. */
 			GLFWmonitor *monitor;
@@ -31,9 +26,9 @@ namespace re
 			@return
 				The name of the device.
 				! Do not delete / free the memory, it is handled by GLFW. */
-			const char* getName() const;
-			void getVirtualPosition(int *x, int *y) const;
-			void getCurrentVideoMode(VideoMode *mode) const;
+			char const* name() const;
+			void virtual_position(int *x, int *y) const;
+			void current_video_mode(VideoMode * mode) const;
 		};
 		
 	}

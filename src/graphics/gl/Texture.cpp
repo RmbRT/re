@@ -8,7 +8,7 @@ namespace re
 		namespace gl
 		{
 
-			GLenum gl_internalformat(ColorChannel channel)
+			RECXDA GLenum get_internalformat(ColorChannel channel)
 			{
 				static GLenum const k_lookup[] = {
 					GL_RED,
@@ -22,16 +22,17 @@ namespace re
 				};
 
 				RE_DBG_ASSERT(size_t(channel) < _countof(k_lookup));
+				RE_DBG_ASSERT(_countof(k_lookup) == RE_COUNT(ColorChannel));
 
 				return k_lookup[channel];
 			}
 
-			GLenum gl_format(ColorChannel channel)
+			GLenum get_format(ColorChannel channel)
 			{
-				return gl_internalformat(channel);
+				return get_internalformat(channel);
 			}
 
-			GLenum gl_type(ColorChannel channel)
+			GLenum get_type(ColorChannel channel)
 			{
 				static GLenum const lookup[] = {
 					GL_FLOAT,
@@ -125,11 +126,11 @@ namespace re
 				RE_OGL(glTexImage1d(
 					GL_TEXTURE_1D,
 					lod,
-					gl_internalformat(texels.channel()),
+					get_internalformat(texels.channel()),
 					texels.width(),
 					0,
-					gl_format(texels.channel()),
-					gl_type(texels.channel()),
+					get_format(texels.channel()),
+					get_type(texels.channel()),
 					texels.data()));
 			}
 		}
