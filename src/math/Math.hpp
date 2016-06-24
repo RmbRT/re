@@ -9,7 +9,7 @@ namespace re
 	}
 }
 
-#include "..\types.hpp"
+#include "../types.hpp"
 
 #include "Vector.hpp"
 #include "Matrix.hpp"

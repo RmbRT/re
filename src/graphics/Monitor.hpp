@@ -1,10 +1,10 @@
 #ifndef __re_monitor_hpp_defined
 #define __re_monitor_hpp_defined
 
-#include "..\types.hpp"
+#include "../types.hpp"
 #define GLFW_INCLUDE_NONE
-#include <glfw\glfw3.h>
-#include "..\math\Vector.hpp"
+#include <glfw/glfw3.h>
+#include "../math/Vector.hpp"
 #include "VideoMode.hpp"
 
 namespace re

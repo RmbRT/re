@@ -1,5 +1,5 @@
 #include "Renderer.hpp"
-#include "graphics\OpenGL.hpp"
+#include "graphics/OpenGL.hpp"
 #include "Scene.hpp"
 #include "SceneNode.hpp"
 

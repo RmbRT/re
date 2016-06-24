@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(RmbRT_Engine)
 
 # Set the C++ standard used by the RmbRT Engine.
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wfatal-errors")
 
 # Add Lock library include path.
 include_directories(depend/Lock/include)
