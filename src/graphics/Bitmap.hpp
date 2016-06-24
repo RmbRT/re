@@ -10,45 +10,45 @@ namespace re
 	namespace graphics
 	{
 		/** Describes the color channels a Bitmap has. */
-		enum class Channel
+		enum class Channel : ubyte_t
 		{
-			R,
-			Rg,
-			Rgb,
-			Rgba
+			kR,
+			kRg,
+			kRgb,
+			RE_LAST(kRgba)
 		};
 
 		/** Describes the type of the color component a Bitmap has. */
-		enum class Component
+		enum class Component : ubyte_t
 		{
-			Float,
-			Ubyte
+			kFloat,
+			RE_LAST(kUbyte)
 		};
 
 		namespace detail
 		{
-			template<Component c>
+			template<Component kComp>
 			struct ComponentType;
 
 			template<>
-			struct ComponentType<Component::Float> { typedef float type; };
+			struct ComponentType<Component::kFloat> { typedef float type_t; };
 			template<>
-			struct ComponentType<Component::Ubyte> { typedef ubyte_t type; };
+			struct ComponentType<Component::kUbyte> { typedef ubyte_t type_t; };
 
-			template<Component T>
-			using component_t = typename ComponentType<T>::type;
+			template<Component kComp>
+			using component_t = typename ComponentType<kComp>::type_t;
 
-			template<Channel channel, Component comp>
+			template<Channel kChannel, Component kComp>
 			struct Pixel;
 
-			template<Component comp>
-			struct Pixel<Channel::R, comp> { typedef component_t<comp> type; };
-			template<Component comp>
-			struct Pixel<Channel::Rg, comp> { typedef math::vec2<component_t<comp>> type; };
-			template<Component comp>
-			struct Pixel<Channel::Rgb, comp> { typedef math::vec3<component_t<comp>> type; };
-			template<Component comp>
-			struct Pixel<Channel::Rgba, comp> { typedef math::vec4<component_t<comp>> type; };
+			template<Component kComp>
+			struct Pixel<Channel::kR, kComp> { typedef component_t<kComp> type; };
+			template<Component kComp>
+			struct Pixel<Channel::kRg, kComp> { typedef math::vec2<component_t<kComp>> type; };
+			template<Component kComp>
+			struct Pixel<Channel::kRgb, kComp> { typedef math::vec3<component_t<kComp>> type; };
+			template<Component kComp>
+			struct Pixel<Channel::kRgba, kComp> { typedef math::vec4<component_t<kComp>> type; };
 
 		}
 
@@ -65,7 +65,7 @@ namespace re
 			void* m_data;
 		public:
 			/** Constructs a non-allocated Bitmap. */
-			Bitmap();
+			RECX Bitmap();
 			/** Constructs an allocated Bitmap with he given Channel and Component and size.
 			@param[in] channel:
 				The number of channels the Bitmap should have.
@@ -110,6 +110,10 @@ namespace re
 			@assert index must be within the Bitmap's bounds. */
 			template<Channel c, Component co>
 			REIL pixel_t<c,co> const& pixel(uint32_t index) const;
+
+			REIL void * data();
+			REIL void const * data() const;
+			size_t byte_size() const;
 		};
 
 		/** Represents a one dimensional image. */

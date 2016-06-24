@@ -2,6 +2,13 @@ namespace re
 {
 	namespace graphics
 	{
+
+		RECX Bitmap::Bitmap():
+			m_size(0),
+			m_data(0)
+		{
+		}
+
 		bool Bitmap::exists() const
 		{
 			return m_data;
@@ -45,6 +52,16 @@ namespace re
 			RE_DBG_ASSERT(m_component == co);
 
 			return static_cast<pixel_t<c,co> const*>(m_data)[index];
+		}
+
+		void * Bitmap::data()
+		{
+			return m_data;
+		}
+
+		void const * Bitmap::data() const
+		{
+			return m_data;
 		}
 
 		template<Channel ch, Component co>

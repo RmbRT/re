@@ -49,6 +49,19 @@ namespace re
 
 			RECX operator T*() const;
 		};
+
+		template<class T>
+		class Auto<T []> : private Auto<T>
+		{
+		public:
+			Auto() = default;
+			Auto(Auto &&) = default;
+			using Auto<T>::operator T*;
+
+			Auto<T []> &operator=(Auto<T []> &&);
+			Auto(T * ptr);
+			~Auto();
+		};
 	}
 }
 

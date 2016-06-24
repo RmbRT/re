@@ -2,24 +2,27 @@
 #include "LogFile.hpp"
 #include <type_traits>
 
+#define _CADDRESSOF(X) (&reinterpret_cast<char const&>(X))
+#define _ADDRESSOF(X) (&reinterpret_cast<char &>(X))
+
 namespace re
 {
 	void AssetBase::writeAssetFileHeader(std::ofstream &file) const
 	{
 		size_t len = m_name.size() * sizeof(*m_name.data());
-		file.write(_ADDRESSOF(m_type), sizeof(m_type));
-		file.write(_ADDRESSOF(len), sizeof(len));
-		file.write(m_name.data(), len);
+		AssetType const& type = this->type();
+		file.write(_CADDRESSOF(type), sizeof(type));
+		file.write(_CADDRESSOF(len), sizeof(len));
+		file.write(_CADDRESSOF(*m_name.data()), len);
 	}
 
 	bool AssetBase::loadAssetFileHeader(std::ifstream &file, AssetFileHeader &fileHeader)
 	{
 		file.read(_ADDRESSOF(fileHeader.type), sizeof(fileHeader.type));
 		size_t len;
-		file.read((char*)&len, sizeof(len));
+		file.read(_ADDRESSOF(len), sizeof(len));
 		fileHeader.name.resize(len+1);
-		file.read(&fileHeader.name.front(), len);
-		fileHeader.name[len] = '\0';
+		file.read(_ADDRESSOF(*fileHeader.name.data()), len);
 		
 		switch(fileHeader.type)
 		{

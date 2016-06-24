@@ -9,22 +9,57 @@
 
 namespace re
 {
+	/** An asset type that contains a Bitmap. */
 	class BitmapAsset : public AssetBase
 	{	friend class Resource;
-		graphics::Bitmap content;
+		/** The content of the asset. */
+		graphics::Bitmap m_content;
 
-		bool loadFromFile(std::ifstream &file);
-		void writeToFile(std::ofstream &file) const;
+		/** Loads the asset from a file.
+		@param[in] file:
+			The file stream to load the asset from.
+		@return
+			Whether the asset could be successfully loaded. */
+		bool load_from_file(
+			std::ifstream &file);
+		/** Writes the asset to a file.
+		@param[in] file:
+			The file stream to write the asset to. */
+		void write_to_file(
+			std::ofstream &file) const;
 
 	public:
-		BitmapAsset();
-		BitmapAsset(const string &name, const graphics::Bitmap &content);
-		BitmapAsset(const string &name);
-		BitmapAsset(const graphics::Bitmap &content);
-
-		const graphics::Bitmap &getBitmap() const;
-		void setBitmap(const graphics::Bitmap &bitmap);
+		/** Creates a bitmap asset without name or content. */
+		RECX BitmapAsset();
+		/** Creates a bitmap asset with the given name and content.
+		@param[in] name:
+			The name string of the asset.
+		@param[in] content:
+			The bitmap of the asset. */
+		REIL BitmapAsset(
+			Utf8String name,
+			graphics::Bitmap content);
+		/** Creates a bitmap asset with the given name but no content.
+		@param[in] name:
+			The name string of the asset. */
+		REIL BitmapAsset(
+			Utf8String name);
+		/** Creates an unnamed bitmap asset with the given content.
+		@param[in] content:
+			The bitmap of the asset. */
+		REIL BitmapAsset(
+			graphics::Bitmap content);
+		/** @return
+			the bitmap of the asset. */
+		REIL graphics::Bitmap const& bitmap() const;
+		/** Sets the assets bitmap.
+		@param[in] bitmap:
+			The bitmap to be set as this assets content. */
+		REIL void set_bitmap(
+			graphics::Bitmap bitmap);
 	};
 }
+
+#include "BitmapAsset.inl"
 
 #endif

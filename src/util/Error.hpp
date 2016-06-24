@@ -13,21 +13,19 @@ namespace re
 	namespace util
 	{
 		template<class T>
-		using error_t = std::_If<std::is_enum<T>::value,
+		using error_t = typename std::conditional<std::is_enum<T>::value,
 			T,
-			std::_If<std::is_same<T, char const*>::value,
+			typename std::conditional<std::is_same<T, char const*>::value,
 				char const*,
 				bool>::type>::type;
 
 		template<class Enum>
 		bool is_error_impl(Enum value);
-		template<class T>
-		bool is_error(error_t<T> value);
 
-		template<class Enum>
-		bool is_error_impl(Enum value)
+		template<>
+		bool is_error_impl<bool>(bool value)
 		{
-			static_assert(false, "error::is_error not implemented.");
+			return !value;
 		}
 
 		template<class T>
@@ -36,17 +34,8 @@ namespace re
 			return is_error_impl<error_t<T>>(value);
 		}
 
-		template<>
-		bool is_error_impl<bool>(bool value)
-		{
-			return !value;
-		}
-
 		template<class Enum>
-		char const * to_string_impl(Enum error)
-		{
-			static_assert(false, "Error handler error::to_string not implemented.");
-		}
+		char const * to_string_impl(Enum error);
 
 		template<class T>
 		char const * to_string(copy_arg_t<T> error)
@@ -70,8 +59,8 @@ namespace re
 
 #define RE_CHECKED(x, onfail) \
 	do { \
-		auto const& error_code = (x); \
-		if(re::util::is_error(error_code)) \
+		copy_arg_t<decltype((x))> error_code = (x); \
+		if(::re::util::is_error(error_code)) \
 		{ \
 			onfail; \
 		} \

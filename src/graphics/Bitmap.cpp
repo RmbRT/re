@@ -5,12 +5,6 @@ namespace re
 {
 	namespace graphics
 	{
-		Bitmap::Bitmap():
-			m_size(0),
-			m_data(0)
-		{
-		}
-
 		Bitmap::Bitmap(Channel channel, Component component, uint32_t size):
 			m_channel(channel),
 			m_component(component),
@@ -29,6 +23,11 @@ namespace re
 			RE_DBG_ASSERT(size_t(c) < _countof(size));
 
 			return components[ch] * size[c];
+		}
+
+		size_t Bitmap::byte_size() const
+		{
+			return size_of(m_channel, m_component) * m_size;
 		}
 
 		Bitmap::Bitmap(Bitmap const& copy):

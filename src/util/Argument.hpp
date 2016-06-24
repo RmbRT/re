@@ -4,18 +4,16 @@
 #include <type_traits>
 
 
-
 namespace re
 {
 	namespace util
 	{
 		template<class T>
-		using copy_t = typename std::add_lvalue_reference<typename std::add_const<T>::type>::type;
+		using copy_t = T const&;
 		template<class T>
-		using move_t = typename std::add_rvalue_reference<typename std::remove_const<T>::type>::type;
+		using move_t = typename std::remove_const<T>::type &&;
 
-
-#if defined(__GNUC__) && defined(__GNUC__) && __GNUG__ && __GNUC__ < 5
+#if defined(__GNUC__) && (__GNUC__ < 5)
 		// g++ 4.8 does not properly support the type checks, so we have to assume the worst case.
 		template<class T>
 		using copy_arg_t = copy_t<T>;
