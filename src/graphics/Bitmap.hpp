@@ -27,7 +27,7 @@ namespace re
 
 		namespace detail
 		{
-			template<Component kComp>
+			template<Component kComponent>
 			struct ComponentType;
 
 			template<>
@@ -35,49 +35,76 @@ namespace re
 			template<>
 			struct ComponentType<Component::kUbyte> { typedef ubyte_t type_t; };
 
-			template<Component kComp>
-			using component_t = typename ComponentType<kComp>::type_t;
+			template<Component kComponent>
+			using component_t = typename ComponentType<kComponent>::type_t;
 
-			template<Channel kChannel, Component kComp>
+			template<Channel kChannel, Component kComponent>
 			struct Pixel;
 
-			template<Component kComp>
-			struct Pixel<Channel::kR, kComp> { typedef component_t<kComp> type; };
-			template<Component kComp>
-			struct Pixel<Channel::kRg, kComp> { typedef math::vec2<component_t<kComp>> type; };
-			template<Component kComp>
-			struct Pixel<Channel::kRgb, kComp> { typedef math::vec3<component_t<kComp>> type; };
-			template<Component kComp>
-			struct Pixel<Channel::kRgba, kComp> { typedef math::vec4<component_t<kComp>> type; };
+			template<Component kComponent>
+			struct Pixel<Channel::kR, kComponent> { typedef component_t<kComponent> type; };
+			template<Component kComponent>
+			struct Pixel<Channel::kRg, kComponent> { typedef math::vec2<component_t<kComponent>> type; };
+			template<Component kComponent>
+			struct Pixel<Channel::kRgb, kComponent> { typedef math::vec3<component_t<kComponent>> type; };
+			template<Component kComponent>
+			struct Pixel<Channel::kRgba, kComponent> { typedef math::vec4<component_t<kComponent>> type; };
 
 		}
 
-		template<Channel ch, Component co>
-		using pixel_t = typename detail::Pixel<ch,co>::type;
+		template<Channel kChannel, Component kComponent>
+		using pixel_t = typename detail::Pixel<kChannel, kComponent>::type;
 
 		/** Represents an Image. */
 		class Bitmap
 		{
+			/** The channel of the bitmap. */
 			Channel m_channel;
+			/** The component of the bitmap. */
 			Component m_component;
 			/** The count of elements, not bytes. */
 			uint32_t m_size;
+			/** The data buffer. */
 			void* m_data;
 		public:
 			/** Constructs a non-allocated Bitmap. */
 			RECX Bitmap();
-			/** Constructs an allocated Bitmap with he given Channel and Component and size.
+			/** Constructs an allocated Bitmap with the given Channel and Component and size.
 			@param[in] channel:
 				The number of channels the Bitmap should have.
 			@param[in] component:
 				The component type the Bitmap should have.
 			@param[in] size:
 				The pixel count the Bitmap should have. */
-			Bitmap(Channel channel, Component component, uint32_t size);
-			Bitmap(Bitmap const&);
-			Bitmap(Bitmap &&);
-			Bitmap &operator=(Bitmap const&);
-			Bitmap &operator=(Bitmap &&);
+			Bitmap(
+				Channel channel,
+				Component component,
+				uint32_t size);
+			/** Copies a bitmap.
+			@param[in] rhs:
+				The bitmap to copy from. */
+			Bitmap(
+				Bitmap const& rhs);
+			/** Moves a bitmap.
+			@param[in] rhs:
+				The bitmap to move from.
+				Will be invalidated after the call. */
+			Bitmap(
+				Bitmap && rhs);
+			/** Copies a bitmap, freeing the old bitmap, if exists.
+			@param[in] rhs:
+				The bitmap to copy from.
+			@return
+				The bitmap that was copied to. */
+			Bitmap &operator=(
+				Bitmap const& rhs);
+			/** Moves a bitmap freeing the old bitmap, if exists.
+			@param[in] rhs:
+				The bitmap to move from.
+				Will be invalidated after the call.
+			@return
+				The bitmap that was copied to. */
+			Bitmap &operator=(Bitmap && rhs);
 			/** Frees the Bitmap if it was still allocated. */
 			~Bitmap();
 

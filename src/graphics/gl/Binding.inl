@@ -24,12 +24,12 @@ namespace re
 				move.m_bound = 0;
 			}
 
-			RE_DBG(
-				REIL Binding::~Binding()
-				{
-					RE_DBG_ASSERT(!m_bound && "Did not properly unbind item.");
-				}
-			)
+#ifdef RE_DEBUG
+			REIL Binding::~Binding()
+			{
+				RE_DBG_ASSERT(!m_bound && "Did not properly unbind item.");
+			}
+#endif
 
 			RECX bool Binding::bound(handle_t handle) const&
 			{

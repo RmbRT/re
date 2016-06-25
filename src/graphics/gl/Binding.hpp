@@ -2,7 +2,7 @@
 #define __re_graphics_gl_binding_hpp_defined
 
 #include "../../defines.hpp"
-#include "Handle.hpp"
+#include "handle.hpp"
 
 namespace re
 {
@@ -10,55 +10,62 @@ namespace re
 	{
 		namespace gl
 		{
-			/** Represents a Binding slot for Handles. */
+			/** Represents a binding slot for handles. */
 			class Binding
 			{
-				/** The currently bound Handle. */
+				/** The currently bound handle. */
 				handle_t m_bound;
 			public:
-				/** Creates an empty Binding. */
+				/** Creates an empty binding. */
 				RECX Binding();
-				/** Moves ownership of the given Binding. */
-				REIL Binding(Binding &&);
-				/** Moves ownership of the given Binding.
+				/** Moves ownership of the given binding.
+				@param[in] rhs:
+					The binding to move from. */
+				REIL Binding(
+					Binding && rhs);
+				/** Moves ownership of the given binding.
 				@assert
 					The left hand side argument must be empty.
 				@assert
-					Cannot move to self. */
-				REIL Binding &operator=(Binding &&) &;
+					Cannot move to self.
+				@param[in] rhs:
+					The binding to move from. */
+				REIL Binding &operator=(
+					Binding && rhs) &;
 				/** @assert
 					The Binding must be empty. */
-				RE_DBG(REIL ~Binding();)
-
-				/** Returns whether the given Handle is bound.
+				RECXDA ~Binding() RE_RLS(= default);
+				/** Returns whether the given handle is bound.
 				@assert
-					The given Handle must be valid.
+					The given handle must be valid.
 				@param[in] handle:
-					The Handle in question. */
-				RECXDA bool bound(handle_t handle) const&;
-				/** Returns whether there is a bound Handle. */
+					The handle in question. */
+				RECXDA bool bound(
+					handle_t handle) const&;
+				/** Returns whether there is a bound handle. */
 				RECXDA bool empty() const&;
-				/** Binds the given Handle.
+				/** Binds the given handle.
 				@assert
-					The given Handle must be valid.
+					The given handle must be valid.
 				@param[in] handle:
-					The Handle to be bound. */
+					The handle to be bound. */
 				REIL void bind(handle_t handle) &;
-				/** Unbinds the currently bound Handle.
+				/** Unbinds the currently bound handle.
 				@assert
-					There must be a currently bound Handle. */
+					There must be a currently bound handle. */
 				REIL void unbind() &;
-				/** Called before destroying a Handle.
-					If the Handle was bound, unbinds it.
+				/** Called before destroying a handle.
+					If the handle was bound, unbinds it.
 				@assert
-					The Handle must be valid.
+					The handle must be valid.
 				@param[in] handle:
-					The Handle to bedestroyed. */
+					The handle to be destroyed. */
 				REIL void on_invalidate(handle_t handle) &;
 			};
 		}
 	}
 }
+
 #include "Binding.inl"
 
 #endif

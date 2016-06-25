@@ -7,7 +7,7 @@
 
 namespace re
 {
-	void AssetBase::writeAssetFileHeader(std::ofstream &file) const
+	void AssetBase::write_asset_file_header(std::ofstream &file) const
 	{
 		size_t len = m_name.size() * sizeof(*m_name.data());
 		AssetType const& type = this->type();
@@ -16,7 +16,7 @@ namespace re
 		file.write(_CADDRESSOF(*m_name.data()), len);
 	}
 
-	bool AssetBase::loadAssetFileHeader(std::ifstream &file, AssetFileHeader &fileHeader)
+	bool AssetBase::load_asset_write_header(std::ifstream &file, AssetFileHeader &fileHeader)
 	{
 		file.read(_ADDRESSOF(fileHeader.type), sizeof(fileHeader.type));
 		size_t len;

@@ -52,7 +52,7 @@ namespace re
 		AssetBase &operator=(AssetBase &&) = default;
 		virtual ~AssetBase() = 0;
 
-		/** @return 	The name of this Asset. */
+		/** @return The name of this Asset. */
 		Utf8String const& name() const;
 		/** Sets the name of this Asset. */
 		void set_name(Utf8String name);
@@ -63,9 +63,9 @@ namespace re
 		virtual AssetType type() const = 0;
 
 		/** Writes an AssetFileHeader describing this Asset to the given file stream. */
-		void writeAssetFileHeader(std::ofstream &file) const;
+		void write_asset_file_header(std::ofstream &file) const;
 		/** Loads an AssetFileHeader describing this Asset from the given file stream. */
-		static bool loadAssetFileHeader(std::ifstream &file, AssetFileHeader &fileHeader);
+		static bool load_asset_write_header(std::ifstream &file, AssetFileHeader &fileHeader);
 	};
 }
 
