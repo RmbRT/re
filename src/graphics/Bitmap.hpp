@@ -129,14 +129,14 @@ namespace re
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert index must be within the Bitmap's bounds. */
-			template<Channel c, Component co>
-			REIL pixel_t<c,co> & pixel(uint32_t index);
+			template<Channel kChannel, Component kComponent>
+			REIL pixel_t<kChannel,kComponent> & pixel(uint32_t index);
 			/** Returns the pixel of the Bitmap at the given index.
 			@assert The Bitmap must exist.
 			@assert The Bitmap must have the identical Channel and Component.
 			@assert index must be within the Bitmap's bounds. */
-			template<Channel c, Component co>
-			REIL pixel_t<c,co> const& pixel(uint32_t index) const;
+			template<Channel kChannel, Component kComponent>
+			REIL pixel_t<kChannel,kComponent> const& pixel(uint32_t index) const;
 
 			REIL void * data();
 			REIL void const * data() const;
@@ -147,9 +147,12 @@ namespace re
 		class Bitmap1D : Bitmap
 		{
 		public:
-			Bitmap1D() = default;
+			RECX Bitmap1D();
 			/** @see Bitmap::Bitmap. */
-			Bitmap1D(Channel channel, Component component, uint32_t size);
+			Bitmap1D(
+				Channel channel,
+				Component component,
+				uint32_t size);
 
 			using Bitmap::pixel;
 
@@ -158,6 +161,9 @@ namespace re
 			using Bitmap::channel;
 			using Bitmap::alloc;
 			using Bitmap::free;
+			using Bitmap::data;
+			using Bitmap::byte_size;
+			using Bitmap::component;
 
 			/** Creates a mipmap using nearest filtering.
 			@assert The Bitmap must exist.
@@ -171,11 +177,13 @@ namespace re
 			/** Returns the mipmap's pixel at the given index using nearest filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			REIL pixel_t<ch,co> const& mip_near(uint32_t index) const;
+			REIL pixel_t<ch,co> const& mip_near(
+				uint32_t index) const;
 			/** Returns the mipmap's pixel at the given index using linear filtering.
 			@assert The index must be less than half the size of the Bitmap. */
 			template<Channel ch, Component co>
-			REIL pixel_t<ch,co> mip_lin(uint32_t index) const;
+			REIL pixel_t<ch,co> mip_lin(
+				uint32_t index) const;
 		};
 
 		/** Represents a two dimensional image. */
@@ -184,7 +192,7 @@ namespace re
 			uint32_t m_width;
 			uint32_t m_height;
 		public:
-			Bitmap2D() = default;
+			RECX Bitmap2D();
 			/** @see alloc. */
 			Bitmap2D(
 				Channel channel,
@@ -211,6 +219,9 @@ namespace re
 			using Bitmap::exists;
 			using Bitmap::size;
 			using Bitmap::channel;
+			using Bitmap::data;
+			using Bitmap::byte_size;
+			using Bitmap::component;
 
 			/** Allocates the image data.
 			@see Bitmap::alloc. */
@@ -257,7 +268,7 @@ namespace re
 			uint32_t m_depth;
 
 		public:
-			Bitmap3D() = default;
+			RECX Bitmap3D();
 			/** @see alloc. */
 			Bitmap3D(
 				Channel channel,
@@ -284,6 +295,9 @@ namespace re
 			using Bitmap::exists;
 			using Bitmap::size;
 			using Bitmap::channel;
+			using Bitmap::data;
+			using Bitmap::byte_size;
+			using Bitmap::component;
 
 			/** Allocates the image data.
 			@see Bitmap::alloc. */
@@ -327,5 +341,6 @@ namespace re
 	}
 }
 
+#include "Bitmap.inl"
 
 #endif

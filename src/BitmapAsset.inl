@@ -8,14 +8,14 @@ namespace re
 
 	BitmapAsset::BitmapAsset(
 		Utf8String name,
-		graphics::Bitmap content):
+		graphics::Bitmap2D content):
 		m_content(std::move(content)),
 		AssetBase(std::move(name))
 	{
 	}
 
 	BitmapAsset::BitmapAsset(
-		graphics::Bitmap content):
+		graphics::Bitmap2D content):
 		m_content(std::move(content)),
 		AssetBase()
 	{
@@ -28,12 +28,12 @@ namespace re
 	{
 	}
 
-	graphics::Bitmap const& BitmapAsset::bitmap() const
+	graphics::Bitmap2D const& BitmapAsset::bitmap() const
 	{
 		return m_content;
 	}
-	void BitmapAsset::set_bitmap(graphics::Bitmap bitmap)
+	graphics::Bitmap2D &BitmapAsset::bitmap()
 	{
-		m_content = std::move(bitmap);
+		return m_content;
 	}
 }

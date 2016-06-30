@@ -54,8 +54,8 @@ namespace re
 
 		/** @return The name of this Asset. */
 		Utf8String const& name() const;
-		/** Sets the name of this Asset. */
-		void set_name(Utf8String name);
+		/** @return The name of this Asset. */
+		Utf8String & name();
 		/** Whether this Asset has a name. */
 		bool has_name() const;
 
@@ -68,5 +68,7 @@ namespace re
 		static bool load_asset_write_header(std::ifstream &file, AssetFileHeader &fileHeader);
 	};
 }
+
+#include "Asset.inl"
 
 #endif

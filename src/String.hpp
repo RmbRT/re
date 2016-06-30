@@ -21,6 +21,8 @@ namespace re
 	/** String class. To be a replacement for the std::string class, and have some extensions, for example type safe formatting functions. */
 	class String
 	{
+		static C const s_empty;
+
 		/** The character data of the string. */
 		util::Auto<C []> m_data;
 		/** The character count that is currently used. */
@@ -55,7 +57,7 @@ namespace re
 			@assert
 				Must not be this string. */
 		String<C> &operator=(
-			NotNull<C const> * ptr);
+			NotNull<C const> ptr);
 		/** Copies the given string into this string.
 		@param[in] copy:
 			The string to copy from.
@@ -74,12 +76,14 @@ namespace re
 		/** Compares this string to the given string.
 		@param[in] rhs:
 			The string to compare to this string. */
-		bool operator==(String<C> const& rhs) const;
+		bool operator==(
+			String<C> const& rhs) const;
 		/** Compares this string to the given string.
 		@param[in] rhs:
 			The string to compare to this string.
 			The string must be null-terminated. */
-		bool operator==(NotNull<C const> rhs) const;
+		bool operator==(
+			NotNull<C const> rhs) const;
 
 		/** Returns whether the string is empty or uninitialized. */
 		REIL bool empty() const;
@@ -91,18 +95,13 @@ namespace re
 			For UTF-8 strings, this matches the number of unicode code points encoded in the string, and not necessarily the number of elements, so for UTF-8 strings this has linear complexity. For UTF-32 strings this is equivalent to size(). */
 		REIL size_t length() const;
 		/** The string data - might be null. */
-		REIL util::Auto<C []> const& data() const;
+		REIL C const * data() const;
+		REIL C * data();
 		/** The string contents.
 			If the string is null, an empty string is returned.*/
 		REIL NotNull<C const> content() const;
 		/** The number of elements allocated. */
 		REIL size_t capacity() const;
-
-		/** Transforms the string into an upper case string. */
-		String<C> &make_upper();
-
-		/** Transformst the string into a lower case string. */
-		String<C> &make_lower();
 
 		/** Reserves the given count of elements.
 			If the current capacity is greater than the requested capacity, does nothing.

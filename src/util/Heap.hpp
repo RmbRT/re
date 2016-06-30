@@ -23,13 +23,13 @@ namespace re
 	REIL T * alloc(Args && ...);
 
 	template<class T>
-	REIL T * arrayAlloc(size_t count);
+	REIL T * array_alloc(size_t count);
 
 	template<class T>
 	REIL void dealloc(T * ptr);
 
 	template<class T>
-	REIL void arrayDealloc(T * ptr);
+	REIL void array_dealloc(T * ptr);
 
 	namespace util
 	{
@@ -56,7 +56,7 @@ private:
 			/** The first address that is outside the Heap. */
 			REIL uintptr_t end() const;
 			/** In RE_HEAP_DEBUG, checks for valid address position. */
-			REIL bool isValidHeaderAddress(Header const * header) const;
+			REIL bool is_valid_header_address(Header const * header) const;
 		public:
 			/** Unallocated Heap. */
 			Heap();
@@ -89,7 +89,7 @@ private:
 				The element count of the array.
 			@return
 				The allocated array or null. */
-			REIL T * arrayAlloc(size_t size);
+			REIL T * array_alloc(size_t size);
 
 			/** Whether the memory pool is allocated. */
 			REIL bool exists() const;
@@ -103,10 +103,10 @@ private:
 
 
 			/** Returns the Header address that belongs to the beginning of a memory block. */
-			static RECX Header * getHeader(void const * membegin);
+			static RECX Header * get_header(void const * membegin);
 			
 			/** In RE_HEAP_DEBUG, validates the header and its pointers. */
-			REIL void validateHeader(Header const * header) const;
+			REIL void validate_header(Header const * header) const;
 
 			/** The Header structure that describes a block of allocated memory. */
 			struct Header
@@ -143,5 +143,7 @@ private:
 		};
 	}
 }
+
+#include "Heap.inl"
 
 #endif

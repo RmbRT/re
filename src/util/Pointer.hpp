@@ -27,7 +27,7 @@ namespace re
 			Shared &operator=(Shared<T> &&);
 			~Shared();
 
-			RECX operator T*() const;
+			REIL operator T*() const;
 
 			template<class ...Args>
 			Shared<T> alloc(Args && ...);
@@ -38,6 +38,7 @@ namespace re
 			This makes it impossible to copy it, only moving is allowed. */
 		class Auto
 		{
+		protected:
 			T * m_obj;
 		public:
 			Auto();
@@ -47,7 +48,10 @@ namespace re
 			Auto<T> &operator=(T *);
 			~Auto();
 
-			RECX operator T*() const;
+			/** releases the pointer without freeing it. */
+			T * release();
+
+			REIL operator T*() const;
 		};
 
 		template<class T>
@@ -57,12 +61,16 @@ namespace re
 			Auto() = default;
 			Auto(Auto &&) = default;
 			using Auto<T>::operator T*;
+			using Auto<T>::release;
 
 			Auto<T []> &operator=(Auto<T []> &&);
+			Auto<T []> &operator=(T * ptr);
 			Auto(T * ptr);
 			~Auto();
 		};
 	}
 }
+
+#include "Pointer.inl"
 
 #endif

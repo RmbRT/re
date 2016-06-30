@@ -5,15 +5,15 @@ namespace re
 
 	void * malloc(size_t size)
 	{
-		return singleton<util::Heap>().alloc(size);
+		return singleton<util::Heap>().malloc(size);
 	}
 
 	void free(void const * mem)
 	{
 		RE_DBG_ASSERT(mem);
 
-		util::Heap::Header * header = util::Heap::getHeader(mem);
-		header->m_heap->validateHeader(header);
+		util::Heap::Header * header = util::Heap::get_header(mem);
+		header->m_heap->validate_header(header);
 		header->free();
 	}
 
@@ -22,8 +22,8 @@ namespace re
 		RE_DBG_ASSERT(mem);
 		RE_DBG_ASSERT(size);
 
-		util::Heap::Header * header = util::Heap::getHeader(mem);
-		header->m_heap->validateHeader(header);
+		util::Heap::Header * header = util::Heap::get_header(mem);
+		header->m_heap->validate_header(header);
 		return header->resize(size);
 	}
 
@@ -31,23 +31,24 @@ namespace re
 	{
 		RE_DBG_ASSERT(mem);
 
-		util::Heap::Header * header = util::Heap::getHeader(mem);
-		header->m_heap->validateHeader(header);
+		util::Heap::Header * header = util::Heap::get_header(mem);
+		header->m_heap->validate_header(header);
 		return header->realloc(size);
 	}
 
 	template<class T, class ... Args>
 	T * alloc(Args && ... args)
 	{
-		return singleton<Heap>().alloc<T>(std::forward<Args>(args)...);
+		return singleton<util::Heap>().alloc<T>(std::forward<Args>(args)...);
 	}
 
 	template<class T>
 	T * array_alloc(size_t size)
 	{
-		return singleton<Heap>().array_alloc<T>(size);
+		return singleton<util::Heap>().array_alloc<T>(size);
 	}
 
+	template<class T>
 	REIL void dealloc(T * ptr)
 	{
 		RE_DBG_ASSERT(ptr
@@ -57,21 +58,22 @@ namespace re
 		free(ptr);	
 	}
 
+	template<class T>
 	REIL void array_dealloc(T * ptr)
 	{
 		RE_DBG_ASSERT(ptr
 			&& "Tried to delete null pointer.");
 
-		util::Heap::Header * const header = util::Heap::getHeader(ptr);
+		util::Heap::Header * const header = util::Heap::get_header(ptr);
 		RE_DBG_ASSERT(header->m_heap);
-		header->m_heap->validateHeader(header);
+		header->m_heap->validate_header(header);
 
 		RE_DBG_ASSERT(header->m_size % m_size == 0
 			&& "Could not determine array size.");
 
 		size_t const count = header->m_size / sizeof(T);
 		for(size_t i = 0; i < count; i++)
-			ptr[i]->~T();
+			ptr[i].~T();
 		free(ptr);
 	}
 	
@@ -80,10 +82,10 @@ namespace re
 		uintptr_t Heap::end() const
 		{
 			RE_DBG_ASSERT(exists());
-			return uintptr_t(m_pool) + m_size;
+			return uintptr_t(m_pool) + m_capacity;
 		}
 
-		bool Heap::isValidHeaderAddress(Header const * head) const
+		bool Heap::is_valid_header_address(Header const * head) const
 		{
 #ifdef RE_HEAP_DEBUG
 			return head
@@ -95,10 +97,10 @@ namespace re
 #endif
 		}
 
-		void Heap::validateHeader(Header const * head) const
+		void Heap::validate_header(Header const * head) const
 		{
 			#ifdef RE_HEAP_DEBUG
-			RE_ASSERT(isValidHeadAddress(head));
+			RE_ASSERT(is_valid_header_address(head));
 			RE_ASSERT(head->m_magic == heap_magic);
 
 			if(head->m_prev)
@@ -113,9 +115,9 @@ namespace re
 			#endif
 		}
 
-		Header * Heap::getHeader(void const * membegin)
+		RECX Heap::Header * Heap::get_header(void const * membegin)
 		{
-			return static_cast<Header*>(uintptr_t(membegin)) - 1;
+			return reinterpret_cast<Header*>(uintptr_t(membegin)) - 1;
 		}
 
 		template<class T, class ... Args>

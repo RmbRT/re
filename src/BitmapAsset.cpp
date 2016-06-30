@@ -38,7 +38,7 @@ namespace re
 			"check bitmap component value",
 			false);
 
-		m_content.alloc(channel, component, width * height);
+		m_content.alloc(channel, component, width, height);
 
 		file.read((char*)m_content.data(), m_content.byte_size());
 

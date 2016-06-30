@@ -10,18 +10,17 @@ namespace re
 	{
 	}
 
-	Utf8String const& AssetBase::getName() const
+	Utf8String const& AssetBase::name() const
 	{
-		return name;
+		return m_name;
+	}
+	Utf8String & AssetBase::name()
+	{
+		return m_name;
 	}
 
-	REIL void AssetBase::setName(Utf8String name)
+	REIL bool AssetBase::has_name() const
 	{
-		this->name = std::move(name);
-	}
-
-	REIL bool AssetBase::hasName() const
-	{
-		return !name.empty();
+		return !m_name.empty();
 	}
 }

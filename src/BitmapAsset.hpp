@@ -13,7 +13,7 @@ namespace re
 	class BitmapAsset : public AssetBase
 	{	friend class Resource;
 		/** The content of the asset. */
-		graphics::Bitmap m_content;
+		graphics::Bitmap2D m_content;
 
 		/** Loads the asset from a file.
 		@param[in] file:
@@ -38,7 +38,7 @@ namespace re
 			The bitmap of the asset. */
 		REIL BitmapAsset(
 			Utf8String name,
-			graphics::Bitmap content);
+			graphics::Bitmap2D content);
 		/** Creates a bitmap asset with the given name but no content.
 		@param[in] name:
 			The name string of the asset. */
@@ -48,15 +48,11 @@ namespace re
 		@param[in] content:
 			The bitmap of the asset. */
 		REIL BitmapAsset(
-			graphics::Bitmap content);
+			graphics::Bitmap2D content);
 		/** @return
 			the bitmap of the asset. */
-		REIL graphics::Bitmap const& bitmap() const;
-		/** Sets the assets bitmap.
-		@param[in] bitmap:
-			The bitmap to be set as this assets content. */
-		REIL void set_bitmap(
-			graphics::Bitmap bitmap);
+		REIL graphics::Bitmap2D const& bitmap() const;
+		REIL graphics::Bitmap2D & bitmap();
 	};
 }
 

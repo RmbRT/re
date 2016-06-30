@@ -3,13 +3,13 @@ namespace re
 	namespace util
 	{
 		template<class T>
-		Shared<T>::Shared() :
+		RECX Shared<T>::Shared() :
 			m_obj(nullptr)
 		{
 		}
 
 		template<class T>
-		Shared<T>::Shared(nullptr_t):
+		RECX Shared<T>::Shared(nullptr_t):
 			m_obj(nullptr)
 		{
 		}
@@ -31,9 +31,9 @@ namespace re
 
 		template<class T>
 		Shared<T>::Shared(Shared<T> && move):
-			m_obj(copy.m_obj)
+			m_obj(move.m_obj)
 		{
-			copy.m_obj = nullptr;
+			move.m_obj = nullptr;
 		}
 
 		template<class T>
@@ -63,7 +63,7 @@ namespace re
 		}
 
 		template<class T>
-		Shared<T>::unref()
+		void Shared<T>::unref()
 		{
 			if(m_obj)
 			{
@@ -147,6 +147,14 @@ namespace re
 				dealloc(m_obj);
 		}
 
+		template<class T>
+		T * Auto<T>::release()
+		{
+			T * value = m_obj;
+			m_obj = nullptr;
+			return value;
+		}
+
 
 		template<class T>
 		Auto<T[]>::Auto(T * ptr):
@@ -162,31 +170,30 @@ namespace re
 
 
 		template<class T>
-		Auto<T[]> &Auto<T[]>::operator=(Auto<T[]> && move)
+		Auto<T []> &Auto<T []>::operator=(Auto<T []> && move)
 		{
 			RE_DBG_ASSERT(&move != this
 				&& "tried to move to self.");
 
-			if(m_obj)
-				array_dealloc(m_obj);
+			if(this->m_obj)
+				array_dealloc(this->m_obj);
 
-			m_obj = move.m_obj;
+			this->m_obj = move.m_obj;
 			move.m_obj = nullptr;
 
 			return *this;
 		}
 
 		template<class T>
-		Auto<T[]> &Auto<T[]>::operator=(T * ptr)
+		Auto<T []> &Auto<T []>::operator=(T * ptr)
 		{
 			RE_DBG_ASSERT(!m_obj || m_obj != ptr
 				&& "cannot reassign the same pointer value!");
 
-			if(m_obj)
-				array_dealloc(m_obj);
+			if(this->m_obj)
+				array_dealloc(this->m_obj);
 
-			m_obj = move.m_obj;
-			move.m_obj = nullptr;
+			this->m_obj = ptr;
 
 			return *this;
 		}
@@ -194,8 +201,8 @@ namespace re
 		template<class T>
 		Auto<T[]>::~Auto()
 		{
-			if(m_obj)
-				array_dealloc(m_obj), m_obj = nullptr;
+			if(this->m_obj)
+				array_dealloc(this->m_obj), this->m_obj = nullptr;
 		}
 	}
 }
