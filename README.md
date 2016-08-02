@@ -16,6 +16,7 @@ Now navigate into the newly created folder `re/` and execute:
 
 `
 git submodule init depend/*
+
 git submodule update
 `
 
@@ -44,7 +45,7 @@ This will generate a Doxygen documentation in `re/html`.
 
 The RmbRT Engine depends on certain libraries, which can be found in `re/depend/`, namely:
 * **GLFW**: The RmbRT Engine comes with its own copy of the [GLFW](https://github.com/glfw/glfw.git) source code, to ensure more portability.
-* **Lock**: The thread safety library ['Lock'](https://github.com/RmbRT/Lock.git) is also included.
+* **Lock**: The thread safety library [Lock](https://github.com/RmbRT/Lock.git) is also included.
 
 #### RmbRT Engine
 
