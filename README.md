@@ -8,32 +8,27 @@
 
 Make sure to have git installed on your machine. Now select the folder you want to download the RmbRT Engine to and execute:
 
-`
-git clone https://github.com/RmbRT/re.git
-`
+`git clone https://github.com/RmbRT/re.git`
 
 Now navigate into the newly created folder `re/` and execute:
 
-`
+```
 git submodule init depend/*
 
 git submodule update
-`
+```
 
 ### CMake
+
 Clone the repository, go into the `re/` folder, make sure CMake is installed, and execute:
 
-`
-cmake .
-`
+`cmake .`
 
 This creates project files (or makefiles, depending on your machine), which you can use to compile the RmbRT Engine. Also copies all header files of the RmbRT Engine to `re/include/re/`, so that you can use the directory `re/include/` as include directory for your project that uses the RmbRT Engine.
 ### Doxygen
 You have to have Doxygen installed. Now go to `re/`, and execute:
 
-`
-doxygen Doxyfile
-`
+`doxygen Doxyfile`
 
 This will generate a Doxygen documentation in `re/html`.
 
@@ -61,7 +56,7 @@ You are currently reading the readme file `re/README.md`.
 
 ### Doxygen Doxyfile
 
-A Doxyfile can be found in `re/doxygen/`. It is set to generate a HTML documentation in `re/doxygen/html/` per default. Please note that in order to reduce the size of the repository, the documentation is not part of it. This means you will have to install Doxygen on your machine and generate the documentation yourself. For this, see the [Doxygen installation section](#doxygen).
+A Doxyfile can be found in `re/`. It is set to generate a HTML documentation in `re/html/` per default. Please note that in order to reduce the size of the repository, the documentation is not part of it. This means you will have to install Doxygen on your machine and generate the documentation yourself. For this, see the [Doxygen installation section](#doxygen).
 
 ### CMake CMakeLists.txt
 
