@@ -1,0 +1,6 @@
+[submodule "depend/Lock"]
+	path = depend/Lock
+	url = https://github.com/RmbRT/Lock.git
+[submodule "depend/glfw"]
+	path = depend/glfw
+	url = https://github.com/glfw/glfw.git
