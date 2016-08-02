@@ -22,3 +22,5 @@ target_link_libraries(re glfw ${GLFW_LIBRARIES})
 # Creates an include directory containing all header files used in the RmbRT Engine.
 # Add /re/include/ to your include directories and access the files via #include <re/*>
 file(COPY "src/" DESTINATION "include/re/" FILES_MATCHING PATTERN "*.hpp" PATTERN "*.inl")
+file(COPY "depend/glfw/include/" DESTINATION "include/")
+file(COPY "depend/Lock/include/" DESTINATION "include/")
