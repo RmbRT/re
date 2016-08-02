@@ -12,6 +12,13 @@ Make sure to have git installed on your machine. Now select the folder you want 
 git clone https://github.com/RmbRT/re.git
 `
 
+Now navigate into the newly created folder `re/` and execute:
+
+`
+git submodule init depend/*
+git submodule update
+`
+
 ### CMake
 Clone the repository, go into the `re/` folder, make sure CMake is installed, and execute:
 
