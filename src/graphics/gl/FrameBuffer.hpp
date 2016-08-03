@@ -19,9 +19,9 @@ namespace re
 			class FrameBuffer : Handle
 			{
 				/** The FrameBuffer currently used for read operations. */
-				static Binding bound_read;
+				static Binding s_bound_read;
 				/** The FrameBuffer currently used for write operations. */
-				static Binding bound_write;
+				static Binding s_bound_write;
 				
 				/** @{
 					The bounds of the FrameBuffer. */

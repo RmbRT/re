@@ -11,10 +11,10 @@ namespace re
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting frame buffer!");
 
-				if(bound_read != handle())
+				if(s_bound_read != handle())
 				{
 					RE_OGL(glBindFramebuffer(GL_READ_FRAMEBUFFER, handle()));
-					bound_read = handle();
+					s_bound_read = handle();
 				}
 			}
 
@@ -22,10 +22,10 @@ namespace re
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting frame buffer!");
 
-				if(bound_write != handle())
+				if(s_bound_write != handle())
 				{
 					RE_OGL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, handle()));
-					bound_write = handle();
+					s_bound_write = handle();
 				}
 			}
 
@@ -33,37 +33,37 @@ namespace re
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting frame buffer!");
 
-				if(bound_read != handle() || bound_write != handle())
+				if(s_bound_read != handle() || s_bound_write != handle())
 				{
 					RE_OGL(glBindFramebuffer(GL_FRAMEBUFFER, handle()));
-					bound_read = bound_write = handle();
+					s_bound_read = s_bound_write = handle();
 				}
 			}
 
 			void FrameBuffer::unbind_read()
 			{
-				if(bound_read)
+				if(s_bound_read)
 				{
 					RE_OGL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
-					bound_read = 0;
+					s_bound_read = 0;
 				}
 			}
 
 			void FrameBuffer::unbind_write()
 			{
-				if(bound_write)
+				if(s_bound_write)
 				{
 					RE_OGL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
-					bound_write = 0;
+					s_bound_write = 0;
 				}
 			}
 
 			void FrameBuffer::unbind_both()
 			{
-				if(bound_read || bound_write)
+				if(s_bound_read || s_bound_write)
 				{
 					RE_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-					bound_read = bound_write = 0;
+					s_bound_read = s_bound_write = 0;
 				}
 			}
 
@@ -100,10 +100,10 @@ namespace re
 						"Tried to destroy frame buffer with depth stencil attachment!");
 
 					handles[i] = objects[i].handle();
-					if(bound_read == objects[i].handle())
-						bound_read = 0;
-					if(bound_write == objects[i].handle())
-						bound_write = 0;
+					if(s_bound_read == objects[i].handle())
+						s_bound_read = 0;
+					if(s_bound_write == objects[i].handle())
+						s_bound_write = 0;
 					objects[i].null_handle();
 				}
 
@@ -195,6 +195,8 @@ namespace re
 			{
 				RE_DBG_ASSERT(!has_color() &&
 					"Frame buffer had a color attachment already!");
+				RE_DBG_ASSERT(color.exists() &&
+					"Texture must be valid.");
 
 				m_color = std::move(color);
 				bind_write();
@@ -205,6 +207,7 @@ namespace re
 			{
 				RE_DBG_ASSERT(has_color() &&
 					"Frame buffer has no color attachment!");
+
 				bind_write();
 				RE_OGL(glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0));
 				
@@ -215,10 +218,12 @@ namespace re
 			{
 				RE_DBG_ASSERT(!has_depth() &&
 					"Frame buffer had a depth attachment already!");
+				RE_DBG_ASSERT(depth.exists() &&
+					"The render buffer must be valid.");
 
 				m_depth = std::move(depth);
 				bind_write();
-				RE_OGL(glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth.handle(), 0));
+				RE_OGL(glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_depth.handle(), 0));
 			}
 
 			void FrameBuffer::detach_depth(RenderBuffer & out)
@@ -258,7 +263,7 @@ namespace re
 
 				m_depth_stencil = std::move(depth_stencil);
 				bind_write();
-				RE_OGL(glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depth_stencil.handle(), 0));
+				RE_OGL(glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, m_depth_stencil.handle(), 0));
 			}
 
 			void FrameBuffer::detach_depth_stencil(RenderBuffer & out)

@@ -24,12 +24,22 @@ namespace re
 				return m_type;
 			}
 
+			Texture1D::Texture1D():
+				Texture(TextureType::k1D)
+			{
+			}
+
 			uint_t Texture1D::size() const
 			{
 				RE_DBG_ASSERT(exists() &&
 					"Texture must exist.");
 
 				return m_size;
+			}
+
+			Texture2D::Texture2D():
+				Texture(TextureType::k2D)
+			{
 			}
 
 			uint_t Texture2D::width() const

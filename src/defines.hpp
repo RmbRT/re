@@ -1,7 +1,7 @@
 #ifndef __re_defines_hpp_defined
 #define __re_defines_hpp_defined
 
-#if defined(_DEBUG) || defined(QT_QML_DEBUG)
+#if defined(_DEBUG) || defined(QT_QML_DEBUG) || defined(DEBUG)
 /** Defined when in debug mode. */
 #define RE_DEBUG
 #endif
@@ -34,6 +34,7 @@
 
 #define RE_LAST(Enumerator) Enumerator,  __re_last_field = Enumerator
 #define RE_COUNT(Enum) size_t(Enum::__re_last_field)
+#define RE_IN_ENUM(Constant, Enum) (size_t(Constant) < RE_COUNT(Enum))
 
 /** Constexpr with debug assertions. */
 #define RECXDA RE_SWITCH(REIL,RECX)

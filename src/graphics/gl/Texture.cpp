@@ -22,9 +22,9 @@ namespace re
 				};
 
 				RE_DBG_ASSERT(size_t(channel) < _countof(k_lookup));
-				RE_DBG_ASSERT(_countof(k_lookup) == RE_COUNT(ColorChannel));
+				static_assert(_countof(k_lookup) == RE_COUNT(ColorChannel), "invalid sized lookup table.");
 
-				return k_lookup[channel];
+				return k_lookup[(size_t)channel];
 			}
 
 			GLenum get_format(ColorChannel channel)
@@ -34,7 +34,7 @@ namespace re
 
 			GLenum get_type(ColorChannel channel)
 			{
-				static GLenum const lookup[] = {
+				static GLenum const k_lookup[] = {
 					GL_FLOAT,
 					GL_FLOAT,
 					GL_FLOAT,
@@ -45,12 +45,15 @@ namespace re
 					GL_UNSIGNED BYTE
 				};
 
-				RE_DBG_ASSERT(size_t(channel) < _countof(lookup));
+				RE_DBG_ASSERT(size_t(channel) < _countof(k_lookup));
+				static_assert(_countof(k_lookup) == RE_COUNT(ColorChannel), "invalid sized lookup table.");
 
-				return lookup[channel];
+				return k_lookup[(size_t)channel];
 			}
 
-			void Texture::alloc(Texture ** textures, size_t count)
+			void Texture::alloc(
+				Texture ** textures,
+				size_t count)
 			{
 				RE_DBG_ASSERT(textures);
 
@@ -76,6 +79,8 @@ namespace re
 				{
 					RE_DBG_ASSERT(textures[i]);
 					RE_DBG_ASSERT(textures[i]->exists());
+					RE_DBG_ASSERT(RE_IN_ENUM(textures[i]->type(), TextureType));
+
 					handles[i] = textures[i]->handle();
 
 					s_binding[size_t(textures[i]->type())].on_invalidate(texures[i]->handle());
@@ -87,6 +92,7 @@ namespace re
 			void Texture::bind()
 			{
 				RE_DBG_ASSERT(exists());
+				RE_DBG_ASSERT(RE_IN_ENUM(type(), TextureType));
 
 				if(!bound())
 				{
@@ -112,12 +118,7 @@ namespace re
 				}
 			}
 
-			Texture1D::Texture1D():
-				Texture(TextureType::Texture1D)
-			{
-			}
-
-			void Texture1D::set_texels(Bitmap const& texels, uitn lod)
+			void Texture1D::set_texels(Bitmap const& texels, uint_t lod)
 			{
 				RE_DBG_ASSERT(exists());
 

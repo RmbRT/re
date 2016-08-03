@@ -29,10 +29,12 @@ namespace re
 			}
 
 			
-			RE_DBG(Handle::~Handle()
+#ifdef RE_DEBUG
+			Handle::~Handle()
 			{
 				RE_DBG_ASSERT(!exists() && "Handle was not properly cleaned up.");
-			})
+			}
+#endif
 
 			
 			RECXDA bool Handle::exists() const

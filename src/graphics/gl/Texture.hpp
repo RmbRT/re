@@ -17,26 +17,35 @@ namespace re
 			/** Represents a deriving class of Texture. */
 			enum class TextureType
 			{
-				Texture1D,
-				Texture2D,
-				Texture3D,
-				Texture2DMultisample,
-				Texture1DArray,
-				Texture2DArray,
-				Texture2DMultisampleArray,
-				TextureRectangle,
-				TextureCubeMap,
-				TextureCubeMapArray,
-				RE_LAST(TextureBuffer)
+				k1D,
+				k2D,
+				k3D,
+				k2DMultisample,
+				k1DArray,
+				k2DArray,
+				k2DMultisampleArray,
+				kRectangle,
+				kCubeMap,
+				kCubeMapArray,
+				RE_LAST(kBuffer)
 			};
 
-			/** The Texture base class. */
+			/** The Texture base class.
+				Textures must be allocated and destroyed manually. This is done via calling `Texture::alloc()` and `Texture::destroy()`. */
 			class Texture : protected Handle
 			{
+				/** The currently bound textures.
+					This is used to reduce the overhead of the `bind()` and `unbind()` functions. */
 				static Binding s_binding[RE_COUNT(TextureType)];
 
+				/** The type of the texture.
+					This is already defined by the deriving type, but was chosen instead of a virtual getter function. */
 				TextureType m_type;
-				REIL Texture(TextureType);
+				/** Creates an unallocated texture with of the given type.
+				@param[in] type:
+					The type of the texture. */
+				RECX Texture(
+					TextureType type);
 			private:
 				/** Whether the Texture is bound.
 				@assert The Texture must exist. */
@@ -53,17 +62,19 @@ namespace re
 				
 
 				/** Allocates the given Textures.
+				@assert
+					None of the addresses may be null.
+					None of the given Textures may exist yet.
 				@param[in] textures:
 					The addresses of the Textures to be allocated.
 				@param[in] count:
 					How many Textures to allocate.
-				@important
-					None of the addresses may be null.
-					None of the given Textures may exist yet.
 				@sideeffect
 					Allocates the Handle held by each passed Texture.
-				@see util::allocation_buffer. */
-				static void alloc(Texture ** textures, size_t count);
+				@see `util::allocation_buffer()`. */
+				static void alloc(
+					Texture ** textures,
+					size_t count);
 				/** Destroys the given Textures.
 				@param[in] textures:
 					The addresses of the Textures to be destroyed.
@@ -75,10 +86,12 @@ namespace re
 				@sideeffect
 					Destroys the Handle held by each passed Texture.
 					Unbinds a bound Texture when it is destroyed.
-				@see util::allocation_buffer. */
-				static void destroy(Texture ** textures, size_t count);
+				@see `util::allocation_buffer()`. */
+				static void destroy(
+					Texture ** textures,
+					size_t count);
 
-				/** Binds the Texture. */
+				/** Binds the Texture to make it usable. */
 				void bind();
 			};
 
@@ -86,7 +99,7 @@ namespace re
 			{
 				uint_t m_size;
 			public:
-				Texture1D();
+				RECX Texture1D();
 				Texture1D(Texture1D &&) = default;
 				Texture1D &operator=(Texture1D &&) = default;
 
@@ -94,9 +107,17 @@ namespace re
 				@assert The Texture must exist. */
 				REIL uint_t size() const;
 
-				/** Resizes the Texture to match the size of the given Bitmap, and sets the given Bitmap as image. */
+				/** Resizes the Texture to match the size of the given Bitmap, and sets the given Bitmap as image of the requested mipmap level.
+				@assert
+					The texture must exist.
+				@param[in] texels:
+					The image data to set.
+				@param[in] lod:
+					The mipmap level to set. 0 for the base image. */
 				void set_texels(Bitmap const& texels, uint_t lod);
-				/** Resizes the Texture to the given size. */
+				/** Resizes the Texture to the given size.
+				@assert
+					The texture must exist. */
 				void resize(uint_t size);
 
 				/** Unbinds the currently bound Texture1D, if any. */
@@ -109,7 +130,7 @@ namespace re
 					m_width,
 					m_height;
 			public:
-				Texture2D();
+				RECX Texture2D();
 				Texture2D(Texture2D &&) = default;
 				Texture2D &operator=(Texture2D &&) = default;
 
@@ -131,7 +152,7 @@ namespace re
 					m_height,
 					m_depth;
 			public:
-				Texture3D();
+				RECX Texture3D();
 				Texture3D(Texture3D &&) = default;
 				Texture3D &operator=(Texture3D &&) = default;
 
@@ -156,7 +177,7 @@ namespace re
 					m_height,
 					m_samples;
 			public:
-				Texture2DMultisample();
+				RECX Texture2DMultisample();
 				Texture2DMultisample(Texture2DMultisample &&) = default;
 				Texture2DMultisample &operator=(Texture2DMultisample &&) = default;
 
@@ -180,7 +201,7 @@ namespace re
 					m_size,
 					m_layers;
 			public:
-				Texture1DArray();
+				RECX Texture1DArray();
 				Texture1DArray(Texture1DArray &&) = default;
 				Texture1DArray &operator=(Texture1DArray &&) = default;
 
@@ -197,7 +218,7 @@ namespace re
 					m_height,
 					m_layers;
 			public:
-				Texture2DArray();
+				RECX Texture2DArray();
 				Texture2DArray(Texture2DArray &&) = default;
 				Texture2DArray &operator=(Texture2DArray &&) = default;
 				
@@ -217,7 +238,7 @@ namespace re
 					m_samples,
 					m_layers;
 			public:
-				Texture2DMultisampleArray();
+				RECX Texture2DMultisampleArray();
 				Texture2DMultisampleArray(Texture2DMultisampleArray &&) = default;
 				Texture2DMultisampleArray &operator=(Texture2DMultisampleArray &&) = default;
 
@@ -235,7 +256,7 @@ namespace re
 					m_width,
 					m_height;
 			public:
-				TextureRectangle();
+				RECX TextureRectangle();
 				TextureRectangle(TextureRectangle &&) = default;
 				TextureRectangle &operator=(TextureRectangle &&) = default;
 
