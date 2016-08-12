@@ -6,6 +6,8 @@ namespace re
 {
 	namespace graphics
 	{
+		lock::ThreadSafe<Context *> Context::s_current_contex(nullptr);
+		
 		void Context::make_current()
 		{
 			if(current())

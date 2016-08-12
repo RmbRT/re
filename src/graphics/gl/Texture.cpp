@@ -1,5 +1,6 @@
 #include "Texture.hpp"
 #include "OpenGL.hpp"
+#include "../../util/Lookup.hpp"
 
 namespace re
 {
@@ -8,47 +9,34 @@ namespace re
 		namespace gl
 		{
 
-			RECXDA GLenum get_internalformat(ColorChannel channel)
+			RECXDA GLenum get_internalformat(
+				graphics::Channel channel)
 			{
-				static GLenum const k_lookup[] = {
-					GL_RED,
-					GL_RG,
-					GL_RGB,
-					GL_RGBA,
-					GL_RED,
-					GL_RG,
-					GL_RGB,
-					GL_RGBA
+				static util::Lookup<Channel, GLenum> const k_lookup = {
+					{Channel::kR, GL_RED},
+					{Channel::kRg, GL_RG},
+					{Channel::kRgb, GL_RGB},
+					{Channel::kRgba, GL_RGBA}
 				};
 
-				RE_DBG_ASSERT(size_t(channel) < _countof(k_lookup));
-				static_assert(_countof(k_lookup) == RE_COUNT(ColorChannel), "invalid sized lookup table.");
-
-				return k_lookup[(size_t)channel];
+				return k_lookup[channel];
 			}
 
-			GLenum get_format(ColorChannel channel)
+			RECXDA GLenum get_format(
+				Channel channel)
 			{
 				return get_internalformat(channel);
 			}
 
-			GLenum get_type(ColorChannel channel)
+			GLenum get_type(
+				Component component)
 			{
-				static GLenum const k_lookup[] = {
-					GL_FLOAT,
-					GL_FLOAT,
-					GL_FLOAT,
-					GL_FLOAT,
-					GL_UNSIGNED BYTE,
-					GL_UNSIGNED BYTE,
-					GL_UNSIGNED BYTE,
-					GL_UNSIGNED BYTE
+				static util::Lookup<Component, GLenum> const k_lookup = {
+					{Component::kFloat, GL_FLOAT},
+					{Component::kUbyte, GL_UNSIGNED_BYTE}
 				};
 
-				RE_DBG_ASSERT(size_t(channel) < _countof(k_lookup));
-				static_assert(_countof(k_lookup) == RE_COUNT(ColorChannel), "invalid sized lookup table.");
-
-				return k_lookup[(size_t)channel];
+				return k_lookup[component];
 			}
 
 			void Texture::alloc(
@@ -69,7 +57,9 @@ namespace re
 				}
 			}
 
-			void Texture::destroy(Texture ** textures, size_t count)
+			void Texture::destroy(
+				Texture ** textures,
+				size_t count)
 			{
 				RE_DBG_ASSERT(textures);
 
@@ -83,42 +73,64 @@ namespace re
 
 					handles[i] = textures[i]->handle();
 
-					s_binding[size_t(textures[i]->type())].on_invalidate(texures[i]->handle());
+					s_binding[textures[i]->type()].on_invalidate(texures[i]->handle());
 				}
 
 				RE_OGL(glDeleteTextures(count, handles));
 			}
 
+			void Texture::set_mag_filter(
+				TextureMagFilter filter)
+			{
+				RE_DBG_ASSERT(exists());
+
+				static util::Lookup<TextureMagFilter, GLenum> const k_lookup = {
+					{TextureMagFilter::kNearest, GL_NEAREST},
+					{TextureMagFilter::kLinear, GL_LINEAR}
+				};
+
+				RE_OGL(glTexParameteri(
+					GL_TEXTURE_MAG_FILTER,
+					k_lookup[filter]));
+			}
+
+			void Texture::generate_mipmaps()
+			{
+				RE_DBG_ASSERT(exists());
+				
+				bind();
+				RE_OGL(glGenMipmaps1D
+			}
+
 			void Texture::bind()
 			{
 				RE_DBG_ASSERT(exists());
-				RE_DBG_ASSERT(RE_IN_ENUM(type(), TextureType));
 
 				if(!bound())
 				{
-					binding[size_t(type())].bind(handle());
+					s_binding[type()].bind(handle());
 
-					static GLenum const targets = {
-						GL_TEXTURE_1D,
-						GL_TEXTURE_2D,
-						GL_TEXTURE_3D,
-						GL_TEXTURE_2D_MULTISAMPLE,
-						GL_TEXTURE_1D_ARRAY,
-						GL_TEXTURE_2D_ARRAY,
-						GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
-						GL_TEXTURE_RECTANGLE,
-						GL_TEXTURE_CUBE_MAP,
-						GL_TEXTURE_CUBE_MAP_ARRAY,
-						GL_TEXTURE_BUFFER
+					static util::Lookup<TextureType, GLenum> const k_targets = {
+						{TextureType::k1D, GL_TEXTURE_1D},
+						{TextureType::k2D, GL_TEXTURE_2D},
+						{TextureType::k3D, GL_TEXTURE_3D},
+						{TextureType::k2DMultisample, GL_TEXTURE_2D_MULTISAMPLE},
+						{TextureType::k1DArray, GL_TEXTURE_1D_ARRAY},
+						{TextureType::k2DArray, GL_TEXTURE_2D_ARRAY},
+						{TextureType::k2DMultisampleArray, GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
+						{TextureType::kRectangle, GL_TEXTURE_RECTANGLE},
+						{TextureType::kCubeMap, GL_TEXTURE_CUBE_MAP,
+						{TextureType::kCubeMapArray, GL_TEXTURE_CUBE_MAP_ARRAY},
+						{TextureType::kBuffer, GL_TEXTURE_BUFFER}
 					};
 
-					RE_DBG_ASSERT(size_t(type()) < _countof(targets));
-
-					RE_OGL(glBindTexture(targets[size_t(type)], handle()));
+					RE_OGL(glBindTexture(k_targets[type()], handle()));
 				}
 			}
 
-			void Texture1D::set_texels(Bitmap const& texels, uint_t lod)
+			void Texture1D::set_texels(
+				Bitmap1D const& texels,
+				uint_t lod)
 			{
 				RE_DBG_ASSERT(exists());
 
@@ -131,8 +143,133 @@ namespace re
 					texels.width(),
 					0,
 					get_format(texels.channel()),
-					get_type(texels.channel()),
+					get_type(texels.component()),
 					texels.data()));
+			}
+
+			uint_t Texture1D::set_texels_mipmap(
+				Bitmap1D const& base_texels,
+				MipmapFilter filter)
+			{
+				RE_DBG_ASSERT(RE_IN_ENUM(filter, MipmapFilter));
+				RE_DBG_ASSERT(base_texels.exists());
+
+				set_texels(base_texels, 0);
+				Bitmap1D mip;
+				if(base_texels.size() > 1)
+				{
+					mip = (filter == MipmapFilter::kNearest)
+						? base_texels.mipmap_near()
+						: base_texels.mipmap_lin();
+					set_texels(mip, 1);
+
+					uint_t lod = 1;
+					while(mip.size() > 1)
+					{
+						mip = (filter == MipmapFilter::kNearest)
+							? mip.mipmap_near()
+							: mip.mipmap_lin();
+						set_texels(mip, ++lod);
+					}
+
+					return lod;
+				} else
+					return 0;
+			}
+
+			void Texture1D::resize(
+				uint_t size,
+				Channel channel,
+				Component component)
+			{
+				RE_DBG_ASSERT(exists());
+
+				bind();
+
+				RE_OGL(glTexImage1d(
+					GL_TEXTURE_1D,
+					0,
+					get_internalformat(channel),
+					size,
+					0,
+					get_format(channel),
+					get_type(component),
+					nullptr));
+			}
+
+			void Texture2D::set_texels(
+				Bitma const& texels,
+				uint_t lod)
+			{
+				RE_DBG_ASSERT(exists());
+
+				bind();
+
+				RE_OGL(glTexImage2d(
+					GL_TEXTURE_2D,
+					lod,
+					get_internalformat(texels.channel()),
+					texels.width(),
+					texels.height(),
+					0,
+					get_format(texels.channel()),
+					get_type(texels.component()),
+					texels.data()));
+			}
+
+			void Texture2D::resize(
+				uint_t width,
+				uint_t height,
+				Channel channel,
+				Component component)
+			{
+				RE_DBG_ASSERT(exists());
+
+				bind();
+
+				RE_OGL(glTexImage2d(
+					GL_TEXTURE_2D,
+					0,
+					get_internalformat(ch),
+					width,
+					height,
+					0,
+					get_format(ch),
+					get_type(co),
+					nullptr));
+			}
+
+			void Texture2D::set_texels_mipmap(
+				Bitmap2D const& base_texels,
+				MipmapFilter filter)
+			{
+				RE_DBG_ASSERT(exists());
+				RE_DBG_ASSERT(base_texels.exists());
+				RE_DBG_ASSERT(RE_IN_ENUM(filter, MipmapFilter));
+
+				bind();
+
+				set_texels(base_texels, 0);
+				Bitmap2D mip;
+				if(base_texels.size() > 1)
+				{
+					mip = (filter == MipmapFilter::kNearest)
+						? base_texels.mipmap_near()
+						: base_texels.mipmap_lin();
+					set_texels(mip, 1);
+
+					uint_t lod = 1;
+					while(mip.size() > 1)
+					{
+						mip = (filter == MipmapFilter::kNearest)
+							? mip.mipmap_near()
+							: mip.mipmap_lin();
+						set_texels(mip, ++lod);
+					}
+
+					set_
+				} else
+					return 0;
 			}
 		}
 	}
