@@ -11,7 +11,6 @@ namespace re
 {
 	namespace graphics
 	{
-		class Window;
 		/** Used to keep track of how many Windows are sharing a Context. */
 		class ContextReferenceCounter
 		{
@@ -27,7 +26,7 @@ namespace re
 			/** Points to the current Context of this thread. */
 			thread_local static lock::ThreadSafe<Context *> s_current_context;
 			/** If this Context is current, points to the pointer pointing to this Context. */
-			lock::ThreadSafe<Context *> * m_current_thread;
+			lock::ThreadSafe<Context const *> * m_current_thread;
 			/** The API Version of this Context.
 				This may not be equal to the requested Version. */
 			Version m_version;
@@ -47,16 +46,23 @@ namespace re
 			REIL virtual ~Context() = 0;
 
 			/** Returns the version of the Context. */
-			RECX Version const& version() const;
+			REIL Version const& version() const;
 			/** Whether the Context is current in the active thread. */
-			RECX bool current() const;
+			REIL bool current() const;
 			/** Returns how many Windows reference this Context. */
-			RECX uint_t references() const;
+			REIL uint_t references() const;
 
-			RECX ContextHints const& hints() const;
+			REIL ContextHints const& hints() const;
+
+			/** Returns whether a context with a version >= the requested version is active. */
+			REIL static bool require_version(
+				Version const& minimum);
+			/** Returns whether a context is active. */
+			REIL static bool require();
 		};
 	}
 }
 
+#include "Context.inl"
 
 #endif

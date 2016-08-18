@@ -20,7 +20,7 @@ namespace re
 				context.make_current();
 			}
 			
-			Context::Context(Version const& version):
+			RECX Context::Context(Version const& version):
 				m_current_thread(nullptr),
 				m_version(version),
 				m_references(0)
@@ -37,10 +37,10 @@ namespace re
 					&& "Tried to move referenced Context.");
 
 				if(move.current())
-					tlsm_current = this;
+					*lock::write_lock(s_current_context) = this;
 
 				move.m_version = Version(0,0);
-				move.m_current_thread = 0;
+				move.m_current_thread = nullptr;
 			}
 
 			Context &operator=(Context && move)
@@ -50,11 +50,11 @@ namespace re
 
 				m_version = move.m_version;
 				move.m_version = Version(0,0);
-				m_current = move.m_current;
-				move.m_current = nullptr;
+				m_current_thread = move.m_current;
+				move.m_current_thread = nullptr;
 
 				if(current())
-					*m_current->writeLock() = this;
+					*lock::write_lock(s_current_context) = this;
 
 				return *this;
 			}
@@ -64,7 +64,7 @@ namespace re
 				if(valid())
 				{
 					if(current())
-						*m_current = nullptr;
+						*lock::write_lock(m_current_thread) = nullptr;
 				}
 			}
 
@@ -75,12 +75,24 @@ namespace re
 
 			bool Context::current() const
 			{
-				return m_current;
+				return m_current_thread;
 			}
 
 			uint_t Context::references() const
 			{
 				return m_references;
+			}
+
+			bool Context::require_version(
+				Version const& minimum)
+			{
+				auto lock = lock::read_lock(s_current_context);
+				return *lock && (*lock)->version() >= minimum;
+			}
+
+			bool Context::require()
+			{
+				return *lock::read_lock(s_current_context);
 			}
 		}
 	}

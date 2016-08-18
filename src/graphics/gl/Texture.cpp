@@ -39,6 +39,29 @@ namespace re
 				return k_lookup[component];
 			}
 
+			RECXDA GLenum get_target(
+				TextureType type)
+			{
+				RE_DBG_ASSERT(RE_IN_ENUM(type, Texturetype));
+
+
+				static util::Lookup<TextureType, GLenum> const k_targets = {
+					{TextureType::k1D, GL_TEXTURE_1D},
+					{TextureType::k2D, GL_TEXTURE_2D},
+					{TextureType::k3D, GL_TEXTURE_3D},
+					{TextureType::k2DMultisample, GL_TEXTURE_2D_MULTISAMPLE},
+					{TextureType::k1DArray, GL_TEXTURE_1D_ARRAY},
+					{TextureType::k2DArray, GL_TEXTURE_2D_ARRAY},
+					{TextureType::k2DMultisampleArray, GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
+					{TextureType::kRectangle, GL_TEXTURE_RECTANGLE},
+					{TextureType::kCubeMap, GL_TEXTURE_CUBE_MAP,
+					{TextureType::kCubeMapArray, GL_TEXTURE_CUBE_MAP_ARRAY},
+					{TextureType::kBuffer, GL_TEXTURE_BUFFER}
+				};
+
+				return k_targets[type];
+			}
+
 			void Texture::alloc(
 				Texture ** textures,
 				size_t count)
@@ -89,42 +112,50 @@ namespace re
 					{TextureMagFilter::kLinear, GL_LINEAR}
 				};
 
-				RE_OGL(glTexParameteri(
-					GL_TEXTURE_MAG_FILTER,
-					k_lookup[filter]));
+				bind();
+
+				RE_OGL(glTexParameteri(GL_TEXTURE_MAG_FILTER, k_lookup[filter]));
+			}
+
+			void Texture::set_min_filter(
+				TextureMinFilter filter)
+			{
+				RE_DBG_ASSERT(exists());
+
+				static util::Lookup<TextureMinFilter, GLenum> const k_lookup = {
+					{ TextureMinFilter::kNearest, GL_NEAREST },
+					{ TextureMinFilter::kLinear, GL_LINEAR },
+					{ TextureMinFilter::kNearestMipmapNearest, GL_NEAREST_MIPMAP_NEAREST },
+					{ TextureMinFilter::kNearestMipmapLinear, GL_NEAREST_MIPMAP_LINEAR },
+					{ TextureMinFilter::kLinearMipmapNearest, GL_LINEAR_MIPMAP_NEAREST },
+					{ TextureMinFilter::kLinearMipmapLinear, GL_LINEAR_MIPMAP_LINEAR }
+				};
+
+				bind();
+
+				RE_OGL(glTexParameteri(GL_TEXTURE_MIN_FILTER, k_lookup[filter]));
 			}
 
 			void Texture::generate_mipmaps()
 			{
 				RE_DBG_ASSERT(exists());
-				
+				RE_DBG_ASSERT(Context::require_version(Version(3,0)));
+
 				bind();
-				RE_OGL(glGenMipmaps1D
+				RE_OGL(glGenerateMipmap(get_target(type())));
 			}
 
 			void Texture::bind()
 			{
 				RE_DBG_ASSERT(exists());
+				RE_DBG_ASSERT(graphics::Context::require());
 
 				if(!bound())
 				{
 					s_binding[type()].bind(handle());
 
-					static util::Lookup<TextureType, GLenum> const k_targets = {
-						{TextureType::k1D, GL_TEXTURE_1D},
-						{TextureType::k2D, GL_TEXTURE_2D},
-						{TextureType::k3D, GL_TEXTURE_3D},
-						{TextureType::k2DMultisample, GL_TEXTURE_2D_MULTISAMPLE},
-						{TextureType::k1DArray, GL_TEXTURE_1D_ARRAY},
-						{TextureType::k2DArray, GL_TEXTURE_2D_ARRAY},
-						{TextureType::k2DMultisampleArray, GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
-						{TextureType::kRectangle, GL_TEXTURE_RECTANGLE},
-						{TextureType::kCubeMap, GL_TEXTURE_CUBE_MAP,
-						{TextureType::kCubeMapArray, GL_TEXTURE_CUBE_MAP_ARRAY},
-						{TextureType::kBuffer, GL_TEXTURE_BUFFER}
-					};
 
-					RE_OGL(glBindTexture(k_targets[type()], handle()));
+					RE_OGL(glBindTexture(get_target(type()), handle()));
 				}
 			}
 
@@ -198,7 +229,7 @@ namespace re
 			}
 
 			void Texture2D::set_texels(
-				Bitma const& texels,
+				Bitmap2D const& texels,
 				uint_t lod)
 			{
 				RE_DBG_ASSERT(exists());
@@ -267,7 +298,7 @@ namespace re
 						set_texels(mip, ++lod);
 					}
 
-					set_
+					return lod;
 				} else
 					return 0;
 			}
