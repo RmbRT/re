@@ -1,20 +1,25 @@
 #include "VertexArray.hpp"
 #include "OpenGL.hpp"
 
+#include "../../util/Lookup.hpp"
+
 namespace re
 {
 	namespace graphics
 	{
 		namespace gl
 		{
-			VertexArrayBase::VertexArrayBase(BufferAccess access, BufferUsage usage):
+			VertexArrayBase::VertexArrayBase(
+				BufferAccess access,
+				BufferUsage usage):
 				Handle(),
 				m_vertex(BufferType::VertexData, access, usage),
 				m_index(BufferType::IndexData, access, usage),
 				m_index_used(false)
 			{
 			}
-			VertexArrayBase::VertexArrayBase(VertexArrayBase && move):
+			VertexArrayBase::VertexArrayBase(
+				VertexArrayBase && move):
 				Handle(std::move(move)),
 				m_vertex(std::move(move.m_vertex)),
 				m_index(std::move(move.m_index)),
@@ -22,7 +27,8 @@ namespace re
 			{
 			}
 
-			VertexArrayBase &VertexArrayBase::operator=(VertexArrayBase && move)
+			VertexArrayBase &VertexArrayBase::operator=(
+				VertexArrayBase && move)
 			{
 				if(this != &move)
 				{
@@ -45,15 +51,19 @@ namespace re
 				}
 			}
 
-			void VertexArrayBase::alloc_handles(handle_t * handles, size_t count)
+			void VertexArrayBase::alloc_handles(
+				handle_t * handles,
+				size_t count)
 			{
 				RE_OGL(glGenVertexArrays(count, handles));
 			}
 
-			void VertexArrayBase::alloc(VertexArrayBase * arrays, size_t count)
+			void VertexArrayBase::alloc(
+				VertexArrayBase * arrays,
+				size_t count)
 			{
 				handle_t * buffer = allocation_buffer(count);
-				
+
 				alloc_handles(buffer, count);
 
 				for(size_t i = count; i--;)
@@ -79,7 +89,9 @@ namespace re
 				}
 			}
 
-			void VertexArrayBase::destroy_handles(handle_t * handles, size_t count)
+			void VertexArrayBase::destroy_handles(
+				handle_t * handles,
+				size_t count)
 			{
 				for(size_t i = count; i--;)
 					RE_DBG_ASSERT(handles[i] != 0
@@ -87,7 +99,10 @@ namespace re
 
 				RE_OGL(glDeleteVertexArrays(count, handles));
 			}
-			void VertexArrayBase::destroy(VertexArrayBase * arrays, size_t count)
+
+			void VertexArrayBase::destroy(
+				VertexArrayBase * arrays,
+				size_t count)
 			{
 				handle_t * const buffers = allocation_buffer(count << 1);
 				for(size_t i = count; i--;)
@@ -124,10 +139,10 @@ namespace re
 				size_t element_count,
 				size_t type_size)
 			{
-				static GLenum const k_type_lookup[] =
+				static util::Lookup<ElementType, GLenum> const k_type_lookup =
 				{
-					GL_FLOAT,
-					GL_DOUBLE
+					{ ElementType::Float, GL_FLOAT },
+					{ ElementType::Double, GL_DOUBLE }
 				};
 
 				bind();
@@ -138,7 +153,7 @@ namespace re
 					RE_OGL(glVertexAttribPointer(
 						i,
 						vertexType[i].elements,
-						k_type_lookup[size_t(vertexType[i].type)],
+						k_type_lookup[vertexType[i].type],
 						false,
 						type_size,
 						(void const*)vertexType[i].offset));
@@ -151,7 +166,9 @@ namespace re
 					size_t type_size,
 					RenderMode render_mode)
 			{
+				RE_DBG_ASSERT(exists());
 				m_vertex.data(vertex_data, vertices, type_size);
+				m_index.
 				m_index_used = false;
 				m_render_mode = render_mode;
 			}
@@ -164,6 +181,7 @@ namespace re
 					uint32_t const * index_data,
 					size_t indices)
 			{
+				RE_DBG_ASSERT(exists());
 				m_vertex.data(vertex_data, vertices, type_size);
 				m_index.data(index_data, indices, sizeof(index_data[0]));
 				m_index_used = true;
@@ -172,14 +190,14 @@ namespace re
 
 			void VertexArrayBase::draw(size_t count, size_t start)
 			{
-				static GLenum const k_rendermode_lookup[] =
+				static Lookup<RenderMode, GLenum> const k_rendermode_lookup[] =
 				{
-					GL_LINE_STRIP,
-					GL_LINES,
-					GL_TRIANGLES,
-					GL_TRIANGLE_STRIP,
-					GL_POINTS,
-					GL_TRIANGLE_FAN
+					{ RenderMode::Linestrip, GL_LINE_STRIP },
+					{ RenderMode::Lines, GL_LINES },
+					{ RenderMode::Triangles, GL_TRIANGLES },
+					{ RenderMode::TriangleStrip, GL_TRIANGLE_STRIP },
+					{ RenderMode::Points, GL_POINTS },
+					{ RenderMode::TriangleFan, GL_TRIANGLE_FAN }
 				};
 
 				RE_DBG_ASSERT(size_t(m_render_mode) < _countof(k_rendermode_lookup));
@@ -187,7 +205,7 @@ namespace re
 				GLenum mode = k_rendermode_lookup[size_t(m_render_mode)];
 
 				bind();
-				
+
 				if(m_index_used)
 				{
 					m_index.bind();

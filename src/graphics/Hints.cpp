@@ -48,11 +48,5 @@ namespace re
 			samples(samples)
 		{
 		}
-
-		ContextHints::ContextHints():
-			version(0,0),
-			profile(OpenGLProfile::Any)
-		{
-		}
 	}
 }

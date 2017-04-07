@@ -11,10 +11,10 @@ namespace re
 
 				RE_DBG_ASSERT(size_t(m_type) < _countof(s_binding));
 
-				return s_binding[size_t(m_type)].bound(handle());
+				return s_binding[m_type].bound(handle());
 			}
 
-			REIL Texture::Texture(TextureType type):
+			RECX Texture::Texture(TextureType type):
 				m_type(type)
 			{
 			}
@@ -24,9 +24,15 @@ namespace re
 				return m_type;
 			}
 
-			Texture1D::Texture1D():
-				Texture(TextureType::k1D)
+			RECX Texture1D::Texture1D():
+				Texture(TextureType::k1D),
+				m_size()
 			{
+			}
+
+			REIL bool Texture1D::available()
+			{
+				return Context::require();
 			}
 
 			uint_t Texture1D::size() const
@@ -37,9 +43,16 @@ namespace re
 				return m_size;
 			}
 
-			Texture2D::Texture2D():
-				Texture(TextureType::k2D)
+			RECX Texture2D::Texture2D():
+				Texture(TextureType::k2D),
+				m_width(),
+				m_height()
 			{
+			}
+
+			REIL bool Texture2D::available()
+			{
+				return Context::require();
 			}
 
 			uint_t Texture2D::width() const

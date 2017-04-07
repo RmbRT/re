@@ -31,6 +31,6 @@ namespace re
 	}
 }
 
-
+#include "Version.inl"
 
 #endif

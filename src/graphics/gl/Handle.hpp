@@ -13,7 +13,7 @@ namespace re
 			/** The type used by OpenGL to store object handles. */
 			typedef uint_t handle_t;
 
-			
+
 			/** Represents a handle to a resource managed by OpenGL.
 			Does not support copy operations.
 			When assigning, the destination Handle must not exist already.
@@ -42,9 +42,11 @@ namespace re
 				REIL void null_handle();
 
 				/** Returns whether a Handle exists / was allocated. */
-				RECXDA bool exists() const;
+				RECX bool exists() const;
 
-				/** Returns the handle to this Handle. */
+				/** Returns the handle to this Handle.
+				@assert
+					The handle must exist. */
 				RECXDA handle_t handle() const;
 			};
 		}

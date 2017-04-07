@@ -69,7 +69,7 @@ namespace re
 			{
 				if(!m_obj->unreference())
 				{
-					m_obj->~T();
+					m_obj->get().~T();
 					re::free(m_obj);
 				}
 			}
@@ -82,9 +82,9 @@ namespace re
 		}
 
 		template<class T>
-		Shared<T>::operator T*() const
+		T* Shared<T>::operator->() const
 		{
-			return m_obj ? m_obj->get() : nullptr;
+			return m_obj ? &m_obj->get() : nullptr;
 		}
 
 		template<class T>
@@ -92,6 +92,12 @@ namespace re
 		Shared<T> Shared<T>::alloc(Args && ... args)
 		{
 			return *(new RefCount<T>(std::forward<Args>(args)...));
+		}
+
+		template<class T>
+		RECX Shared<T>::operator bool() const
+		{
+			return m_obj != nullptr;
 		}
 
 		template<class T>
@@ -155,19 +161,17 @@ namespace re
 			return value;
 		}
 
+		template<class T>
+		T* Auto<T>::operator->() const
+		{
+			return m_obj;
+		}
 
 		template<class T>
 		Auto<T[]>::Auto(T * ptr):
 			Auto<T>(ptr)
 		{
 		}
-
-		template<class T>
-		Auto<T>::operator T*() const
-		{
-			return m_obj;
-		}
-
 
 		template<class T>
 		Auto<T []> &Auto<T []>::operator=(Auto<T []> && move)
@@ -202,7 +206,23 @@ namespace re
 		Auto<T[]>::~Auto()
 		{
 			if(this->m_obj)
-				array_dealloc(this->m_obj), this->m_obj = nullptr;
+			{
+				array_dealloc(this->m_obj);
+				this->m_obj = nullptr;
+			}
+		}
+
+		template<class T>
+		REIL T const& Auto<T []>::operator[](size_t i) const
+		{
+			RE_DBG_ASSERT(m_obj != nullptr);
+			return m_obj[i];
+		}
+		template<class T>
+		REIL T &Auto<T []>::operator[](size_t i)
+		{
+			RE_DBG_ASSERT(m_obj != nullptr);
+			return m_obj[i];
 		}
 	}
 }

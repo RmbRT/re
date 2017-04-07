@@ -9,9 +9,9 @@ namespace re
 	{
 		struct Material
 		{
-			math::fvec3 ambient;
-			math::fvec3 diffuse;
-			math::fvec3 specular;
+			math::fvec3_t ambient;
+			math::fvec3_t diffuse;
+			math::fvec3_t specular;
 			float shininess;
 		};
 	}

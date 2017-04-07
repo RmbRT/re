@@ -1,6 +1,7 @@
 #ifndef __re_util_pointer_hpp_defined
 #define __re_util_pointer_hpp_defined
 
+#include "../defines.hpp"
 #include "../base_types.hpp"
 #include "RefCount.hpp"
 #include "Heap.hpp"
@@ -27,7 +28,8 @@ namespace re
 			Shared &operator=(Shared<T> &&);
 			~Shared();
 
-			REIL operator T*() const;
+			REIL T* operator->() const;
+			RECX operator bool() const;
 
 			template<class ...Args>
 			Shared<T> alloc(Args && ...);
@@ -48,25 +50,32 @@ namespace re
 			Auto<T> &operator=(T *);
 			~Auto();
 
-			/** releases the pointer without freeing it. */
+			/** Releases the pointer without freeing it.
+				This resets the pointer to null.
+			@return
+				The address previously held by the pointer. */
 			T * release();
 
-			REIL operator T*() const;
+			REIL T* operator->() const;
 		};
 
 		template<class T>
 		class Auto<T []> : private Auto<T>
 		{
+			using Auto<T>::m_obj;
 		public:
 			Auto() = default;
 			Auto(Auto &&) = default;
-			using Auto<T>::operator T*;
+			using Auto<T>::operator->;
 			using Auto<T>::release;
 
 			Auto<T []> &operator=(Auto<T []> &&);
 			Auto<T []> &operator=(T * ptr);
 			Auto(T * ptr);
 			~Auto();
+
+			REIL T const& operator[](size_t i) const;
+			REIL T &operator[](size_t i);
 		};
 	}
 }

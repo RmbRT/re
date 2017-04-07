@@ -3,7 +3,7 @@
 #include <fstream>
 #include <vector>
 
-namespace file
+namespace re
 {
 	namespace file
 	{
@@ -16,8 +16,8 @@ namespace file
 				m_value_type(EntryValue::String)
 			{
 			}
-			
-			Entry::Entry(string key, string parsed, string comment):
+
+			Entry::Entry(string8_t key, string8_t parsed, string8_t comment):
 				m_key(std::move(key)),
 				m_content(std::move(parsed)),
 				m_value_type(EntryValue::String),
@@ -25,7 +25,7 @@ namespace file
 			{
 			}
 
-			Entry::Entry(string key, string content, string comment, int parsed):
+			Entry::Entry(string8_t key, string8_t content, string8_t comment, int parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
 				m_value_type(EntryValue::Int),
@@ -34,7 +34,7 @@ namespace file
 				m_parsed.Int = parsed;
 			}
 
-			Entry::Entry(string key, string content, string comment, float parsed):
+			Entry::Entry(string8_t key, string8_t content, string8_t comment, float parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
 				m_value_type(EntryValue::Float),
@@ -43,7 +43,7 @@ namespace file
 				m_parsed.Float = parsed;
 			}
 
-			Entry::Entry(string key, string content, string comment, bool parsed):
+			Entry::Entry(string8_t key, string8_t content, string8_t comment, bool parsed):
 				m_key(std::move(key)),
 				m_content(std::move(content)),
 				m_value_type(EntryValue::Bool),
@@ -102,16 +102,16 @@ namespace file
 
 			Entry * Section::find_entry(char const * name)
 			{
-				for(auto &entry : m_entries)
-					if(entry.key() == name)
+				for(auto &entry : entries)
+					if(entry.key() == util::notNull(name))
 						return &entry;
 				return nullptr;
 			}
 
 			Entry const* Section::find_entry(char const * name) const
 			{
-				for(auto const& entry : m_entries)
-					if(entry.key() == name)
+				for(auto const& entry : entries)
+					if(entry.key() == (utf8_t const*) name)
 						return &entry;
 				return nullptr;
 			}
@@ -119,26 +119,27 @@ namespace file
 			// Entry end.
 			// IniFile start.
 
-			int IniFile::comment(const std::vector<string> &lines, const int current_line, string &out)
+			int IniFile::comment(const std::vector<string8_t> &lines, const int current_line, string8_t &out)
 			{
 				int line = current_line;
 				if(line >= lines.size())
 					return 0;
 				char buf[2048] = { 0 };
-				
+
 				while(lines[line].empty())
 					line++;
-				
+
 				if(line >= lines.size())
 					return 0;
+
 				if(sscanf(lines[line++].c_str(), ";%s", buf))
 				{
-					out = buf;
+					out = (utf8_t*)buf;
 					return line-current_line;
 				}
 				else return 0;
 			}
-			int IniFile::section(const std::vector<string> &lines, const int current_line, Section &out)
+			int IniFile::section(const std::vector<string8_t> &lines, const int current_line, Section &out)
 			{
 				int line = current_line;
 				char buf[2048] = { 0 };
@@ -147,14 +148,14 @@ namespace file
 					return 0;
 				while(lines[line].empty())
 					line++;
-				string comment;
+				string8_t comment;
 				out.comment.clear();
 				while(int temp = this->comment(lines, line, comment))
 				{
 					out.comment += comment;
 					line += temp;
 				}
-				
+
 				if(line >= lines.size())
 					return 0;
 				if(!sscanf(lines[line++].c_str(), "[%[^]]]", buf))
@@ -175,18 +176,18 @@ namespace file
 			}
 
 
-			int IniFile::entry(std::vector<string> const& lines, const int current_line, Entry &out)
+			int IniFile::entry(std::vector<string8_t> const& lines, const int current_line, Entry &out)
 			{
 				int line = current_line;
-				string out_comment;
+				string8_t out_comment;
 
 				if(line >= lines.size())
 					return 0;
 				while(lines[line].empty())
 					line++;
 
-				
-				string comment;
+
+				string8_t comment;
 				while(int temp = this->comment(lines, line, comment))
 				{
 					out_comment += comment;
@@ -194,11 +195,13 @@ namespace file
 				}
 
 
-				char name[2048] = { 0 }, value[2048] = { 0 };
-				
+				std::vector<char> name(2048), value(2048);
+
+				name[0] = value[0] = '\0';
+
 				if(line >= lines.size())
 					return 0;
-				if(2 != sscanf(lines[line++].c_str(), "%[^=]=%s", name, value))
+				if(2 != sscanf(lines[line++].c_str(), "%[^=]=%s", name.data(), value.data()))
 					return 0;
 				else
 				{
@@ -208,16 +211,16 @@ namespace file
 						bool Bool;
 					};
 
-					if(sscanf(value, "%i", &Int))
-						out = Entry(name, value, Int);
-					else if(sscanf(value, "%f", &Float))
-						out = Entry(name, value, Float);
+					if(sscanf(value.data(), "%i", &Int))
+						out = Entry(name.data(), value.data(), comment, Int);
+					else if(sscanf(value.data(), "%f", &Float))
+						out = Entry(name.data(), value.data(), comment, Float);
 					else if(!strcmp(value, "true") || !strcmp(value, "yes"))
-						out = Entry(name, value, true);
+						out = Entry(name.data(), value.data(), comment, true);
 					else if(!strcmp(value, "false") || !strcmp(value, "no"))
-						out = Entry(name, value, false);
+						out = Entry(name.data(), value.data(), comment, false);
 					else
-						out = Entry(name, value);
+						out = Entry(name.data(), value.data(), comment);
 
 					return line-current_line;
 				}
@@ -225,9 +228,9 @@ namespace file
 
 			bool IniFile::load(char const * filename)
 			{
-				std::vector<string> lines;
+				std::vector<string8_t> lines;
 				std::ifstream file(filename, std::ios::in);
-				string line;
+				string8_t line;
 
 				while(std::getline(file, line))
 					lines.push_back(line);
@@ -264,7 +267,7 @@ namespace file
 				return current_line == lines.size();
 			}
 
-			Section * IniFile::find_section(string const& name)
+			Section * IniFile::find_section(string8_t const& name)
 			{
 				if(name.empty())
 					return &m_unnamed_section;
@@ -274,7 +277,7 @@ namespace file
 				return nullptr;
 			}
 
-			Section const* IniFile::find_section(string const& name) const
+			Section const* IniFile::find_section(string8_t const& name) const
 			{
 				if(name.empty())
 					return &m_unnamed_section;

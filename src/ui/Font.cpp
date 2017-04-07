@@ -83,7 +83,6 @@ namespace re
 						{
 							auto entry = getEntry(text[i]);
 							uint_t tw = atlas->getWidth(), th = atlas->getHeight();
-					
 
 							const math::fvec2 pos_o(pen.x+entry->bearing_h.x, pen.y-entry->bearing_h.y);
 							const math::fvec2 pos_t(pos_o.x+entry->size.x, pos_o.y+entry->size.y);
@@ -124,7 +123,7 @@ namespace re
 			const math::fvec2 bounds = size(text, settings);
 
 			pen_position = (settings.orientation == TextOrientation::Horizontal)?math::fvec2(0,-lineHeight*settings.lineHeight) : math::fvec2(0,0);
-			
+
 				for(size_t i = 0; i<text.length(); i++)
 				{
 					const auto c = text[i];
@@ -156,7 +155,7 @@ namespace re
 							uint_t tw = atlas->getWidth(), th = atlas->getHeight();
 							math::fvec2 tex_o(entry->tex_origin);
 							math::fvec2 tex_t(math::hvec2(entry->tex_origin)+entry->size);
-					
+
 							tex_o.x /= tw;
 							tex_o.y = 1.f- tex_o.y / th;
 							tex_t.x /= tw;
@@ -179,7 +178,7 @@ namespace re
 					}
 				}
 			vdata->setData(vertices.data(), vertices.size());
-			
+
 			return vdata;
 		}
 

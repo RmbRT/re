@@ -6,6 +6,8 @@
 
 #include "Handle.hpp"
 #include "Binding.hpp"
+#include "Context.hpp"
+#include "Version.hpp"
 #include "../Bitmap.hpp"
 #include "../../util/Lookup.hpp"
 
@@ -108,6 +110,7 @@ namespace re
 					This is already defined by the deriving type, but was chosen instead of a virtual getter function. */
 				TextureType const m_type;
 
+			protected:
 				/** Creates an unallocated texture with of the given type.
 				@param[in] type:
 					The type of the texture. */
@@ -127,7 +130,6 @@ namespace re
 
 				/** Used to identify the deriving class of Texture. */
 				REIL TextureType type() const;
-				
 
 				/** Allocates the given Textures.
 				@assert
@@ -169,7 +171,7 @@ namespace re
 				/** Sets the border color for the texture.
 					This only has an effect for textures that have `TextureWrap::kClampToBorder` as thier wrap options. */
 				void set_border_color(
-					math::vec4<float> const& color);
+                    math::Vec4<float> const& color);
 
 				/** Sets the priority with which the texture should be kept in memory.
 				@assert
@@ -199,6 +201,8 @@ namespace re
 				RECX Texture1D();
 				Texture1D(Texture1D &&) = default;
 				Texture1D &operator=(Texture1D &&) = default;
+
+				REIL static bool available();
 
 				/** Returns the size of the Texture.
 				@assert The Texture must exist. */
@@ -263,6 +267,8 @@ namespace re
 				Texture2D(Texture2D &&) = default;
 				Texture2D &operator=(Texture2D &&) = default;
 
+				REIL static bool available();
+
 				/** Returns the width of the Texture.
 				@assert The Texture must exist. */
 				REIL uint_t width() const;
@@ -281,7 +287,7 @@ namespace re
 				@param[in] lod:
 					The mipmap level to set the data for. */
 				void set_texels(
-					Bitmap const& texels,
+					Bitmap2D const& texels,
 					uint_t lod);
 
 				/** Sets the image data of the texture and generates mip maps.
@@ -298,44 +304,84 @@ namespace re
 				uint_t set_texels_mipmap(
 					Bitmap2D const& base_texels,
 					MipmapFilter filter);
+
+				/** Resizes the Texture to the given size.
+					Allocates an uninitialised texture of the requested size.
+				@assert
+					The texture must exist.
+				@param[in] width:
+					The new width of the texture.
+				@param[in] height:
+					The new height of the texture.
+				@param[in] component:
+					The new color component of the texture.
+				@param[in] channel:
+					The new color channel of the texture. */
+				void resize(
+					uint_t width,
+					uint_t height,
+					Channel channel,
+					Component component);
 			};
 
 			/** 3-dimensional texture type. */
 			class Texture3D : public Texture
 			{
-				uint_t
-					m_width,
-					m_height,
-					m_depth;
+				/** The texel width of the texture. */
+				uint_t m_width;
+				/** The texel height of the texture. */
+				uint_t m_height;
+				/** The texel depth of the texture. */
+				uint_t m_depth;
 			public:
+				/** Constructs an unallocated 3-dimensional texture. */
 				RECX Texture3D();
 				Texture3D(Texture3D &&) = default;
 				Texture3D &operator=(Texture3D &&) = default;
 
-				/** Returns the width of the Texture.
+				REIL static bool available();
+
+				/** Returns the width of the texture.
 				@assert The Texture must exist. */
 				REIL uint_t width() const;
-				/** Returns the height of the Texture.
+				/** Returns the height of the texture.
 				@assert The Texture must exist. */
 				REIL uint_t height() const;
-				/** Returns the depth of the Texture.
+				/** Returns the depth of the texture.
 				@assert The Texture must exist. */
 				REIL uint_t depth() const;
 
 				/** Unbinds the currently bound Texture3D, if any. */
 				static void unbind();
+
+				/** Sets the image data of the texture.
+				@assert
+					The texture must exist.
+				@param[in] texels:
+					The image data.
+				@param[in] lod:
+					The mipmap level to set the data for. */
+				void set_texels(
+					Bitmap3D const& texels,
+					uint_t lod);
 			};
 
+			/** GL_TEXTURE_2D_MULTISAMPLE texture class. */
 			class Texture2DMultisample : public Texture
 			{
-				uint_t
-					m_width,
-					m_height,
-					m_samples;
+				/** The texture's texel width. */
+				uint_t m_width;
+				/** The texture's texel height. */
+				uint_t m_height;
+				/** The texture's sample count.*/
+				uint_t m_samples;
 			public:
+				/** Constructs an unallocated 2-dimensional multisampled texture. */
 				RECX Texture2DMultisample();
 				Texture2DMultisample(Texture2DMultisample &&) = default;
 				Texture2DMultisample &operator=(Texture2DMultisample &&) = default;
+
+				REIL static bool available();
 
 				/** Returns the width of the Texture.
 				@assert The Texture must exist. */
@@ -351,22 +397,30 @@ namespace re
 				static void unbind();
 			};
 
+			/** GL_TEXTURE_1D_ARRAY texture class. */
 			class Texture1DArray : public Texture
 			{
-				uint_t
-					m_size,
-					m_layers;
+				/** The texture's texel size. */
+				uint_t m_size;
+				/** The texture's layers. */
+				uint_t m_layers;
 			public:
+				/** Constructs an unallocated 1-dimensional array texture. */
 				RECX Texture1DArray();
 				Texture1DArray(Texture1DArray &&) = default;
 				Texture1DArray &operator=(Texture1DArray &&) = default;
 
+				/** @return The size of the texture.
+				@assert The Texture must exist. */
 				REIL uint_t size() const;
+				/** @return The layers of the texture.
+				@assert The Texture must exist. */
 				REIL uint_t layers() const;
 
 				static void unbind();
 			};
 
+			/** GL_TEXTURE_2D_ARRAY texture class. */
 			class Texture2DArray : public Texture
 			{
 				uint_t
@@ -377,7 +431,9 @@ namespace re
 				RECX Texture2DArray();
 				Texture2DArray(Texture2DArray &&) = default;
 				Texture2DArray &operator=(Texture2DArray &&) = default;
-				
+
+				REIL static bool available();
+
 				REIL uint_t width() const;
 				REIL uint_t height() const;
 				REIL uint_t layers() const;
@@ -398,6 +454,8 @@ namespace re
 				Texture2DMultisampleArray(Texture2DMultisampleArray &&) = default;
 				Texture2DMultisampleArray &operator=(Texture2DMultisampleArray &&) = default;
 
+				REIL static bool available();
+
 				REIL uint_t width() const;
 				REIL uint_t height() const;
 				REIL uint_t samples() const;
@@ -416,10 +474,41 @@ namespace re
 				TextureRectangle(TextureRectangle &&) = default;
 				TextureRectangle &operator=(TextureRectangle &&) = default;
 
+				REIL static bool available();
+
 				REIL uint_t width() const;
 				REIL uint_t height() const;
 
 				static void unbind();
+			};
+
+			class TextureCubemap : public Texture
+			{
+			public:
+				RECX TextureCubemap();
+
+				TextureCubemap(TextureCubemap &&) = default;
+				TextureCubemap &operator=(TextureCubemap &&) = default;
+
+				REIL static bool available();
+
+				REIL uint_t size() const;
+			};
+
+			class TextureCubemapArray : public Texture
+			{
+				uint_t m_width;
+				uint_t m_height;
+			public:
+				RECX TextureCubemapArray();
+
+				TextureCubemapArray(TextureCubemapArray &&) = default;
+				TextureCubemapArray &operator=(TextureCubemapArray &&) = default;
+
+				REIL static bool available();
+
+				REIL uint_t size() const;
+				REIL uint_t layers() const;
 			};
 		}
 	}

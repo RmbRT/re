@@ -31,17 +31,12 @@ namespace re
 		template<class T>
 		bool is_error(copy_arg_t<T> value)
 		{
-			return is_error_impl<error_t<T>>(value);
+			return is_error_impl<error_t<T>>(error_t<T>(value));
 		}
 
 		template<class Enum>
 		char const * to_string_impl(Enum error);
 
-		template<class T>
-		char const * to_string(copy_arg_t<T> error)
-		{
-			return to_string_impl<error_t<T>>(error);
-		}
 
 		template<>
 		char const * to_string_impl<bool>(bool error_code)
@@ -54,19 +49,25 @@ namespace re
 		{
 			return error_msg ? error_msg:"(null)";
 		}
+
+		template<class T>
+		char const * to_string(copy_arg_t<T> error)
+		{
+			return to_string_impl<error_t<T>>(error_t<T>(error));
+		}
 	}
 }
 
 #define RE_CHECKED(x, onfail) \
 	do { \
 		copy_arg_t<decltype((x))> error_code = (x); \
-		if(::re::util::is_error(error_code)) \
+		if(::re::util::is_error<decltype(error_code)>(error_code)) \
 		{ \
 			onfail; \
 		} \
 	} while(0,0)
 
-#define RE_ERROR_LOG(name) void(std::clog << __FILE__ << '@' << __LINE__ << " in " << __FUNCTION__ << ":\n\t" << name << ": " << re::util::to_string((error_code)) << '\n')
+#define RE_ERROR_LOG(name) void(std::clog << __FILE__ << '@' << __LINE__ << " in " << __FUNCTION__ << ":\n\t" << name << ": " << re::util::to_string<decltype(error_code)>((error_code)) << '\n')
 #define RE_CHECKED_LOG(x, name, onfail) RE_CHECKED(x, { RE_ERROR_LOG(name); onfail; })
 
 #define RE_CRITICAL(x, errcode) RE_CHECKED(x, { return errcode; })

@@ -4,6 +4,8 @@
 #include "../base_types.hpp"
 #include "../defines.hpp"
 
+#include <array>
+
 namespace re
 {
 	namespace math
@@ -15,6 +17,18 @@ namespace re
 
 		template<class T>
 		inline const T &cap(const T &val, const T &_min, const T &_max) { return min(max(val,_min),_max); }
+
+		template<class T, size_t sz>
+		T avg(std::array<T, sz> const&x)
+		{
+			T acc = T();
+			for(size_t z = sz; z--;)
+				acc = acc + x[z];
+			if(sz)
+				return acc / (int)sz;
+			else
+				return T();
+		}
 	}
 }
 

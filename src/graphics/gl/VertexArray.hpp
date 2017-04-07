@@ -30,7 +30,7 @@ namespace re
 				size_t elements;
 				size_t offset;
 			};
-			
+
 
 #define RE_VERTEX_ELEMENT(VertexClass,ElementName) \
 	re::graphics::gl::VertexElement( \
@@ -54,16 +54,15 @@ namespace re
 				VertexElement elements[VERTEX_ELEMENTS];
 			};
 
-			
+
 			/** Contains rendering modes for drawing models.
-				Warning: The enum values are linked with lookup table in .cpp file.
-				The names are corresponding to the OpenGL render modes'. */
+				Warning: The enum values are linked with a lookup table in the .cpp file. The names are corresponding to the OpenGL render modes. */
 			enum class RenderMode
 			{
-				Linestrip,
+				LineStrip,
 				Lines,
 				Triangles,
-				Trianglestrip,
+				TriangleStrip,
 				Points,
 				TriangleFan
 			};
@@ -81,19 +80,41 @@ namespace re
 				bool m_index_used;
 				/** How to render the stored vertices. */
 				RenderMode m_render_mode;
+
+				/** How many indices the array currently has. */
+				size_t m_index_count;
+				/** How many vertices the array currently has. */
+				size_t m_vertex_count;
 			public:
 				/** Creates an invalid handle. */
-				VertexArrayBase(BufferAccess access, BufferUsage usage);
+				VertexArrayBase(
+					BufferAccess access,
+					BufferUsage usage);
 				/** Moves the ownership of the array from one instance to another. */
-				VertexArrayBase(VertexArrayBase &&);
+				VertexArrayBase(
+					VertexArrayBase &&);
 				/** Moves the ownership of the array from one instance to another.
-				The destination instance must not have an existing handle already. */
-				VertexArrayBase &operator=(VertexArrayBase &&);
+					The destination instance must not have an existing handle already. */
+				VertexArrayBase &operator=(
+					VertexArrayBase &&);
 				/** Asserts that the vertex array must not exist anymore. */
 				REIL ~VertexArrayBase();
-			
-				VertexArrayBase(VertexArrayBase const&) = delete;
-				VertexArrayBase &operator=(VertexArrayBase const&) = delete;
+
+				VertexArrayBase(
+					VertexArrayBase const&) = delete;
+				VertexArrayBase &operator=(
+					VertexArrayBase const&) = delete;
+
+				/** @return The render mode. */
+				REIL RenderMode render_mode() const;
+				/** @return The index buffer count. */
+				REIL size_t index_count() const;
+				/** @return The vertex buffer count. */
+				REIL size_t vertex_count() const;
+				/** @return If the index buffer is used, the index count, otherwise, the vertex count. */
+				REIL size_t element_count() const;
+				/** @return Whether the index buffer is used. */
+				REIL bool index_used() const;
 
 				/** Binds the vertex array to select it for future OpenGL calls. */
 				void bind();
@@ -101,10 +122,18 @@ namespace re
 				using Handle::exists;
 				using Handle::handle;
 
-				static void alloc_handles(handle_t * handles, size_t count);
-				static void alloc(VertexArrayBase * arrays, size_t count);
-				static void destroy_handles(handle_t * handles, size_t count);
-				static void destroy(VertexArrayBase * arrays, size_t count);
+				static void alloc_handles(
+					handle_t * handles,
+					size_t count);
+				static void alloc(
+					VertexArrayBase * arrays,
+					size_t count);
+				static void destroy_handles(
+					handle_t * handles,
+					size_t count);
+				static void destroy(
+					VertexArrayBase * arrays,
+					size_t count);
 
 				/** Configures the VertexArray for the input type.
 				@param[in] vertexType:
@@ -118,13 +147,41 @@ namespace re
 					VertexElement const * vertexType,
 					size_t element_count,
 					size_t type_size);
-				
+
+				/** Sets the vertices with the given render mode.
+					This will disable rendering from the index buffer, instead rendering from the vertex buffer.
+				@assert
+					The vertex array must exist. `vertex_data` must not be null.
+				@param[in] vertex_data:
+					The vertices to store on the GPU. Must be of the preconfigured vertex type.
+				@param[in] vertices:
+					The vertex count.
+				@param[in] type_size:
+					The vertex type's byte size.
+				@param[in] render_mode:
+					What rendering mode to use. */
 				void set_data(
 					void const * vertex_data,
 					size_t vertices,
 					size_t type_size,
 					RenderMode render_mode);
-				
+
+				/** Sets the vertices and indices with the given render mode.
+					This will enable rendering from the index buffer instead of the vertex buffer.
+				@assert
+					The vertex array must exist. `vertex_data` must not be null. `index_data` must not be null.
+				@param[in] vertex_data:
+					The vertices to store on the GPU. Must be of the preconfigured vertex type.
+				@param[in] vertices:
+					The vertex count.
+				@param[in] type_size:
+					The vertex type's byte size.
+				@param[in] render_mode:
+					The rendering mode.
+				@param[in] index_data:
+					The indices to store on the GPU.
+				@param[in] indices:
+					The element count of the index data. */
 				void set_data(
 					void const * vertex_data,
 					size_t vertices,
@@ -133,12 +190,17 @@ namespace re
 					uint32_t const * index_data,
 					size_t indices);
 
+				/** Draws `count` elements, starting at `start`. */
 				void draw(size_t count, size_t start);
+
+				/** Draws the whole array.
+					Equivalent to `draw(element_count(), 0)`. */
+				REIL void draw();
 			};
 
-			
+
 			template<class Vertex>
-			class VertexArray : VertexArrayBase
+			class VertexArray : public VertexArrayBase
 			{
 			public:
 				RECX VertexArray(BufferAccess access, BufferUsage usage);

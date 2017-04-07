@@ -21,11 +21,11 @@ namespace re
 			UIElement content;
 
 			/** The Position of this UIView in 3D space. */
-			math::fvec3 position;
+			math::fvec3_t position;
 			/** The Rotation of this UIView in 3D space. */
-			math::vec3<math::Angle> rotation;
-			/** The Scaling of this UIView in 3D spac. */
-			math::fvec3 scaling;
+			math::Vec3<math::Angle> rotation;
+			/** The Scaling of this UIView in 3D space. */
+			math::fvec3_t scaling;
 
 			/** Calculates the transformation Matrix for this UIView.
 			@note: This can be quite expensive so avoid redundant calls.
@@ -36,20 +36,20 @@ namespace re
 			/** The plane of this UIView in the 3D space.
 			Can be used to determine the local cursor position via intersection.
 			The UIView is inside the plane at the coordinates (0,0) to (1,1). */
-			math::STPlane<float> uiPlane() const;
+			math::STPlane<float> ui_plane() const;
 
 			/** Updates the Cursor position and generates events for the UIElement tree if needed.
 			@param[in] cursor:
 				a Ray for calculating the intersection with the UIView. */
-			void updateCursor(const math::Ray<float> &cursor);
+			void update_cursor(math::Ray<float> const& cursor);
 
 			/** Updates the Cursor position and generates events for the UIElement tree if needed.
 			@param[in] cursor:
 				the local cursor position. */
-			void updateCursor(const math::fvec2 &cursor);
+			void update_cursor(math::fvec2_t const& cursor);
 
 			/** Searches and returns the UIElement described by the name, if exists. */
-			const strong_handle<UIElement> &findElement(const string &name) const;
+			const strong_handle<UIElement> &findElement(string8_t const& name) const;
 
 		};
 	}

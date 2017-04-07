@@ -19,19 +19,22 @@ namespace re
 			{
 				context.make_current();
 			}
-			
-			RECX Context::Context(Version const& version):
+
+			REIL Context::Context(
+				ContextHints const& hints,
+				Version const& version):
 				m_current_thread(nullptr),
 				m_version(version),
-				m_references(0)
+				m_references(0),
+				m_hints(hints)
 			{
 			}
 
-			Context(Context && move):
-				m_version(move.m_version),
-				m_context(move.m_context),
+			REIL Context::Context(Context && move):
 				m_current_thread(move.m_current_thread),
-				m_references(0)
+				m_version(move.m_version),
+				m_references(0),
+				m_hints(std::move(move.m_hints))
 			{
 				RE_DBG_ASSERT(move.m_references == 0
 					&& "Tried to move referenced Context.");
@@ -43,14 +46,14 @@ namespace re
 				move.m_current_thread = nullptr;
 			}
 
-			Context &operator=(Context && move)
+			Context &Context::operator=(Context && move)
 			{
 				RE_DBG_ASSERT(this != &move);
 				RE_DBG_ASSERT(!valid());
 
 				m_version = move.m_version;
 				move.m_version = Version(0,0);
-				m_current_thread = move.m_current;
+				m_current_thread = move.m_current_thread;
 				move.m_current_thread = nullptr;
 
 				if(current())
@@ -61,10 +64,10 @@ namespace re
 
 			Context::~Context()
 			{
-				if(valid())
+				if(m_version.valid())
 				{
 					if(current())
-						*lock::write_lock(m_current_thread) = nullptr;
+						*lock::write_lock(*m_current_thread) = nullptr;
 				}
 			}
 

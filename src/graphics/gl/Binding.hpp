@@ -2,7 +2,7 @@
 #define __re_graphics_gl_binding_hpp_defined
 
 #include "../../defines.hpp"
-#include "handle.hpp"
+#include "Handle.hpp"
 
 namespace re
 {
@@ -34,7 +34,7 @@ namespace re
 					Binding && rhs) &;
 				/** @assert
 					The Binding must be empty. */
-				RECXDA ~Binding() RE_RLS(= default);
+				RE_DBG(RECXDA) ~Binding() RE_RLS(= default);
 				/** Returns whether the given handle is bound.
 				@assert
 					The given handle must be valid.

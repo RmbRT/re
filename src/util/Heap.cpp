@@ -2,6 +2,7 @@
 #include "Error.hpp"
 
 #include <memory>
+#include <cstring>
 
 namespace re
 {
@@ -9,7 +10,7 @@ namespace re
 	{
 		Heap::Heap():
 			m_pool(0),
-			m_end(0),
+			m_capacity(0),
 			m_first(nullptr),
 			m_last(nullptr)
 		{
@@ -18,7 +19,7 @@ namespace re
 
 		Heap::Heap(size_t capacity) :
 			m_pool(0),
-			m_end(0),
+			m_capacity(0),
 			m_first(nullptr),
 			m_last(nullptr)
 		{
@@ -27,7 +28,7 @@ namespace re
 
 		Heap::Heap(Heap && move) :
 			m_pool(move.m_pool),
-			m_end(move.m_end),
+			m_capacity(move.m_capacity),
 			m_first(move.m_first),
 			m_last(move.m_last)
 		{
@@ -50,7 +51,7 @@ namespace re
 			dealloc();
 		}
 
-		void * Heap::alloc(size_t size)
+		void * Heap::malloc(size_t size)
 		{
 			RE_DBG_ASSERT(exists()
 				&& "heap is not allocated");
@@ -75,7 +76,7 @@ namespace re
 				m_first->m_heap = this;
 				m_first->m_prev = nullptr;
 
-				validateHeader(m_first);
+				validate_header(m_first);
 
 				// return the address after the header.
 				return m_first+1;
@@ -83,7 +84,7 @@ namespace re
 
 			if(uintptr_t(m_first) - uintptr_t(m_pool) >= hole_needed)
 			{	// gap at the beginning?
-				validateHeader(m_first);
+				validate_header(m_first);
 
 				m_pool->m_next = m_first;
 				m_first->m_prev = m_pool;
@@ -94,13 +95,13 @@ namespace re
 #endif
 				m_first->m_size = size;
 
-				validateHeader(m_first);
+				validate_header(m_first);
 				return m_first+1;
 			}
 
 			if(end() - m_last->end() >= hole_needed)
 			{	// gap at end?
-				Header * const header = static_cast<Header*>(m_last->end());
+				Header * const header = reinterpret_cast<Header*>(m_last->end());
 
 #ifdef RE_HEAP_DEBUG
 				header->m_magic = heap_magic;
@@ -113,7 +114,7 @@ namespace re
 				m_last->m_next = header;
 				m_last = header;
 
-				validateHeader(header);
+				validate_header(header);
 
 				return header + 1;
 			} else if(!m_last->m_prev)
@@ -122,18 +123,18 @@ namespace re
 			}
 
 			// these are the two iterators, as we will try to find a hole starting from both ends.
-			struct { Header * m_header, int const m_next } iterators[] = {
+			struct { Header * m_header; int const m_next; } iterators[] = {
 				{ m_first, 1 },
 				{ m_last->m_prev, 0 }
 			}, * it = iterators;
 
 			while(it->m_header && it->m_header->m_next)
 			{
-				validateHeader(it->m_header);
+				validate_header(it->m_header);
 
 				if(it->m_header->hole() >= hole_needed)
 				{	// found a satisfying hole?
-					Header * const header = static_cast<Header *>(it->m_header->end());
+					Header * const header = reinterpret_cast<Header *>(it->m_header->end());
 					header->m_prev = it->m_header;
 					header->m_heap = this;
 					header->m_next = it->m_header->m_next;
@@ -144,7 +145,7 @@ namespace re
 					header->m_magic = heap_magic;
 #endif
 
-					validateHeader(header);
+					validate_header(header);
 					return header + 1;
 				}
 
@@ -163,7 +164,7 @@ namespace re
 		bool Heap::Header::resize(size_t size)
 		{
 			RE_DBG_ASSERT(m_heap);
-			m_heap->validateHeader(this);
+			m_heap->validate_header(this);
 
 			if(this == m_heap->m_last)
 			{
@@ -187,13 +188,13 @@ namespace re
 		void * Heap::Header::realloc(size_t size)
 		{
 			RE_DBG_ASSERT(m_heap);
-			m_heap->validateHeader(this);
+			m_heap->validate_header(this);
 
 			if(resize(size))
 				return this + 1;
-			
-			void * const moved = m_heap->alloc(size);
-			memcpy(moved, this + 1, m_size);
+
+			void * const moved = m_heap->malloc(size);
+			std::memcpy(moved, this + 1, m_size);
 			free();
 			return moved;
 		}
@@ -201,7 +202,7 @@ namespace re
 		void Heap::Header::free()
 		{
 			RE_DBG_ASSERT(m_heap);
-			m_heap->validateHeader(this);
+			m_heap->validate_header(this);
 
 			if(m_prev)
 				m_prev->m_next = m_next;
@@ -223,12 +224,12 @@ namespace re
 			RE_DBG_ASSERT(!exists()
 				&& "Tried to allocate heap that is already allocated.");
 
-			RE_FATAL(
-				m_pool = static_cast<Header *>(std::malloc(capacity))),
+			RE_FATAL_LOG(
+				m_pool = static_cast<Header *>(std::malloc(capacity)),
 				"util::Heap allocation"
 			);
 
-			m_end = static_cast<Header*>(static_cast<intptr_t>(m_pool) + capacity);
+			m_capacity = capacity;
 			m_first = nullptr;
 			m_last = nullptr;
 		}

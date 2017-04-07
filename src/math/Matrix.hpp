@@ -10,72 +10,72 @@ namespace re
 	namespace math
 	{
 		template<class T>
-		struct mat2x2;
+		struct Mat2x2;
 		template<class T>
-		struct mat3x3;
+		struct Mat3x3;
 		template<class T>
-		struct mat4x4;
+		struct Mat4x4;
 
-		typedef mat2x2<float> float2x2, fmat2x2, mat2x2f;
-		typedef mat3x3<float> float3x3, fmat3x3, mat3x3f;
-		typedef mat4x4<float> float4x4, fmat4x4, mat4x4f;
+		typedef Mat2x2<float> float2x2_t, fmat2x2_t, mat2x2f_t;
+		typedef Mat3x3<float> float3x3_t, fmat3x3_t, mat3x3f_t;
+		typedef Mat4x4<float> float4x4_t, fmat4x4_t, mat4x4f_t;
 
-		typedef mat2x2<int> int2x2, imat2x2, mat2x2i;
-		typedef mat3x3<int> int3x3, imat3x3, mat3x3i;
-		typedef mat4x4<int> int4x4, imat4x4, mat4x4i;
+		typedef Mat2x2<int> int2x2_t, imat2x2_t, mat2x2i_t;
+		typedef Mat3x3<int> int3x3_t, imat3x3_t, mat3x3i_t;
+		typedef Mat4x4<int> int4x4_t, imat4x4_t, mat4x4i_t;
 
-		typedef mat2x2<short> short2x2, hmat2x2, mat2x2h;
-		typedef mat3x3<short> short3x3, hmat3x3, mat3x3h;
-		typedef mat4x4<short> short4x4, hmat4x4, mat4x4h;
+		typedef Mat2x2<short> short2x2_t, hmat2x2_t, mat2x2h_t;
+		typedef Mat3x3<short> short3x3_t, hmat3x3_t, mat3x3h_t;
+		typedef Mat4x4<short> short4x4_t, hmat4x4_t, mat4x4h_t;
 
 		/** The element tpye of the matrix. */
 		template<class T>
 		/** Represents a 2x2 matrix. The values are stored column-wise. */
-		struct mat2x2
+		struct Mat2x2
 		{
 			/** Converts a 2x2 matrix of one type to another. */
 			template<class U>
-			explicit mat2x2<T>(const mat2x2<U> &m);
+			explicit Mat2x2<T>(Mat2x2<U> const& m);
 
 			/** Constructs a 2x2 matrix. The values are passed row-wise. */
-			mat2x2(const T& v00, const T &v10, const T &v01, const T &v11);
+			Mat2x2(T const& v00, T const& v10, T const& v01, T const& v11);
 
 			/** Constructs a 2x2 matrix with the given columns.
 			@param[in] v0:
 				the first column of the matrix.
 			@param[in] v1:
 				the second column of the matrix. */
-			mat2x2(const vec2<T> &v0, const vec2<T> &v1);
+			Mat2x2(Vec2<T> const& v0, Vec2<T> const& v1);
 
 
-			mat2x2<T> operator*(const mat2x2<T> &rval) const;
-			vec2<T> operator*(const vec2<T> &rval) const;
+			Mat2x2<T> operator*(Mat2x2<T> const& rval) const;
+			Vec2<T> operator*(Vec2<T> const& rval) const;
 
-			bool operator==(const mat2x2<T> &other) const;
-			bool operator!=(const mat2x2<T> &other) const;
+			bool operator==(Mat2x2<T> const& other) const;
+			bool operator!=(Mat2x2<T> const& other) const;
 
-			static const mat2x2<T> IDENTITY;
+			static const Mat2x2<T> kIdentity;
 
 			/** The columns of the matrix. */
-			vec2<T> v0, v1;
+			Vec2<T> v0, v1;
 		};
 
 		template<class T>
-		mat2x2<T> operator*(float a, const mat2x2<T> &b);
+		Mat2x2<T> operator*(float a, Mat2x2<T> const& b);
 
 		/** The element type of the matrix. */
 		template<class T>
 		/** Represents a 3x3 matrix. The values are stored column-wise. */
-		struct mat3x3
+		struct Mat3x3
 		{
 			/** Converts a 3x3 matrix of one type to another. */
 			template<class U>
-			explicit mat3x3<T>(const mat3x3<U> &m);
+			explicit Mat3x3<T>(Mat3x3<U> const& m);
 
 			/** Constructs a 3x3 matrix. The values are passed row-wise. */
-			mat3x3(const T &v00, const T &v10, const T &v20,
-				const T &v01, const T &v11, const T &v21,
-				const T &v02, const T &v12, const T &v22);
+			Mat3x3(T const& v00, T const& v10, T const& v20,
+				T const& v01, T const& v11, T const& v21,
+				T const& v02, T const& v12, T const& v22);
 
 			/** Constructs a 3x3 matrix with the given columns.
 			@param[in] v0:
@@ -84,34 +84,34 @@ namespace re
 				the second column of the matrix.
 			@param[in] v2:
 				the third column of the matrix. */
-			mat3x3(const vec3<T> &v0, const vec3<T> &v1, const vec3<T> &v2);
+			Mat3x3(Vec3<T> const& v0, Vec3<T> const& v1, Vec3<T> const& v2);
 
-			mat3x3<T> operator*(const mat3x3<T> &rval) const;
-			vec3<T> operator*(const vec3<T> &rval) const;
+			Mat3x3<T> operator*(Mat3x3<T> const& rval) const;
+			Vec3<T> operator*(Vec3<T> const& rval) const;
 
-			bool operator==(const mat3x3<T> &other) const;
-			bool operator!=(const mat3x3<T> &other) const;
+			bool operator==(Mat3x3<T> const& other) const;
+			bool operator!=(Mat3x3<T> const& other) const;
 
-			static const mat3x3<T> IDENTITY;
+			static const Mat3x3<T> kIdentity;
 
 			/** The columns of the matrix. */
-			vec3<T> v0, v1, v2;
+			Vec3<T> v0, v1, v2;
 		};
 
 		template<class T>
-		mat3x3<T> operator*(float a, const mat3x3<T> &b);
+		Mat3x3<T> operator*(float a, Mat3x3<T> const& b);
 
 		/** The element type of the matrix. */
 		template<class T>
 		/** Represents a 4x4 matrix. The values are stored column-wise. */
-		struct mat4x4
+		struct Mat4x4
 		{
 			/** Converts a 4x4 matrix of one type to another. */
 			template<class U>
-			explicit mat4x4(const mat4x4<U> &m);
+			explicit Mat4x4(Mat4x4<U> const& m);
 
 			/** Constructs a 4x4 matrix. The values are passed row-wise. */
-			mat4x4(
+			Mat4x4(
 				T v00, T v10, T v20, T v30,
 				T v01, T v11, T v21, T v31,
 				T v02, T v12, T v22, T v32,
@@ -126,40 +126,40 @@ namespace re
 				the third column of the matrix.
 			@param[in] v3:
 				the fourth column of the matrix. */
-			mat4x4(const vec4<T> &v0, const vec4<T> &v1, const vec4<T> &v2, const vec4<T> &v3);
+			Mat4x4(Vec4<T> const& v0, Vec4<T> const& v1, Vec4<T> const& v2, Vec4<T> const& v3);
 
-			mat4x4<T> operator*(const mat4x4<T> &rval) const;
-			vec4<T> operator*(const vec4<T> &rval) const;
-			Ray<T> operator*(const Ray<T> &val) const;
+			Mat4x4<T> operator*(Mat4x4<T> const& rval) const;
+			Vec4<T> operator*(Vec4<T> const& rval) const;
+			Ray<T> operator*(Ray<T> const& val) const;
 
-			bool operator==(const mat4x4<T> &other) const;
-			bool operator!=(const mat4x4<T> &other) const;
+			bool operator==(Mat4x4<T> const& other) const;
+			bool operator!=(Mat4x4<T> const& other) const;
 
-			static mat4x4<T> transform(const vec3<T> &xAxis, const vec3<T> &yAxis, const vec3<T> &zAxis, const vec3<T> &translate);
-			static mat4x4<T> lookAt(const vec3<T> &pos, const vec3<T> &forward, const vec3<T> &up);
-			static mat4x4<T> rotationX(const Angle &alpha);
-			static mat4x4<T> rotationY(const Angle &alpha);
-			static mat4x4<T> rotationZ(const Angle &alpha);
-			static mat4x4<T> translation(const vec3<T> &delta);
-			static mat4x4<T> ortho(T width, T height, T zNear, T zFar);
-			static mat4x4<T> ortho(T xmin, T ymin, T xmax, T ymax, T zNear, T zFar);
-			static mat4x4<T> ortho_infinite(T width, T height);
-			static mat4x4<T> ortho_infinite(T xmin, T ymin, T xmax, T ymax);
-			static mat4x4<T> perspective(const Angle &yFov, T width, T height, T zNear, T zFar);
-			static mat4x4<T> rotation(const vec3<Angle> &rotation);
-			static mat4x4<T> scaling(const vec3<T> &scaling);
-			static mat4x4<T> transformation(const vec3<T> &position, const vec3<Angle> &rotation, const vec3<T> &scaling);
+			static Mat4x4<T> transform(Vec3<T> const& xAxis, Vec3<T> const& yAxis, Vec3<T> const& zAxis, Vec3<T> const& translate);
+			static Mat4x4<T> look_at(Vec3<T> const& pos, Vec3<T> const& forward, Vec3<T> const& up);
+			static Mat4x4<T> rotation_x(Angle const& alpha);
+			static Mat4x4<T> rotation_y(Angle const& alpha);
+			static Mat4x4<T> rotation_z(Angle const& alpha);
+			static Mat4x4<T> translation(Vec3<T> const& delta);
+			static Mat4x4<T> ortho(T width, T height, T zNear, T zFar);
+			static Mat4x4<T> ortho(T xmin, T ymin, T xmax, T ymax, T zNear, T zFar);
+			static Mat4x4<T> ortho_infinite(T width, T height);
+			static Mat4x4<T> ortho_infinite(T xmin, T ymin, T xmax, T ymax);
+			static Mat4x4<T> perspective(Angle const& yFov, T width, T height, T zNear, T zFar);
+			static Mat4x4<T> rotation(Vec3<Angle> const& rotation);
+			static Mat4x4<T> scaling(Vec3<T> const& scaling);
+			static Mat4x4<T> transformation(Vec3<T> const& position, Vec3<Angle> const& rotation, Vec3<T> const& scaling);
 			/** Kind of hacky, but works. Also, does not use inverse matrix method. maybe inverse is faster but idk. */
-			static mat4x4<T> inverse_lookAt(const mat4x4<T> &look_at);
+			static Mat4x4<T> inverse_look_at(Mat4x4<T> const& look_at);
 
-			static const mat4x4<T> IDENTITY;
+			static const Mat4x4<T> kIdentity;
 
 			/** The columns of the matrix. */
-			vec4<T> v0, v1, v2, v3;
+			Vec4<T> v0, v1, v2, v3;
 		};
 
 		template<class T>
-		mat4x4<T> operator*(float a, const mat4x4<T> &b);
+		Mat4x4<T> operator*(float a, Mat4x4<T> const& b);
 	}
 }
 
@@ -169,43 +169,43 @@ namespace re
 	namespace math
 	{
 		template<class T>
-		const mat2x2<T> mat2x2<T>::IDENTITY = mat2x2<T>(1,0,0,1);
+		const Mat2x2<T> Mat2x2<T>::kIdentity = Mat2x2<T>(1,0,0,1);
 
 		template<class T>
-		const mat3x3<T> mat3x3<T>::IDENTITY = mat3x3<T>(1,0,0,0,1,0,0,0,1);
+		const Mat3x3<T> Mat3x3<T>::kIdentity = Mat3x3<T>(1,0,0,0,1,0,0,0,1);
 
 		template<class T>
-		const mat4x4<T> mat4x4<T>::IDENTITY = mat4x4<T>(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-
-		template<class T>
-		template<class U>
-		mat2x2<T>::mat2x2(const mat2x2<U> &m) : v0(m.v0), v1(m.v1)	{	}
-
-		template<class T>
-		mat2x2<T>::mat2x2(const T &v00, const T &v10, const T &v01, const T &v11): v0(v00, v01), v1(v10, v11)	{	}
-
-		template<class T>
-		mat2x2<T>::mat2x2(const vec2<T> &v0, const vec2<T> &v1) : v0(v0), v1(v1)	{	}
-
+		const Mat4x4<T> Mat4x4<T>::kIdentity = Mat4x4<T>(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
 		template<class T>
 		template<class U>
-		mat3x3<T>::mat3x3(const mat3x3<U> &m) : v0(m.v0), v1(m.v1), v2(m.v2)	{	}
+		Mat2x2<T>::Mat2x2(Mat2x2<U> const& m) : v0(m.v0), v1(m.v1)	{	}
 
 		template<class T>
-		mat3x3<T>::mat3x3(const T &v00, const T &v10, const T &v20,
-			const T &v01, const T &v11, const T &v21,
-			const T &v02, const T &v12, const T &v22): v0(v00, v01, v02), v1(v10, v11, v12), v2(v20, v21, v22)	{	}
+		Mat2x2<T>::Mat2x2(T const& v00, T const& v10, T const& v01, T const& v11): v0(v00, v01), v1(v10, v11)	{	}
 
 		template<class T>
-		mat3x3<T>::mat3x3(const vec3<T> &v0, const vec3<T> &v1, const vec3<T> &v2) : v0(v0), v1(v1), v2(v2)	{	}
+		Mat2x2<T>::Mat2x2(Vec2<T> const& v0, Vec2<T> const& v1) : v0(v0), v1(v1)	{	}
+
 
 		template<class T>
 		template<class U>
-		mat4x4<T>::mat4x4(const mat4x4<U> &m): v0(m.v0), v1(m.v1), v2(m.v2), v3(m.v3)	{	}
+		Mat3x3<T>::Mat3x3(Mat3x3<U> const& m) : v0(m.v0), v1(m.v1), v2(m.v2)	{	}
 
 		template<class T>
-		mat4x4<T>::mat4x4(
+		Mat3x3<T>::Mat3x3(T const& v00, T const& v10, T const& v20,
+			T const& v01, T const& v11, T const& v21,
+			T const& v02, T const& v12, T const& v22): v0(v00, v01, v02), v1(v10, v11, v12), v2(v20, v21, v22)	{	}
+
+		template<class T>
+		Mat3x3<T>::Mat3x3(Vec3<T> const& v0, Vec3<T> const& v1, Vec3<T> const& v2) : v0(v0), v1(v1), v2(v2)	{	}
+
+		template<class T>
+		template<class U>
+		Mat4x4<T>::Mat4x4(Mat4x4<U> const& m): v0(m.v0), v1(m.v1), v2(m.v2), v3(m.v3)	{	}
+
+		template<class T>
+		Mat4x4<T>::Mat4x4(
 			T v00, T v10, T v20, T v30,
 			T v01, T v11, T v21, T v31,
 			T v02, T v12, T v22, T v32,
@@ -218,234 +218,234 @@ namespace re
 		}
 
 		template<class T>
-		mat4x4<T>::mat4x4(const vec4<T> &v0, const vec4<T> &v1, const vec4<T> &v2, const vec4<T> &v3): v0(v0), v1(v1), v2(v2), v3(v3)	{	}
+		Mat4x4<T>::Mat4x4(Vec4<T> const& v0, Vec4<T> const& v1, Vec4<T> const& v2, Vec4<T> const& v3): v0(v0), v1(v1), v2(v2), v3(v3)	{	}
 
 		template<class T>
-		mat2x2<T> mat2x2<T>::operator*(const mat2x2<T> &rval) const
+		Mat2x2<T> Mat2x2<T>::operator*(Mat2x2<T> const& rval) const
 		{
-			vec2<T> r0(v0.x, v1.x),
+			Vec2<T> r0(v0.x, v1.x),
 					r1(v0.y, v1.y);
 
-			return mat2x2<T>(dot(r0, rval.v0), dot(r0, rval.v1),
+			return Mat2x2<T>(dot(r0, rval.v0), dot(r0, rval.v1),
 							 dot(r1, rval.v0), dot(r1, rval.v1));
 		}
 
 		template<class T>
-		mat3x3<T> mat3x3<T>::operator*(const mat3x3<T> &rval) const
+		Mat3x3<T> Mat3x3<T>::operator*(Mat3x3<T> const& rval) const
 		{
-			vec3<T> r0(v0.x, v1.x, v2.x),
+			Vec3<T> r0(v0.x, v1.x, v2.x),
 					r1(v0.y, v1.y, v2.y),
 					r2(v0.z, v1.z, v2.z);
-			return mat3x3<T>(dot(r0, rval.v0), dot(r0, rval.v1), dot(r0, rval.v2),
+			return Mat3x3<T>(dot(r0, rval.v0), dot(r0, rval.v1), dot(r0, rval.v2),
 							 dot(r1, rval.v0), dot(r1, rval.v1), dot(r1, rval.v2),
 							 dot(r2, rval.v0), dot(r2, rval.v1), dot(r2, rval.v2));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::operator*(const mat4x4<T> &rval) const
+		Mat4x4<T> Mat4x4<T>::operator*(Mat4x4<T> const& rval) const
 		{
-			vec4<T> r0(v0.x, v1.x, v2.x, v3.x),
+			Vec4<T> r0(v0.x, v1.x, v2.x, v3.x),
 					r1(v0.y, v1.y, v2.y, v3.y),
 					r2(v0.z, v1.z, v2.z, v3.z),
 					r3(v0.w, v1.w, v2.w, v3.w);
-			return mat4x4<T>(dot(r0, rval.v0), dot(r0, rval.v1), dot(r0, rval.v2), dot(r0, rval.v3),
+			return Mat4x4<T>(dot(r0, rval.v0), dot(r0, rval.v1), dot(r0, rval.v2), dot(r0, rval.v3),
 							 dot(r1, rval.v0), dot(r1, rval.v1), dot(r1, rval.v2), dot(r1, rval.v3),
 							 dot(r2, rval.v0), dot(r2, rval.v1), dot(r2, rval.v2), dot(r2, rval.v3),
 							 dot(r3, rval.v0), dot(r3, rval.v1), dot(r3, rval.v2), dot(r3, rval.v3));
 		}
 
 		template<class T>
-		vec2<T> mat2x2<T>::operator*(const vec2<T> &rval) const
+		Vec2<T> Mat2x2<T>::operator*(Vec2<T> const& rval) const
 		{
-			vec2<T> r0(v0.x, v1.x),
+			Vec2<T> r0(v0.x, v1.x),
 					r1(v0.y, v1.y);
-			return vec2<T>(dot(r0, rval),
+			return Vec2<T>(dot(r0, rval),
 						   dot(r1, rval));
 		}
 		template<class T>
-		vec3<T> mat3x3<T>::operator*(const vec3<T> &rval) const
+		Vec3<T> Mat3x3<T>::operator*(Vec3<T> const& rval) const
 		{
-			vec3<T> r0(v0.x, v1.x, v2.x),
+			Vec3<T> r0(v0.x, v1.x, v2.x),
 					r1(v0.y, v1.y, v2.y),
 					r2(v0.z, v1.z, v2.z);
-			return vec3<T>(dot(r0,rval),
+			return Vec3<T>(dot(r0,rval),
 						   dot(r1,rval),
 						   dot(r2,rval));
 		}
 		template<class T>
-		vec4<T> mat4x4<T>::operator*(const vec4<T> &rval) const
+		Vec4<T> Mat4x4<T>::operator*(Vec4<T> const& rval) const
 		{
-			vec4<T> r0(v0.x, v1.x, v2.x, v3.x),
+			Vec4<T> r0(v0.x, v1.x, v2.x, v3.x),
 					r1(v0.y, v1.y, v2.y, v3.y),
 					r2(v0.z, v1.z, v2.z, v3.z),
 					r3(v0.w, v1.w, v2.w, v3.w);
-			return vec4<T>(dot(r0,rval),
+			return Vec4<T>(dot(r0,rval),
 						   dot(r1,rval),
 						   dot(r2,rval),
 						   dot(r3,rval));
 		}
 
 		template<class T>
-		Ray<T> mat4x4<T>::operator*(const Ray<T> &rval) const
+		Ray<T> Mat4x4<T>::operator*(Ray<T> const& rval) const
 		{
-			return Ray<T>(vec3<T>(operator*(vec4<T>(rval.position,1))), vec3<T>(operator*(vec4<T>(rval.direction,0))));
+			return Ray<T>(Vec3<T>(operator*(Vec4<T>(rval.position,1))), Vec3<T>(operator*(Vec4<T>(rval.direction,0))));
 		}
 
 		template<class T>
-		mat2x2<T> operator*(float a, const mat2x2<T> &b)
+		Mat2x2<T> operator*(float a, Mat2x2<T> const& b)
 		{
-			return mat2x2<T>(a*b.v0, a*b.v1);
+			return Mat2x2<T>(a*b.v0, a*b.v1);
 		}
 		template<class T>
-		mat3x3<T> operator*(float a, const mat3x3<T> &b)
+		Mat3x3<T> operator*(float a, Mat3x3<T> const& b)
 		{
-			return mat3x3<T>(a*b.v0, a*b.v1, a*b.v2);
+			return Mat3x3<T>(a*b.v0, a*b.v1, a*b.v2);
 		}
 		template<class T>
-		mat4x4<T> operator*(float a, const mat4x4<T> &b)
+		Mat4x4<T> operator*(float a, Mat4x4<T> const& b)
 		{
-			return mat4x4<T>(a*b.v0, a*b.v1, a*b.v2, a*b.v3);
+			return Mat4x4<T>(a*b.v0, a*b.v1, a*b.v2, a*b.v3);
 		}
 
 
 		template<class T>
-		bool mat2x2<T>::operator==(const mat2x2<T> &other) const
+		bool Mat2x2<T>::operator==(Mat2x2<T> const& other) const
 		{
 			return v0 == other.v0 && v1 == other.v1;
 		}
 		template<class T>
-		bool mat3x3<T>::operator==(const mat3x3<T> &other) const
+		bool Mat3x3<T>::operator==(Mat3x3<T> const& other) const
 		{
 			return v0 == other.v0 && v1 == other.v1 && v2 == other.v2;
 		}
 		template<class T>
-		bool mat4x4<T>::operator==(const mat4x4<T> &other) const
+		bool Mat4x4<T>::operator==(Mat4x4<T> const& other) const
 		{
 			return v0 == other.v0 && v1 == other.v1 && v2 == other.v2 && v3 == other.v3;
 		}
 
 		template<class T>
-		bool mat2x2<T>::operator!=(const mat2x2<T> &other) const
+		bool Mat2x2<T>::operator!=(Mat2x2<T> const& other) const
 		{
 			return v0 != other.v0 || v1 != other.v1;
 		}
 		template<class T>
-		bool mat3x3<T>::operator!=(const mat3x3<T> &other) const
+		bool Mat3x3<T>::operator!=(Mat3x3<T> const& other) const
 		{
 			return v0 != other.v0 || v1 != other.v1 || v2 != other.v2;
 		}
 		template<class T>
-		bool mat4x4<T>::operator!=(const mat4x4<T> &other) const
+		bool Mat4x4<T>::operator!=(Mat4x4<T> const& other) const
 		{
 			return v0 != other.v0 || v1 != other.v1 || v2 != other.v2 || v3 != other.v3;
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::transform(const vec3<T> &xAxis, const vec3<T> &yAxis, const vec3<T> &zAxis, const vec3<T> &translate)
+		Mat4x4<T> Mat4x4<T>::transform(Vec3<T> const& xAxis, Vec3<T> const& yAxis, Vec3<T> const& zAxis, Vec3<T> const& translate)
 		{
-			vec4<T> v0(xAxis, 0),
+			Vec4<T> v0(xAxis, 0),
 				v1 (yAxis, 0),
 				v2 (zAxis, 0),
 				v3 (translate, 1);
-			return mat4x4<T>(v0, v1, v2, v3);
+			return Mat4x4<T>(v0, v1, v2, v3);
 		}
 		template<class T>
-		mat4x4<T> mat4x4<T>::lookAt(const vec3<T> &position, const vec3<T> &forward, const vec3<T> &up)
+                Mat4x4<T> Mat4x4<T>::look_at(Vec3<T> const& position, Vec3<T> const& forward, Vec3<T> const& up)
 		{
-			/** vec3<T> _z(norm(forward));
-			vec3<T> _x(norm(cross(up,forward)));
-			vec3<T> _y(norm(cross(forward, _x)));
-			vec4<T> x(_z.x, _z.y, _z.z, -dot(_x,position));
-			return mat4x4<T>(_x.x, _y.x, _z.x, -dot(_x,position),
+			/** Vec3<T> _z(norm(forward));
+			Vec3<T> _x(norm(cross(up,forward)));
+			Vec3<T> _y(norm(cross(forward, _x)));
+			Vec4<T> x(_z.x, _z.y, _z.z, -dot(_x,position));
+			return Mat4x4<T>(_x.x, _y.x, _z.x, -dot(_x,position),
 							 _x.y, _y.y, _z.y, -dot(_y,position),
 							 _x.z, _y.z, _z.z, -dot(_z,position),
 							 0, 0, 0, 1). */
-			vec3<T> _z(norm(forward));
-			vec3<T> _x(norm(cross(up,_z)));
-			vec3<T> _y(norm(cross(_z,_x)));
-			return mat4x4<T>(vec4<T>(_x.x, _y.x, _z.x, 0),
-							 vec4<T>(_x.y, _y.y, _z.y, 0),
-							 vec4<T>(_x.z, _y.z, _z.z, 0),
-							 vec4<T>(-dot(_x, position), -dot(_y, position), -dot(_z, position), 1));
+			Vec3<T> _z(norm(forward));
+			Vec3<T> _x(norm(cross(up,_z)));
+			Vec3<T> _y(norm(cross(_z,_x)));
+			return Mat4x4<T>(Vec4<T>(_x.x, _y.x, _z.x, 0),
+							 Vec4<T>(_x.y, _y.y, _z.y, 0),
+							 Vec4<T>(_x.z, _y.z, _z.z, 0),
+							 Vec4<T>(-dot(_x, position), -dot(_y, position), -dot(_z, position), 1));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::rotationX(const Angle &alpha)
+                Mat4x4<T> Mat4x4<T>::rotation_x(Angle const& alpha)
 		{
 			T c = cos(alpha);
 			T s = sin(alpha);
-			return mat4x4<T>(1, 0, 0, 0,
+			return Mat4x4<T>(1, 0, 0, 0,
 							 0, c,-s, 0,
 							 0, s, c, 0,
 							 0, 0, 0, 1);
 		}
 		template<class T>
-		mat4x4<T> mat4x4<T>::rotationY(const Angle &alpha)
+                Mat4x4<T> Mat4x4<T>::rotation_y(Angle const& alpha)
 		{
 			T c = cos(alpha);
 			T s = sin(alpha);
-			return mat4x4<T>(c, 0, s, 0,
+			return Mat4x4<T>(c, 0, s, 0,
 							 0, 1, 0, 0,
 							 -s,0, c, 0,
 							 0, 0, 0, 1);
 		}
 		template<class T>
-		mat4x4<T> mat4x4<T>::rotationZ(const Angle &alpha)
+                Mat4x4<T> Mat4x4<T>::rotation_z(Angle const& alpha)
 		{
 			T c = cos(alpha);
 			T s = sin(alpha);
-			return mat4x4<T>(c,-s, 0, 0,
+			return Mat4x4<T>(c,-s, 0, 0,
 							 s, c, 0, 0,
 							 0, 0, 1, 0,
 							 0, 0, 0, 1);
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::translation(const vec3<T> &delta)
+		Mat4x4<T> Mat4x4<T>::translation(Vec3<T> const& delta)
 		{
-			return mat4x4<T>(1, 0, 0, delta.x,
+			return Mat4x4<T>(1, 0, 0, delta.x,
 							 0, 1, 0, delta.y,
 							 0, 0, 1, delta.z,
 							 0, 0,	0, 1);
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::ortho(T width, T height, T zNear, T zFar)
+		Mat4x4<T> Mat4x4<T>::ortho(T width, T height, T zNear, T zFar)
 		{
 			T inv = T(-1)/(zFar-zNear);
-			return mat4x4<T>(
-				vec4<T>(1/width, 0, 0, 0),
-				vec4<T>(0, 1/height, 0, 0),
-				vec4<T>(0, 0, inv+inv, (zFar+zNear)*inv),
-				vec4<T>(0, 0, 0, 1));
+			return Mat4x4<T>(
+				Vec4<T>(1/width, 0, 0, 0),
+				Vec4<T>(0, 1/height, 0, 0),
+				Vec4<T>(0, 0, inv+inv, (zFar+zNear)*inv),
+				Vec4<T>(0, 0, 0, 1));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::ortho(T xmin, T ymin, T xmax, T ymax, T zNear, T zFar)
+		Mat4x4<T> Mat4x4<T>::ortho(T xmin, T ymin, T xmax, T ymax, T zNear, T zFar)
 		{
 			T w = (xmax-xmin)/2;
 			T h = (ymax-ymin)/2;
-			return ortho(w, h, zNear, zFar)*translation(vec3<T>(-xmin-w, -ymin+h, 0));
+			return ortho(w, h, zNear, zFar)*translation(Vec3<T>(-xmin-w, -ymin+h, 0));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::ortho_infinite(T width, T height)
+		Mat4x4<T> Mat4x4<T>::ortho_infinite(T width, T height)
 		{
-			return mat4x4<T>(
-				vec4<T>(1/width, 0, 0, 0),
-				vec4<T>(0, 1/height, 0, 0),
-				vec4<T>(0, 0, 0, 0),
-				vec4<T>(0, 0, 0, 1));
+			return Mat4x4<T>(
+				Vec4<T>(1/width, 0, 0, 0),
+				Vec4<T>(0, 1/height, 0, 0),
+				Vec4<T>(0, 0, 0, 0),
+				Vec4<T>(0, 0, 0, 1));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::ortho_infinite(T xmin, T ymin, T xmax, T ymax)
+		Mat4x4<T> Mat4x4<T>::ortho_infinite(T xmin, T ymin, T xmax, T ymax)
 		{
-			return ortho_infinite((xmax-xmin)/2, (ymax-ymin)/2) * translation(vec3<T>(-xmin,-ymin,0));
+			return ortho_infinite((xmax-xmin)/2, (ymax-ymin)/2) * translation(Vec3<T>(-xmin,-ymin,0));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::perspective(const Angle &yFov, T width, T height, T zNear, T zFar)
+		Mat4x4<T> Mat4x4<T>::perspective(Angle const& yFov, T width, T height, T zNear, T zFar)
 		{
 			/** T inv = T(1)/(zNear-zFar);
 			T t = (zNear*zFar)*inv;
@@ -453,7 +453,7 @@ namespace re
 			T aspect = height / width;
 			T xFov = _tan * aspect;
 
-			return mat4x4<T>(xFov, 0,    0,                0,
+			return Mat4x4<T>(xFov, 0,    0,                0,
 							 0,    _tan, 0,                0,
 							 0,    0,    (zFar+zNear)*inv, T(2)*(zNear*zFar)*inv,
 							 0,    0,    1,                0). */
@@ -462,57 +462,57 @@ namespace re
 			const T tanHalfFOV = T(1)/tan(yFov/T(2));
 			const T zRange = T(1)/(zNear - zFar);
 
-			return mat4x4<T>(
-				vec4<T>(ar*tanHalfFOV, T(0), T(0), T(0)),
-				vec4<T>(T(0), tanHalfFOV, T(0), T(0)),
-				vec4<T>(T(0), T(0), T(-zNear-zFar)*zRange, T(2)*zFar*zNear*zRange),
-				vec4<T>(T(0), T(0), T(1), T(0))). */
+			return Mat4x4<T>(
+				Vec4<T>(ar*tanHalfFOV, T(0), T(0), T(0)),
+				Vec4<T>(T(0), tanHalfFOV, T(0), T(0)),
+				Vec4<T>(T(0), T(0), T(-zNear-zFar)*zRange, T(2)*zFar*zNear*zRange),
+				Vec4<T>(T(0), T(0), T(1), T(0))). */
 
 			const T _tan = T(1)/tan(rad(yFov.rad() * T(0.5)));
 			const T AR = height / width;
 			const T A = AR * _tan;
-			const T &B = _tan;
+			T const& B = _tan;
 			const T C = zFar / (zFar-zNear);
 			const T D = T(1);
 			const T E = -zNear * C;
 
-			return mat4x4<T>(
-				vec4<T>(A,0,0,0),
-				vec4<T>(0,B,0,0),
-				vec4<T>(0,0,C,D),
-				vec4<T>(0,0,E,0));
+			return Mat4x4<T>(
+				Vec4<T>(A,0,0,0),
+				Vec4<T>(0,B,0,0),
+				Vec4<T>(0,0,C,D),
+				Vec4<T>(0,0,E,0));
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::rotation(const vec3<Angle> &axis)
+		Mat4x4<T> Mat4x4<T>::rotation(Vec3<Angle> const& axis)
 		{
-			return rotationZ(axis.z)*rotationY(axis.y)*rotationX(axis.x);
+                        return rotation_x(axis.z)*rotation_y(axis.y)*rotation_z(axis.x);
 		}
 
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::scaling(const vec3<T> &scaling)
+		Mat4x4<T> Mat4x4<T>::scaling(Vec3<T> const& scaling)
 		{
-			return mat4x4<T>(scaling.x,0,0,0,
+			return Mat4x4<T>(scaling.x,0,0,0,
 							 0,scaling.y,0,0,
 							 0,0,scaling.z,0,
 							 0,0,0,1);
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::transformation(const vec3<T> &position, const vec3<Angle> &rotation, const vec3<T> &scaling)
+		Mat4x4<T> Mat4x4<T>::transformation(Vec3<T> const& position, Vec3<Angle> const& rotation, Vec3<T> const& scaling)
 		{
-			return translation(position) * mat4x4<T>::rotation(rotation) * mat4x4<T>::scaling(scaling);
+			return translation(position) * Mat4x4<T>::rotation(rotation) * Mat4x4<T>::scaling(scaling);
 		}
 
 		template<class T>
-		mat4x4<T> mat4x4<T>::inverse_lookAt(const mat4x4<T> &look_at)
+		Mat4x4<T> Mat4x4<T>::inverse_look_at(Mat4x4<T> const& look_at)
 		{
-			const math::fvec3 origin = math::fvec3(look_at * math::fvec4(0,0,0,1));
-			const math::fvec3 up = math::fvec3(look_at * math::fvec4(0,1,0,1)) - origin;
-			const math::fvec3 forward = math::fvec3(look_at * math::fvec4(0,0,1,1)) - origin;
+			const math::fvec3_t origin = math::fvec3_t(look_at * math::fvec4_t(0,0,0,1));
+			const math::fvec3_t up = math::fvec3_t(look_at * math::fvec4_t(0,1,0,1)) - origin;
+			const math::fvec3_t forward = math::fvec3_t(look_at * math::fvec4_t(0,0,1,1)) - origin;
 
-			const math::fmat4x4 inv_view = math::fmat4x4::lookAt(origin, forward, up);
+			const math::fmat4x4_t inv_view = math::fmat4x4_t::look_at(origin, forward, up);
 			return inv_view;
 		}
 	}

@@ -6,10 +6,10 @@
 
 #include <Lock/Lock.hpp>
 
-#include "Version.hpp"
+#include "gl/Version.hpp"
 #include "Monitor.hpp"
 #include "../input/Input.hpp"
-#include "Context.hpp"
+#include "gl/Context.hpp"
 #include "../math/Vector.hpp"
 #include "../math/Rect.hpp"
 #include "Hints.hpp"
@@ -23,24 +23,24 @@ namespace re
 		@usage:
 			Derive a class of Window to implement custom behaviour and receive window events.
 			GPU data should be stored in the Context. Create a custom Context by overriding create_context(). */
-		class Window : ContextReferenceCounter
+		class Window : gl::ContextReferenceCounter
 		{
 			/** The Context of the Window.
 			Only the Window that is pointed back to by the Context owns the Context. */
-			Context * m_context;
+			gl::Context * m_context;
 
 			/** The Handle to the window. */
 			struct GLFWwindow * m_handle;
-			
+
 			/** If this Window is in fullscreen mode, then this is a pointer to the Monitor used. */
 			Monitor * m_monitor;
 
 			/** The title of the Window. */
-			string m_title;
+			string8_t m_title;
 			/** The Window bounds in screen coordinates. */
 			math::Rect<int> m_screen_bounds;
 			/** The Window size in pixels. */
-			math::int2 m_pixels;
+			math::int2_t m_pixels;
 			/** Whether the Window is visible or hidden. */
 			bool m_visible;
 			/** Whether the Window is focused for input. */
@@ -48,7 +48,7 @@ namespace re
 			/** Whether the Window is iconified. */
 			bool m_iconified;
 			/** The cursor positon relative to the Window, in screen coordinates. */
-			math::double2 m_cursor;
+			math::double2_t m_cursor;
 
 			/** The WindowHints used when creating the Window. */
 			WindowHints m_window_hints;
@@ -65,41 +65,41 @@ namespace re
 			~Window();
 
 			/** Whether the Window exists. */
-			RECX bool exists() const;
+			REIL bool exists() const;
 
 			/** Whether the Window is in fullscreen mode.
 			@assert The Window must exist. */
-			RECXDA bool fullscreen() const;
+			REIL bool fullscreen() const;
 
 			/** Whether the Window is currently focused.
 			@assert The Window must exist. */
-			RECXDA bool focused() const;
+			REIL bool focused() const;
 
 			/** Whether the Window is currently iconified.
 			@assert The Window must exist. */
-			RECXDA bool iconified() const;
+			REIL bool iconified() const;
 
 			/** Returns the size of the framebuffer associated with the window, in pixels.
 			This is not equal to the size of the window, but only of the drawing area/canvas.
 			@assert The Window must exist. */
-			RECXDA math::int2 const& pixels() const;
-				
+			REIL math::int2_t const& pixels() const;
+
 			/** Returns the Window bounds (in screen coordinates).
 			@assert The Window must exist. */
-			RECXDA math::Rect<int> const& screen_bounds() const;
+			REIL math::Rect<int> const& screen_bounds() const;
 
 			/** Returns the title of the window.
 			@assert The Window must exist. */
-			RECXDA string const& title() const;
+			REIL string8_t const& title() const;
 
 			/** Returns whether the window is visible or not.
 			@assert The Window must exist. */
-			RECXDA bool visible() const;
-			
+			REIL bool visible() const;
+
 			/** Returns the Cursor position relative to the client area of the window.
 			@return
 				the Cursor position relative to the client are of the window, in screen coordinates. */
-			RECXDA math::double2 const& cursor() const;
+			REIL math::double2_t const& cursor() const;
 
 			/** Requests the Window to close.
 				Calls onCloseRequest, and if the close request was accepted, closes the Window. */
@@ -107,10 +107,10 @@ namespace re
 
 			/** Returns the Context of the Window.
 			@assert The Window must exist. */
-			RECXDA14 Context & context();
+			REIL gl::Context & context();
 			/** Returns the Context of the Window.
 			@assert The Window must exist. */
-			RECXDA Context const& context() const;
+			REIL gl::Context const& context() const;
 
 		protected:
 
@@ -125,17 +125,17 @@ namespace re
 			@return
 				Whether the Window was created successfully. */
 			bool create(
-				string title,
+				string8_t title,
 				WindowHints const& window,
 				FramebufferHints const& framebuffer,
-				ContextHints const& context);
+				gl::ContextHints const& context);
 
 			/** Creates the Window and shares the Context with the given Window.
 			@assert The Window must not yet exist.
 			@param[in] hints:
 				The hints controllin. */
 			bool create(
-				string title,
+				string8_t title,
 				WindowHints const& window,
 				FramebufferHints const& framebuffer,
 				Window const& share_context);
@@ -149,7 +149,7 @@ namespace re
 			@return
 				Whether the new Window could be created. If it failed, the old window is kept. */
 			bool recreate(
-				string title,
+				string8_t title,
 				WindowHints const& window,
 				FramebufferHints const& framebuffer);
 
@@ -159,14 +159,14 @@ namespace re
 
 			/** Makes the window visible. */
 			void show();
-				
+
 			/** Makes the window invisible. */
 			void hide();
 
 			/** Sets the Cursor position relative to the client area of the window.
 			@param[in] pos:
 				the new Cursor position relative to the client area of the window, in screen coordinates. */
-			void set_cursor(math::double2 const& pos);
+			void set_cursor(math::double2_t const& pos);
 
 			/** Sets the position of the window.
 			@param[in] x:
@@ -184,7 +184,7 @@ namespace re
 			/** Sets the title of the window.
 			@param[in] title:
 				the title of the window. */
-			void set_title(string title);
+			void set_title(string8_t title);
 
 			/** Makes the context of the window current, enabling rendering to the window.
 			@assert The Window must exist. */
@@ -204,18 +204,20 @@ namespace re
 
 			/** Creates the correct Context used by this Window.
 				Called by create(). */
-			virtual Context * create_context(ContextHints const&, gl::Version const&) = 0;
+			virtual gl::Context * create_context(
+				gl::ContextHints const&,
+				gl::Version const&) = 0;
 
 			/** Called when the Window receives an unicode character.
 			@param[in] codepoint:
 				the unicode value of the character. */
 			virtual void onCharacter(uint_t codepoint) = 0;
-				
+
 			/** Called when the cursor enters or leaves the window.
 			@param[in] entered:
 				true if the cursor entered, false if it left the window. */
 			virtual void onCursorEnter(bool entered) = 0;
-				
+
 			/** Called when the cursor moves.
 			@param[in] x:
 				the x coordinate of the cursor, relative to the top left corner of the window (in pixels).
@@ -270,7 +272,7 @@ namespace re
 			@param[in] iconified:
 				true if the window was minimized, false if it was restored. */
 			virtual void onIconify(bool iconified) = 0;
-				
+
 			/** Called when the window position changes.
 			@param[in] x:
 				the new window x coordinate (in pixels).
@@ -292,7 +294,7 @@ namespace re
 			@param[in] shown:
 				true if the window became visible, false if it became hidden. */
 			virtual void onVisibilityChanged(bool shown) = 0;
-				
+
 			/** Gets called upon scrolling.
 			@param[in] xoffset:
 				the amount of pixels scrolled in x axis.

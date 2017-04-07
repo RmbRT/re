@@ -1,5 +1,5 @@
 #include "Monitor.hpp"
-#include "OpenGL.hpp"
+#include "gl/OpenGL.hpp"
 
 namespace re
 {
@@ -15,9 +15,11 @@ namespace re
 			return glfwGetMonitorName(monitor);
 		}
 
-		void Monitor::virtual_position(int *x, int *y) const
+		math::ivec2_t Monitor::virtual_position() const
 		{
-			glfwGetMonitorPos(monitor, x, y);
+			math::ivec2_t pos;
+			glfwGetMonitorPos(monitor, &pos.x, &pos.y);
+			return pos;
 		}
 
 		void Monitor::current_video_mode(VideoMode *mode) const

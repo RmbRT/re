@@ -1,5 +1,8 @@
 #include <type_traits>
 
+#include "../Singleton.hpp"
+#include "../LogFile.hpp"
+
 namespace re
 {
 
@@ -39,7 +42,8 @@ namespace re
 	template<class T, class ... Args>
 	T * alloc(Args && ... args)
 	{
-		return singleton<util::Heap>().alloc<T>(std::forward<Args>(args)...);
+		return singleton<util::Heap>().alloc<T>(
+			std::forward<Args>(args)...);
 	}
 
 	template<class T>
@@ -55,7 +59,7 @@ namespace re
 			&& "Tried to delete null pointer.");
 
 		ptr->~T();
-		free(ptr);	
+		free(ptr);
 	}
 
 	template<class T>
@@ -76,7 +80,7 @@ namespace re
 			ptr[i].~T();
 		free(ptr);
 	}
-	
+
 	namespace util
 	{
 		uintptr_t Heap::end() const

@@ -9,22 +9,17 @@ namespace re
 				return m_value_type;
 			}
 
-			string const& Entry::content() const
+			string8_t const& Entry::content() const
 			{
 				return m_content;
 			}
 
-			string const& Entry::key() const
+			string8_t const& Entry::key() const
 			{
 				return m_key;
 			}
 
-			string const& Entry::comment() const
-			{
-				return m_comment;
-			}
-
-			string & Entry::comment()
+			string8_t const& Entry::comment() const
 			{
 				return m_comment;
 			}
@@ -41,12 +36,12 @@ namespace re
 
 			Section * IniFile::operator[](char const * name)
 			{
-				return find_entry(name);
+				return find_section(name);
 			}
 
 			Section const * IniFile::operator[](char const * name) const
 			{
-				return find_entry(name);
+				return find_section(name);
 			}
 
 			Section & IniFile::unnamed_section()

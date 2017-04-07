@@ -1,10 +1,8 @@
-#include "Window.hpp"
-#include <glfw/glfw3.h>
-#include "modules/WindowManager.hpp"
-#include <gl3/glew.h>
-#include "LogFile.hpp"
-#include "graphics/ShaderProgram.hpp"
 #include "gl/OpenGL.hpp"
+#include "Window.hpp"
+#include "../LogFile.hpp"
+#include "gl/ShaderProgram.hpp"
+#include "../util/Error.hpp"
 
 namespace re
 {
@@ -34,10 +32,10 @@ namespace re
 			move.m_handle = nullptr;
 		}
 
-		Window &operator=(Window && move)
+		Window &Window::operator=(Window && move)
 		{
 			RE_DBG_ASSERT(&move != this);
-			
+
 			if(exists())
 				destroy();
 
@@ -74,7 +72,7 @@ namespace re
 
 		void send_window_hints(WindowHints const& hints)
 		{
-			glfwWindowHint(GLFW_RESIZABLE, hints.resizeable ? GL_TRUE : GL_FALSE);
+			glfwWindowHint(GLFW_RESIZABLE, hints.resizable ? GL_TRUE : GL_FALSE);
 			glfwWindowHint(GLFW_VISIBLE, hints.visible ? GL_TRUE : GL_FALSE);
 			glfwWindowHint(GLFW_DECORATED, hints.decorated ? GL_TRUE : GL_FALSE);
 			glfwWindowHint(GLFW_FOCUSED, hints.focused ? GL_TRUE : GL_FALSE);
@@ -101,13 +99,14 @@ namespace re
 			glfwWindowHint(GLFW_DOUBLEBUFFER, hints.doublebuffer ? GL_TRUE : GL_FALSE);
 		}
 
-		void send_context_hints(ContextHints const& hints)
+		void send_context_hints(
+			gl::ContextHints const& hints)
 		{
 			int client_api;
-			switch(hints.client_api)
+			switch(*hints.client_api)
 			{
-			case ClientAPI::OpenGL: client_api = GLFW_OPENGL_API; break;
-			case ClientAPI::OpenGLES: client_api = GLFW_OPENGL_ES_API; break;
+			case gl::ClientAPI::OpenGL: client_api = GLFW_OPENGL_API; break;
+			case gl::ClientAPI::OpenGLES: client_api = GLFW_OPENGL_ES_API; break;
 			default:
 				{
 					RE_DBG_ASSERT(!"Invalid Client Api value.");
@@ -122,9 +121,9 @@ namespace re
 			int profile = GLFW_OPENGL_ANY_PROFILE;
 			switch(hints.profile)
 			{
-			case OpenGLProfile::Core: profile = GLFW_OPENGL_CORE_PROFILE; break;
-			case OpenGLProfile::Compat: profile = GLFW_OPENGL_COMPAT_PROFILE; break;
-			case OpenGLProfile::Any: profile = GLFW_OPENGL_ANY_PROFILE; break;
+			case gl::OpenGLProfile::Core: profile = GLFW_OPENGL_CORE_PROFILE; break;
+			case gl::OpenGLProfile::Compat: profile = GLFW_OPENGL_COMPAT_PROFILE; break;
+			case gl::OpenGLProfile::Any: profile = GLFW_OPENGL_ANY_PROFILE; break;
 			default:
 				RE_DBG_ASSERT(!"Invalid opengl profile enum.");
 			}
@@ -134,10 +133,10 @@ namespace re
 
 
 		bool Window::create(
-			string title,
+			string8_t title,
 			WindowHints const& window,
 			FramebufferHints const& framebuffer,
-			ContextHints const& context);
+			gl::ContextHints const& context)
 		{
 			RE_DBG_ASSERT(!exists() &&
 				"Tried to create existing window.");
@@ -150,14 +149,14 @@ namespace re
 				m_handle = glfwCreateWindow(
 					window.width,
 					window.height,
-					title.c_str(),
+					(char const*) (unsigned char const*) title.content(),
 					window.monitor ? window.monitor->monitor : nullptr,
 					nullptr),
 				"Window creation", false);
 
 			RE_CRITICAL_DBG_LOG(m_handle != nullptr, "Window creation", false);
 
-			glfwMakeContextCurrent(new_window);
+			glfwMakeContextCurrent(m_handle);
 
 			char const * version_string = nullptr;
 			RE_OGL(version_string = reinterpret_cast<char const*>(glGetString(GL_VERSION)));
@@ -166,14 +165,14 @@ namespace re
 				"Retrieve context version string", false);
 
 			int major, minor;
-			RE_CRITICAL_DBG_LOG(2 == sprintf(version_string, "%i.%i", &major, &minor),
-				"Parse context version string", false);
+			RE_CRITICAL_DBG_LOG(2 == sscanf(version_string, "%i.%i", &major, &minor),
+				"Parsing context version string", false);
 
 			RE_CRITICAL_DBG_LOG(m_context = create_context(context, gl::Version(major,minor)),
 				"Context creation",
 				false);
 
-			reference(m_context);
+			reference(*m_context);
 
 			m_window_hints = window;
 			m_framebuffer_hints = framebuffer;
@@ -181,7 +180,7 @@ namespace re
 
 			glfwGetWindowPos(m_handle, &m_screen_bounds.x, &m_screen_bounds.y);
 			glfwGetWindowSize(m_handle, &m_screen_bounds.w, &m_screen_bounds.h);
-			glfwGetWindowFrameSize(m_handle, &m_pixels.x, &m_pixels.y);
+			glfwGetFramebufferSize(m_handle, &m_pixels.x, &m_pixels.y);
 
 			m_visible = glfwGetWindowAttrib(m_handle, GLFW_VISIBLE);
 			m_focused = glfwGetWindowAttrib(m_handle, GLFW_FOCUSED);
@@ -193,7 +192,7 @@ namespace re
 		}
 
 		bool Window::create(
-			string title,
+			string8_t title,
 			WindowHints const& window,
 			FramebufferHints const& framebuffer,
 			Window const& share_context)
@@ -209,12 +208,11 @@ namespace re
 			send_context_hints(share_context.m_context->hints());
 
 
-			GLFWwindow * new_window;
 			RE_CRITICAL_DBG_LOG(
-				new_window = glfwCreateWindow(
+				m_handle = glfwCreateWindow(
 					window.width,
 					window.height,
-					title.c_str(),
+					(char const*) &*title.content(),
 					window.monitor ? window.monitor->monitor : nullptr,
 					share_context.m_handle),
 				"Window creation", false);
@@ -225,7 +223,7 @@ namespace re
 
 			glfwGetWindowPos(m_handle, &m_screen_bounds.x, &m_screen_bounds.y);
 			glfwGetWindowSize(m_handle, &m_screen_bounds.w, &m_screen_bounds.h);
-			glfwGetWindowFrameSize(m_handle, &m_pixels.x, &m_pixels.y);
+			glfwGetFramebufferSize(m_handle, &m_pixels.x, &m_pixels.y);
 
 			m_visible = glfwGetWindowAttrib(m_handle, GLFW_VISIBLE);
 			m_focused = glfwGetWindowAttrib(m_handle, GLFW_FOCUSED);
@@ -233,13 +231,16 @@ namespace re
 
 			glfwGetCursorPos(m_handle, &m_cursor.x, &m_cursor.y);
 
-			reference(m_context);
+			glfwMakeContextCurrent(m_handle);
+
+			m_context = share_context.m_context;
+			reference(*m_context);
 
 			return true;
 		}
 
 		bool Window::recreate(
-			string title,
+			string8_t title,
 			WindowHints const& window,
 			FramebufferHints const& framebuffer)
 		{
@@ -256,14 +257,14 @@ namespace re
 				new_window = glfwCreateWindow(
 					window.width,
 					window.height,
-					title.c_str(),
+					(char const*) &*title.content(),
 					window.monitor ? window.monitor->monitor : nullptr,
 					m_handle),
 				"Window recreation", false);
 
-			Context * const shared_context = m_context;
-			reference(shared_context);
-
+			gl::Context * const shared_context = m_context;
+			// add one reference, because destroy() removes one.
+			reference(*shared_context);
 			destroy();
 
 			m_handle = new_window;
@@ -275,7 +276,7 @@ namespace re
 
 			glfwGetWindowPos(m_handle, &m_screen_bounds.x, &m_screen_bounds.y);
 			glfwGetWindowSize(m_handle, &m_screen_bounds.w, &m_screen_bounds.h);
-			glfwGetWindowFrameSize(m_handle, &m_pixels.x, &m_pixels.y);
+			glfwGetFramebufferSize(m_handle, &m_pixels.x, &m_pixels.y);
 
 			m_visible = glfwGetWindowAttrib(m_handle, GLFW_VISIBLE);
 			m_focused = glfwGetWindowAttrib(m_handle, GLFW_FOCUSED);
@@ -291,19 +292,19 @@ namespace re
 			RE_DBG_ASSERT(exists() &&
 				"Tried to destroy nonexisting window.");
 
-			dereference(m_context);
+			dereference(*m_context);
 
 			if(!m_context->references())
 				delete m_context;
 
 			glfwDestroyWindow(m_handle);
-			
+
 
 			m_handle = nullptr;
 			m_context = nullptr;
 		}
 
-		void Window::set_cursor(math::double2 const& pos)
+		void Window::set_cursor(math::double2_t const& pos)
 		{
 			RE_DBG_ASSERT(exists() &&
 				"Tried to access nonexisting window.");
@@ -329,12 +330,12 @@ namespace re
 			m_screen_bounds.h = h;
 		}
 
-		void Window::set_title(string title)
+		void Window::set_title(string8_t title)
 		{
 			RE_DBG_ASSERT(exists() &&
 				"Tried to access nonexisting window.");
 
-			glfwSetWindowTitle(m_handle, title.c_str());
+			glfwSetWindowTitle(m_handle, (char const*) &*title.content());
 			m_title = std::move(title);
 		}
 
@@ -343,8 +344,8 @@ namespace re
 			RE_DBG_ASSERT(exists() &&
 				"Tried to access nonexisting window.");
 
-			if(!context->current())
-				glfwMakeContextCurrent(m_handle), make_current(*context);
+			if(!m_context->current())
+				glfwMakeContextCurrent(m_handle), make_current(*m_context);
 		}
 
 		void Window::swap_buffers()
@@ -364,7 +365,5 @@ namespace re
 		{
 			glfwWaitEvents();
 		}
-
-		
 	}
 }

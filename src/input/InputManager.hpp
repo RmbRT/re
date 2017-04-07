@@ -73,7 +73,7 @@ namespace re
 			KeyEvent(Key key, bool pressed);
 		};
 
-		enum class KeyState: byte
+		enum class KeyState
 		{
 			Changed = 1,
 			Idle = 0,

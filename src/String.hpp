@@ -14,15 +14,49 @@ namespace re
 	/** UTF-8 character. */
 	typedef uint8_t utf8_t;
 
-	using util::NotNull;
-	using util::Auto;
+	template<class C>
+	class String;
+
+	/** UTF32 string type. */
+	typedef String<utf32_t> string32_t;
+	/** UTF8 string type. */
+	typedef String<utf8_t> string8_t;
+
+	namespace detail
+	{
+		template<class C>
+		struct to_std_char;
+
+		template<>
+		struct to_std_char<char>
+		{
+			typedef char type;
+		};
+
+		template<>
+		struct to_std_char<utf8_t>
+		{
+			typedef char type;
+		};
+
+		template<>
+		struct to_std_char<utf32_t>
+		{
+			typedef char32_t type;
+		};
+
+		template<>
+		struct to_std_char<char32_t>
+		{
+			typedef char32_t type;
+		};
+	}
 
 	template<class C>
 	/** String class. To be a replacement for the std::string class, and have some extensions, for example type safe formatting functions. */
 	class String
 	{
 		static C const s_empty;
-
 		/** The character data of the string. */
 		util::Auto<C []> m_data;
 		/** The character count that is currently used. */
@@ -30,6 +64,8 @@ namespace re
 		/** The current amount of characters allocated. */
 		size_t m_capacity;
 	public:
+		typedef typename detail::to_std_char<C>::type stdchar_t;
+
 		/** Creates an empty string. */
 		RECX String();
 		/** Creates a string holding a copy of the given string.
@@ -37,7 +73,22 @@ namespace re
 			The string to copy.
 			The string must be null-terminated. */
 		String(
-			NotNull<C const> ptr);
+			util::NotNull<C const> ptr);
+
+		template<typename StdChar = stdchar_t>
+		/** Creates a string from a std-char literal.
+		@param[in] ptr:
+			The string to copy.
+			The string must be null-terminated. */
+		String(
+			typename std::enable_if<
+				std::is_same<StdChar, stdchar_t>::value &&
+				!std::is_same<C, stdchar_t>::value,
+			util::NotNull<stdchar_t const>>::type ptr):
+			String(util::reinterpret<C const>(ptr))
+		{
+		}
+
 		/** Creates a string holding a copy of the given string.
 		@param[in] copy:
 			The string to copy. */
@@ -57,7 +108,23 @@ namespace re
 			@assert
 				Must not be this string. */
 		String<C> &operator=(
-			NotNull<C const> ptr);
+			util::NotNull<C const> ptr);
+
+		/** Copies the given string into this string.
+		@param[in] ptr:
+			The string to copy from.
+			The string must be null-terminated.
+			@assert
+				Must not be this string. */
+		template<typename StdChar = stdchar_t>
+		typename std::enable_if<
+			!std::is_same<C, StdChar>::value,
+			String<C>>::type &operator=(
+			util::NotNull<stdchar_t const> ptr)
+		{
+			return *this = util::reinterpret<C const>(ptr);
+		}
+
 		/** Copies the given string into this string.
 		@param[in] copy:
 			The string to copy from.
@@ -83,7 +150,26 @@ namespace re
 			The string to compare to this string.
 			The string must be null-terminated. */
 		bool operator==(
-			NotNull<C const> rhs) const;
+			util::NotNull<C const> rhs) const;
+		template<typename StdChar = stdchar_t>
+		REIL typename std::enable_if<
+			std::is_same<StdChar, stdchar_t>::value &&
+			!std::is_same<C, stdchar_t>::value,
+			bool>::type operator==(
+			util::NotNull<stdchar_t const> rhs) const
+		{
+			return *this == (util::NotNull<C const>) rhs;
+		}
+
+		String<C> &operator+=(
+			util::NotNull<C const> rhs);
+		template<typename StdChar = stdchar_t>
+		typename std::enable_if<
+			!std::is_same<C, StdChar>::value,
+			String<C>>::type &operator+=(
+			util::NotNull<stdchar_t const> rhs);
+		String<C> &operator+=(
+			String<C> const& rhs);
 
 		/** Returns whether the string is empty or uninitialized. */
 		REIL bool empty() const;
@@ -99,7 +185,10 @@ namespace re
 		REIL C * data();
 		/** The string contents.
 			If the string is null, an empty string is returned.*/
-		REIL NotNull<C const> content() const;
+		REIL util::NotNull<C const> content() const;
+
+		/** The string contents, usable by the STL functions. */
+		REIL util::NotNull<stdchar_t const> c_str() const;
 		/** The number of elements allocated. */
 		REIL size_t capacity() const;
 
@@ -117,12 +206,19 @@ namespace re
 		void resize(
 			size_t size);
 
-		/** Empties the string. */
+		/** Empties the string, so that `empty()` returns `true`. */
 		void clear();
-	};
 
-	typedef String<utf32_t> Utf32String;
-	typedef String<utf8_t> Utf8String;
+		/** Appends a string to this string.
+		@param[in] other:
+			The string to append to this string. */
+		REIL void append(
+			util::NotNull<C const> other);
+
+		void append(
+			util::NotNull<C const> other,
+			size_t length);
+	};
 }
 
 #include "String.inl"

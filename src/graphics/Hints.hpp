@@ -2,7 +2,8 @@
 #define __re_graphics_hints_hpp_defined
 
 #include "../util/Maybe.hpp"
-#include "Version.hpp"
+#include "gl/Version.hpp"
+#include "Monitor.hpp"
 #include "VideoMode.hpp"
 
 namespace re
@@ -10,23 +11,10 @@ namespace re
 	namespace graphics
 	{
 
-
-		enum class ClientAPI
-		{
-			OpenGL,
-			OpenGLES
-		};
-
-		enum class OpenGLProfile
-		{
-			Core,
-			Compat,
-			Any
-		};
-
 		/** The window hints for window creation. */
 		struct WindowHints
 		{
+			WindowHints() = default;
 			WindowHints(Monitor const& monitor);
 			WindowHints(int width, int height);
 
@@ -62,14 +50,6 @@ namespace re
 			util::Maybe<int> stencil_bits;
 
 			util::Maybe<int> samples;
-		};
-
-		struct ContextHints
-		{
-			ContextHints();
-			Version version;
-			util::Maybe<ClientAPI> client_api;
-			OpenGLProfile profile;
 		};
 	}
 }

@@ -65,41 +65,20 @@ namespace re
 			id = 0;
 		}
 
-		bool ShaderProgram::loadFromString(const char* code, ShaderType shader)
+		bool ShaderProgram::load_from_string(const char* code, ShaderType shader)
 		{
 			if(!shaders[int(shader)])
 			{
-				GLenum shader_type = GL_INVALID_ENUM;
-				switch(shader)
-				{
-				case ShaderType::ST_VERTEX:
-					{
-						shader_type = GL_VERTEX_SHADER;
-					} break;
-				case ShaderType::ST_FRAGMENT:
-					{
-						shader_type = GL_FRAGMENT_SHADER;
-					} break;
-				case ShaderType::ST_GEOMETRY:
-					{
-						shader_type = GL_GEOMETRY_SHADER;
-					} break;
-				case ShaderType::ST_TESS_CONTROL:
-					{
-						shader_type = GL_TESS_CONTROL_SHADER;
-					} break;
-				case ShaderType::ST_TESS_EVALUATION:
-					{
-						shader_type = GL_TESS_EVALUATION_SHADER;
-					} break;
-				default:
-					{
-						RE_ASSERTION_FAILURE("Unknown ShaderType!");
-					} break;
-				}
-				shaders[int(shader)] = glCreateShader(shader_type);
+				static util::Lookup<ShaderType, GLenum> const k_lookup = {
+					{ ShaderType::kVertex,  GL_VERTEX_SHADER },
+					{ ShaderType::kFragment, GL_FRAGMENT_SHADER },
+					{ ShaderType::kGeometry, GL_GEOMETRY_SHADER },
+					{ ShaderType::kTesselationControl, GL_TESS_CONTROL_SHADER },
+					{ ShaderType::kTesselationEvaluation, GL_TESS_EVALUATION_SHADER }
+				};
+				RE_OGL(shaders[int(shader)] = glCreateShader(k_lookup[shader]));
 			}
-			
+
 			GLint len = strlen(code);
 			RE_OGL(glShaderSource(shaders[int(shader)], 1, &code, &len));
 

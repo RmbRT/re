@@ -7,7 +7,8 @@ namespace re
 	{
 		namespace gl
 		{
-			RECXDA GLenum opengl_target(BufferType type)
+			RECXDA GLenum opengl_target(
+				BufferType type)
 			{
 				static GLenum const table[] = {
 					GL_ARRAY_BUFFER,
@@ -27,19 +28,18 @@ namespace re
 				};
 
 				RE_DBG_ASSERT(size_t(type) <= _countof(table));
-				
+
 				return table[size_t(type)];
 			}
 
 			void Buffer::bind() &
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting Buffer.");
-				RE_DBG_ASSERT(size_t(m_type) <= RE_COUNT(BufferType));
 
-				if(!bindings[size_t(m_type)].bound(handle()))
+				if(!bindings[m_type].bound(handle()))
 				{
 					RE_OGL(glBindBuffer(opengl_target(m_type), handle()));
-					bindings[size_t(m_type).bind(handle());
+					bindings[m_type].bind(handle());
 				}
 			}
 
@@ -83,26 +83,36 @@ namespace re
 
 			RECXDA GLenum opengl_usage(BufferAccess access, BufferUsage usage)
 			{
-				static GLenum const table[][3] = {
+				static util::Lookup<
+					BufferAccess,
+					util::Lookup<
+						BufferUsage,
+						GLenum> const table = {
 					{
-						GL_STREAM_DRAW,
-						GL_STREAM_READ,
-						GL_STREAM_COPY
+						BufferAccess::Stream,
+						{
+							{ BufferUsage::Draw, GL_STREAM_DRAW },
+							{ BufferUsage::Read, GL_STREAM_READ },
+							{ BufferUsage::Copy, GL_STREAM_COPY }
+						}
 					}, {
-						GL_STATIC_DRAW,
-						GL_STATIC_READ,
-						GL_STATIC_COPY
+						BufferAccess::Static,
+						{
+							{ BufferUsage::Draw, GL_STATIC_DRAW },
+							{ BufferUsage::Read, GL_STATIC_READ },
+							{ BufferUsage::Copy, GL_STATIC_COPY }
+						}
 					}, {
-						GL_DYNAMIC_DRAW,
-						GL_DYNAMIC_READ,
-						GL_DYNAMIC_COPY
+						BufferAccess::Dynamic,
+						{
+							{ BufferUsage::Draw, GL_DYNAMIC_DRAW },
+							{ BufferUsage::Read, GL_DYNAMIC_READ },
+							{ BufferUsage::Copy, GL_DYNAMIC_COPY }
+						}
 					}
 				};
 
-				RE_DBG_ASSERT(size_t(access) <= _countof(table));
-				RE_DBG_ASSERT(size_t(usage) <= _countof(table[size_t(access)]));
-
-				return table[size_t(access)][size_t(usage)];
+				return table[access][usage];
 			}
 
 			void Buffer::data(void const * data, size_t elements, size_t element_size) &
@@ -111,7 +121,7 @@ namespace re
 
 				GLenum target = opengl_target(m_type);
 				GLenum usage = opengl_usage(m_access, m_usage);
-				
+
 				RE_OGL(glBufferData(target, elements*element_size, data, usage));
 			}
 		}

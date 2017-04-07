@@ -1,3 +1,4 @@
+#include "../math/MathUtil.hpp"
 namespace re
 {
 	namespace graphics
@@ -39,8 +40,8 @@ namespace re
 		{
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(index < m_size);
-			RE_DBG_ASSERT(m_channel == c);
-			RE_DBG_ASSERT(m_component == co);
+			RE_DBG_ASSERT(m_channel == kChannel);
+			RE_DBG_ASSERT(m_component == kComponent);
 
 			return static_cast<pixel_t<kChannel,kComponent> *>(m_data)[index];
 		}
@@ -50,8 +51,8 @@ namespace re
 		{
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(index < m_size);
-			RE_DBG_ASSERT(m_channel == c);
-			RE_DBG_ASSERT(m_component == co);
+			RE_DBG_ASSERT(m_channel == kChannel);
+			RE_DBG_ASSERT(m_component == kComponent);
 
 			return static_cast<pixel_t<kChannel,kComponent> const*>(m_data)[index];
 		}
@@ -98,7 +99,7 @@ namespace re
 		{
 			index <<= 1;
 			if(index+1 < size())
-				return math::avg({
+				return math::avg<pixel_t<kChannel, kComponent>, 2>({
 					pixel<kChannel,kComponent>(index),
 					pixel<kChannel,kComponent>(index+1)});
 			else
@@ -111,7 +112,7 @@ namespace re
 			RE_DBG_ASSERT(x < m_width);
 			RE_DBG_ASSERT(y < m_height);
 
-			return pixel<kChannel,kComponent>(x + y * m_width);
+			return Bitmap::pixel<kChannel,kComponent>(x + y * m_width);
 		}
 
 		template<Channel ch, Component co>
@@ -120,7 +121,7 @@ namespace re
 			RE_DBG_ASSERT(x < m_width);
 			RE_DBG_ASSERT(y < m_height);
 
-			return pixel<ch,co>(x + y * m_width);
+			return Bitmap::pixel<ch,co>(x + y * m_width);
 		}
 
 		void Bitmap2D::alloc(
@@ -146,7 +147,7 @@ namespace re
 		}
 
 		template<Channel ch, Component co>
-		pixel_t<ch,co> const& mip_near(uint32_t x, uint32_t y) const
+		pixel_t<ch,co> const& Bitmap2D::mip_near(uint32_t x, uint32_t y) const
 		{
 			return pixel<ch,co>(x<<1, y<<1);
 		}
@@ -159,18 +160,18 @@ namespace re
 
 			if(x + 1 < width())
 				if(y + 1 < height())
-					return math::avg({
+					return math::avg<pixel_t<ch,co>, 4>({
 						pixel<ch,co>(x, y),
 						pixel<ch,co>(x+1, y),
 						pixel<ch,co>(x, y+1),
 						pixel<ch,co>(x+1, y+1)});
 				else
-					return math::avg({
+					return math::avg<pixel_t<ch,co>, 2>({
 						pixel<ch,co>(x, y),
 						pixel<ch,co>(x+1, y)});
 			else
 				if(y + 1 < height())
-					return math::avg({
+					return math::avg<pixel_t<ch,co>, 2>({
 						pixel<ch,co>(x, y),
 						pixel<ch,co>(x, y+1)});
 				else
@@ -184,7 +185,7 @@ namespace re
 			RE_DBG_ASSERT(y < height());
 			RE_DBG_ASSERT(z < depth());
 
-			return pixel<ch,co>(x + (y + z * height()) * width());
+			return Bitmap::pixel<ch,co>(x + (y + z * height()) * width());
 		}
 
 		template<Channel ch, Component co>
@@ -194,7 +195,7 @@ namespace re
 			RE_DBG_ASSERT(y < height());
 			RE_DBG_ASSERT(z < depth());
 
-			return pixel<ch,co>(x + (y + z * height()) * width());
+			return Bitmap::pixel<ch,co>(x + (y + z * height()) * width());
 		}
 
 		void Bitmap3D::alloc(
@@ -204,7 +205,7 @@ namespace re
 			uint32_t height,
 			uint32_t depth)
 		{
-			alloc(channel, component, width * height * depth);
+			Bitmap::alloc(channel, component, width * height * depth);
 		}
 
 		uint32_t Bitmap3D::width() const
@@ -238,7 +239,7 @@ namespace re
 			if(x+1 < width())
 				if(y+1 < height())
 					if(z+1 < depth())
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 8>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x+1, y,   z),
 							pixel<ch,co>(x,   y+1, z),
@@ -248,37 +249,37 @@ namespace re
 							pixel<ch,co>(x,   y+1, z+1),
 							pixel<ch,co>(x+1, y+1, z+1)});
 					else
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 4>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x+1, y,   z),
 							pixel<ch,co>(x,   y+1, z),
 							pixel<ch,co>(x+1, y+1, z)});
 				else
 					if(z+1 < depth())
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 4>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x+1, y,   z),
 							pixel<ch,co>(x,   y,   z+1),
 							pixel<ch,co>(x+1, y,   z+1)});
 					else
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 2>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x+1, y,   z)});
 			else
 				if(y+1 < height())
 					if(z+1 < depth())
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 4>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x,   y+1, z),
 							pixel<ch,co>(x,   y,   z+1),
 							pixel<ch,co>(x,   y+1, z+1)});
 					else
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 2>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x,   y+1, z)});
 				else
 					if(z+1 < depth())
-						return math::avg({
+						return math::avg<pixel_t<ch,co>, 2>({
 							pixel<ch,co>(x,   y,   z),
 							pixel<ch,co>(x,   y,   z+1)});
 					else

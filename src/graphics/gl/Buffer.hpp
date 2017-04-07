@@ -3,8 +3,11 @@
 
 #include "../../types.hpp"
 #include "../../defines.hpp"
+
 #include "Handle.hpp"
 #include "Binding.hpp"
+
+#include "../../util/Lookup.hpp"
 
 namespace re
 {
@@ -52,12 +55,10 @@ namespace re
 			};
 
 			/** Represents an OpenGL buffer object.
-			Does not support copy operations.
-			Must be released manually.
-			Allocate / destroy multiple objects at once for more efficiency. */
+				Does not support copy operations. Must be released manually. Allocate / destroy multiple objects at once for more efficiency. */
 			class Buffer : Handle
 			{	friend class VertexArrayBase;
-				static Binding bindings[RE_COUNT(BufferType)];
+				static util::Lookup<BufferType, Binding> bindings;
 
 				BufferType m_type;
 				BufferAccess m_access;

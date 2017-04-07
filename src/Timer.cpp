@@ -1,5 +1,5 @@
 #include "Timer.hpp"
-#include "graphics/OpenGL.hpp"
+#include "graphics/gl/OpenGL.hpp"
 
 namespace re
 {

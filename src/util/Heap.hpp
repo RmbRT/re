@@ -2,7 +2,7 @@
 #define __re_util_heap_hpp_defined
 
 #include "../defines.hpp"
-#include "../types.hpp"
+#include "../base_types.hpp"
 
 #ifdef RE_DEBUG
 /** Define this to prevent the heap checks from being performed. */
@@ -39,7 +39,7 @@ namespace re
 		{
 #ifdef RE_HEAP_DEBUG
 			/** 0xfeffefee for 32 bit, 0xbabbabaafeffefee for 64 bit. */
-			size_t const heap_magic = ((size_t(0xbabbabaa) << 32) | size_t(0xfeffefee))
+			static size_t const heap_magic = ((size_t(0xbabbabaa) << 32) | size_t(0xfeffefee))
 #endif
 public:
 			struct Header;
@@ -104,7 +104,7 @@ private:
 
 			/** Returns the Header address that belongs to the beginning of a memory block. */
 			static RECX Header * get_header(void const * membegin);
-			
+
 			/** In RE_HEAP_DEBUG, validates the header and its pointers. */
 			REIL void validate_header(Header const * header) const;
 

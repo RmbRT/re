@@ -6,7 +6,7 @@ namespace re
 		{
 			return m_handle != nullptr;
 		}
-		
+
 		bool Window::fullscreen() const
 		{
 			RE_DBG_ASSERT(exists() && "Tried reading properties of nonexisting Window.");
@@ -25,7 +25,7 @@ namespace re
 			return m_iconified;
 		}
 
-		math::int2 const& Window::pixels() const
+		math::int2_t const& Window::pixels() const
 		{
 			RE_DBG_ASSERT(exists() && "Tried reading properties of nonexisting Window.");
 			return m_pixels;
@@ -37,7 +37,7 @@ namespace re
 			return m_screen_bounds;
 		}
 
-		string const& Window::title() const
+		string8_t const& Window::title() const
 		{
 			RE_DBG_ASSERT(exists() && "Tried reading properties of nonexisting Window.");
 			return m_title;
@@ -49,19 +49,19 @@ namespace re
 			return m_visible;
 		}
 
-		math::double2 const& Window::cursor() const
+		math::double2_t const& Window::cursor() const
 		{
 			RE_DBG_ASSERT(exists() && "Tried reading properties of nonexisting Window.");
 			return m_cursor;
 		}
 
-		Context & Window::context()
+		gl::Context & Window::context()
 		{
 			RE_DBG_ASSERT(exists() && "Tried reading properties of nonexisting Window.");
 			return *m_context;
 		}
 
-		Context const& Window::context() const
+		gl::Context const& Window::context() const
 		{
 			RE_DBG_ASSERT(exists() && "Tried reading properties of nonexisting Window.");
 			return *m_context;

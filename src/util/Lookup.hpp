@@ -18,22 +18,25 @@ namespace re
 			std::array<Target, RE_COUNT(Enum)> m_values;
 		public:
 			Lookup() = default;
-			RECXDA Lookup(
+			REIL Lookup(
 				std::array<
 					std::pair<
 						Enum,
 						Target>,
 					RE_COUNT(Enum)> values):
-				m_values(values.second...)
+				m_values()
 			{
 #ifdef RE_DEBUG
 				for(size_t i = 0; i<RE_COUNT(Enum); i++)
 					RE_DBG_ASSERT((values[i].first == (Enum) i
 						&& "Invalid order of lookup table entries.");
 #endif
+
+				for(size_t i = 0; i < m_values.size(); i++)
+					m_values[i] = std::move(values[i].second);
 			}
 
-			RECXDA Target operator[](
+			REIL Target const& operator[](
 				Enum index) const
 			{
 				RE_DBG_ASSERT(RE_IN_ENUM(index, Enum));

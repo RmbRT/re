@@ -14,10 +14,48 @@ namespace re
 				offset(offset)
 			{
 			}
-			
+
 			VertexArrayBase::~VertexArrayBase()
 			{
 				RE_DBG_ASSERT(!exists() && "Vertex Array was not properly destroyed!");
+			}
+
+			REIL RenderMode VertexArrayBase::render_mode() const
+			{
+				RE_DBG_ASSERT(exists());
+				return m_render_mode;
+			}
+
+			REIL size_t VertexArrayBase::index_count() const
+			{
+				RE_DBG_ASSERT(exists());
+				return m_index_count;
+			}
+
+			REIL size_t VertexArrayBase::vertex_count() const
+			{
+				RE_DBG_ASSERT(exist());
+				return m_vertex_count;
+			}
+
+			REIL size_t VertexArrayBase::element_count() const
+			{
+				RE_DBG_ASSERT(exists());
+				return m_index_used
+					? m_index_count
+					: m_vertex_count;
+			}
+
+			REIL bool VertexArrayBase::index_used() const
+			{
+				RE_DBG_ASSERT(exists());
+				return m_index_used;
+			}
+
+			REIL void VertexArrayBase::draw()
+			{
+				RE_DBG_ASSERT(exists());
+				draw(element_count(), 0);
 			}
 
 			template<class Vertex>
@@ -42,7 +80,7 @@ namespace re
 			{
 				static_assert(sizeof(VertexArray<Vertex>) == sizeof(VertexArrayBase),
 					"Must not add members to VertexArray<T>.");
-				
+
 				VertexArrayBase::destroy(arrays, count);
 			}
 

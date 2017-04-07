@@ -1,5 +1,8 @@
 #include "Bitmap.hpp"
 #include <memory>
+#include <cstring>
+
+#include "../math/MathUtil.hpp"
 
 namespace re
 {
@@ -14,15 +17,15 @@ namespace re
 			alloc(channel, component, size);
 		}
 
-		RECXDA size_of(Channel ch, Component c)
+		size_t size_of(Channel ch, Component c)
 		{
-			static int components const[] = { 1, 2, 3, 4 };
-			static int size const[] = { sizeof(float), sizeof(ubyte) };
-			
+			static int const components[] = { 1, 2, 3, 4 };
+			static int const size[] = { sizeof(float), sizeof(ubyte_t) };
+
 			RE_DBG_ASSERT(size_t(ch) < _countof(components));
 			RE_DBG_ASSERT(size_t(c) < _countof(size));
 
-			return components[ch] * size[c];
+			return components[size_t(ch)] * size[size_t(c)];
 		}
 
 		size_t Bitmap::byte_size() const
@@ -149,8 +152,46 @@ namespace re
 
 			Bitmap1D mip(channel(), component(), size() >> 1);
 
-			for(uint32_t i = mip.size(); i--;)
-				mip.pixel<ch,co>(i) = mip_near<ch,co>(i);
+			switch(channel())
+			{
+			case Channel::kR:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kR,Component::kFloat>(i) = mip_near<Channel::kR,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kR,Component::kUbyte>(i) = mip_near<Channel::kR,Component::kUbyte>(i);
+				} break;
+				case Channel::kRg:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRg,Component::kFloat>(i) = mip_near<Channel::kRg,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRg,Component::kUbyte>(i) = mip_near<Channel::kRg,Component::kUbyte>(i);
+				} break;
+				case Channel::kRgb:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgb,Component::kFloat>(i) = mip_near<Channel::kRgb,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgb,Component::kUbyte>(i) = mip_near<Channel::kRgb,Component::kUbyte>(i);
+				} break;
+				case Channel::kRgba:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgba,Component::kFloat>(i) = mip_near<Channel::kRgba,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgba,Component::kUbyte>(i) = mip_near<Channel::kRgba,Component::kUbyte>(i);
+				} break;
+			}
+
 
 			return std::move(mip);
 		}
@@ -161,9 +202,109 @@ namespace re
 			RE_DBG_ASSERT(size() > 1);
 
 			Bitmap1D mip(channel(), component(), size() >> 1);
+			switch(channel())
+			{
+			case Channel::kR:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kR,Component::kFloat>(i) = mip_lin<Channel::kR,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kR,Component::kUbyte>(i) = mip_lin<Channel::kR,Component::kUbyte>(i);
+				} break;
+				case Channel::kRg:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRg,Component::kFloat>(i) = mip_lin<Channel::kRg,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRg,Component::kUbyte>(i) = mip_lin<Channel::kRg,Component::kUbyte>(i);
+				} break;
+				case Channel::kRgb:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgb,Component::kFloat>(i) = mip_lin<Channel::kRgb,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgb,Component::kUbyte>(i) = mip_lin<Channel::kRgb,Component::kUbyte>(i);
+				} break;
+				case Channel::kRgba:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgba,Component::kFloat>(i) = mip_lin<Channel::kRgba,Component::kFloat>(i);
+					else
+						for(uint32_t i = mip.size(); i--;)
+							mip.pixel<Channel::kRgba,Component::kUbyte>(i) = mip_lin<Channel::kRgba,Component::kUbyte>(i);
+				} break;
+			}
 
-			for(uint32_t i = mip.size(); i--;)
-				mip.pixel<ch,co>(i) = mip_lin<ch,co>(i);
+			return std::move(mip);
+		}
+
+		Bitmap2D Bitmap2D::create_mipmap_lin() const
+		{
+			RE_DBG_ASSERT(exists());
+			RE_DBG_ASSERT(size() > 1);
+
+			uint32_t new_width = width() >> 1;
+			if(!new_width)
+				new_width = 1;
+			uint32_t new_height = height() >> 1;
+			if(!new_height)
+				new_height = 1;
+
+			Bitmap2D mip(channel(), component(), new_width, new_height);
+			switch(channel())
+			{
+			case Channel::kR:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kR,Component::kFloat>(x, y) = mip_lin<Channel::kR,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kR,Component::kUbyte>(x, y) = mip_lin<Channel::kR,Component::kUbyte>(x, y);
+				} break;
+				case Channel::kRg:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRg,Component::kFloat>(x, y) = mip_lin<Channel::kRg,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRg,Component::kUbyte>(x, y) = mip_lin<Channel::kRg,Component::kUbyte>(x, y);
+				} break;
+				case Channel::kRgb:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgb,Component::kFloat>(x, y) = mip_lin<Channel::kRgb,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgb,Component::kUbyte>(x, y) = mip_lin<Channel::kRgb,Component::kUbyte>(x, y);
+				} break;
+				case Channel::kRgba:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgba,Component::kFloat>(x, y) = mip_lin<Channel::kRgba,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgba,Component::kUbyte>(x, y) = mip_lin<Channel::kRgba,Component::kUbyte>(x, y);
+				} break;
+			}
 
 			return std::move(mip);
 		}
@@ -181,13 +322,58 @@ namespace re
 				new_height = 1;
 
 			Bitmap2D mip(channel(), component(), new_width, new_height);
+			switch(channel())
+			{
+			case Channel::kR:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kR,Component::kFloat>(x, y) = mip_near<Channel::kR,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kR,Component::kUbyte>(x, y) = mip_near<Channel::kR,Component::kUbyte>(x, y);
+				} break;
+				case Channel::kRg:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRg,Component::kFloat>(x, y) = mip_near<Channel::kRg,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRg,Component::kUbyte>(x, y) = mip_near<Channel::kRg,Component::kUbyte>(x, y);
+				} break;
+				case Channel::kRgb:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgb,Component::kFloat>(x, y) = mip_near<Channel::kRgb,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgb,Component::kUbyte>(x, y) = mip_near<Channel::kRgb,Component::kUbyte>(x, y);
+				} break;
+				case Channel::kRgba:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgba,Component::kFloat>(x, y) = mip_near<Channel::kRgba,Component::kFloat>(x, y);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								mip.pixel<Channel::kRgba,Component::kUbyte>(x, y) = mip_near<Channel::kRgba,Component::kUbyte>(x, y);
+				} break;
+			}
 
-			for(uint32_t x = mip.width(); x--;)
-				for(uint32_t y = mip.height(); y--;)
-					mip.pixel<ch,co>(x,y) = mip_near<ch,co>(x,y);
+			return std::move(mip);
 		}
 
-		Bitmap2D Bitmap2D::create_mipmap_near() const
+		Bitmap3D Bitmap3D::create_mipmap_lin() const
 		{
 			RE_DBG_ASSERT(exists());
 			RE_DBG_ASSERT(size() > 1);
@@ -198,12 +384,66 @@ namespace re
 			uint32_t new_height = height() >> 1;
 			if(!new_height)
 				new_height = 1;
+			uint32_t new_depth = depth() >> 1;
+			if(!new_depth)
+				new_depth = 1;
 
-			Bitmap2D mip(channel(), component(), new_width, new_height);
-
-			for(uint32_t x = mip.width(); x--;)
-				for(uint32_t y = mip.height(); y--;)
-					mip.pixel<ch,co>(x,y) = mip_lin<ch,co>(x,y);
+			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
+			switch(channel())
+			{
+			case Channel::kR:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kR,Component::kFloat>(x, y, z) = mip_lin<Channel::kR,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kR,Component::kUbyte>(x, y, z) = mip_lin<Channel::kR,Component::kUbyte>(x, y, z);
+				} break;
+				case Channel::kRg:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRg,Component::kFloat>(x, y, z) = mip_lin<Channel::kRg,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRg,Component::kUbyte>(x, y, z) = mip_lin<Channel::kRg,Component::kUbyte>(x, y, z);
+				} break;
+				case Channel::kRgb:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgb,Component::kFloat>(x, y, z) = mip_lin<Channel::kRgb,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgb,Component::kUbyte>(x, y, z) = mip_lin<Channel::kRgb,Component::kUbyte>(x, y, z);
+				} break;
+				case Channel::kRgba:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgba,Component::kFloat>(x, y, z) = mip_lin<Channel::kRgba,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgba,Component::kUbyte>(x, y, z) = mip_lin<Channel::kRgba,Component::kUbyte>(x, y, z);
+				} break;
+			}
 
 			return std::move(mip);
 		}
@@ -225,35 +465,61 @@ namespace re
 
 			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
 
-			for(uint32_t x = mip.width(); x--;)
-				for(uint32_t y = mip.height(); y--;)
-					for(uint32_t z = mip.depth(); z--;)
-						mip.pixel<ch,co>(x,y,z) = mip_near<ch,co>(x,y,z);
-
-			return std::move(mip);
-		}
-
-		Bitmap3D Bitmap3D::create_mipmap_near() const
-		{
-			RE_DBG_ASSERT(exists());
-			RE_DBG_ASSERT(size() > 1);
-
-			uint32_t new_width = width() >> 1;
-			if(!new_width)
-				new_width = 1;
-			uint32_t new_height = height() >> 1;
-			if(!new_height)
-				new_height = 1;
-			uint32_t new_depth = depth() >> 1;
-			if(!new_depth)
-				new_depth = 1;
-
-			Bitmap3D mip(channel(), component(), new_width, new_height, new_depth);
-
-			for(uint32_t x = mip.width(); x--;)
-				for(uint32_t y = mip.height(); y--;)
-					for(uint32_t z = mip.depth(); z--;)
-						mip.pixel<ch,co>(x,y,z) = mip_lin<ch,co>(x,y,z);
+			switch(channel())
+			{
+			case Channel::kR:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kR,Component::kFloat>(x, y, z) = mip_near<Channel::kR,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kR,Component::kUbyte>(x, y, z) = mip_near<Channel::kR,Component::kUbyte>(x, y, z);
+				} break;
+				case Channel::kRg:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRg,Component::kFloat>(x, y, z) = mip_near<Channel::kRg,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRg,Component::kUbyte>(x, y, z) = mip_near<Channel::kRg,Component::kUbyte>(x, y, z);
+				} break;
+				case Channel::kRgb:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgb,Component::kFloat>(x, y, z) = mip_near<Channel::kRgb,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgb,Component::kUbyte>(x, y, z) = mip_near<Channel::kRgb,Component::kUbyte>(x, y, z);
+				} break;
+				case Channel::kRgba:
+				{
+					if(component() == Component::kFloat)
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgba,Component::kFloat>(x, y, z) = mip_near<Channel::kRgba,Component::kFloat>(x, y, z);
+					else
+						for(uint32_t x = mip.width(); x--;)
+							for(uint32_t y = mip.height(); y--;)
+								for(uint32_t z = mip.depth(); z--;)
+									mip.pixel<Channel::kRgba,Component::kUbyte>(x, y, z) = mip_near<Channel::kRgba,Component::kUbyte>(x, y, z);
+				} break;
+			}
 
 			return std::move(mip);
 		}

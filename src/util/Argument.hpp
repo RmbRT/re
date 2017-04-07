@@ -31,7 +31,7 @@ namespace re
 				::type;
 
 		template<class T>
-		using move_arg_t = std::conditional<
+		using move_arg_t = typename std::conditional<
 			sizeof(T) <= sizeof(void*)
 			&& std::is_trivially_copy_constructible<T>::value
 			&& std::is_trivially_move_constructible<T>::value,
@@ -40,7 +40,7 @@ namespace re
 				::type;
 #endif
 
-		
+
 	}
 }
 

@@ -94,7 +94,6 @@ namespace re
 		template<class T>
 		Emitter<T>::~Emitter()
 		{
-			
 			for(auto recv : recvs)
 			{
 				if(recv->emitters.empty())
@@ -102,7 +101,7 @@ namespace re
 
 
 				if(!recv->emitters.empty())
-					for(std::vector<Emitter<T>*>::iterator it = recv->emitters.begin(); it != recv->emitters.end(); it++)
+					for(typename std::vector<Emitter<T>*>::iterator it = recv->emitters.begin(); it != recv->emitters.end(); it++)
 						if(*it == this)
 						{
 							recv->emitters.erase(it);

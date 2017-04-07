@@ -2,30 +2,39 @@
 
 namespace re
 {
-	Model::Model(strong_handle<graphics::Material> mat, strong_handle<graphics::ShaderProgram> shader, strong_handle<graphics::VertexData> vertexData, strong_handle<graphics::Texture> texture) : material(mat), shader(shader), vertexData(vertexData), texture(texture) { }
+	Model::Model(
+		Shared<graphics::Material> mat,
+		Shared<graphics::gl::ShaderProgram> shader,
+		Shared<graphics::gl::VertexArrayBase> vertex_data,
+		Shared<graphics::gl::Texture> texture):
+		m_material(std::move(mat)),
+		m_shader(std::move(shader)),
+		m_vertex_data(std::move(vertex_data)),
+		m_texture(std::move(texture))
+	{
+	}
+
 	void Model::passMaterial() const
 	{
-		shader->use();
-		shader->setUniform("RE_MAT_AMBIENT", material->ambient);
-		shader->setUniform("RE_MAT_DIFFUSE", material->diffuse);
-		shader->setUniform("RE_MAT_SPECULAR", material->specular);
-		shader->setUniform("RE_MAT_SHININESS", material->shininess);
-		shader->setUniform("texture_color", 0);
+		m_shader->use();
+		m_shader->set_uniform("RE_MAT_AMBIENT", m_material->ambient);
+		m_shader->set_uniform("RE_MAT_DIFFUSE", m_material->diffuse);
+		m_shader->set_uniform("RE_MAT_SPECULAR", m_material->specular);
+		m_shader->set_uniform("RE_MAT_SHININESS", m_material->shininess);
+		m_shader->set_uniform("texture_color", 0);
 	}
-	const math::fAABB &Model::getAABB() const
+
+	Shared<graphics::gl::VertexArrayBase> const& Model::vertex_data() const&
 	{
-		return vertexData->getAABB();
+		return m_vertex_data;
 	}
-	strong_handle<graphics::VertexData> Model::getVertexData() const
-	{
-		return vertexData;
-	}
-	void Model::draw(const math::fmat4x4 &mvp) const
+	void Model::draw(
+		const math::fmat4x4_t &mvp) const
 	{
 		passMaterial();
-		texture->bind();
-		shader->setUniform("RE_MVP", mvp);
-		vertexData->bind();
-		vertexData->draw();
+		m_texture->bind();
+		m_shader->set_uniform("RE_MVP", mvp);
+		m_vertex_data->bind();
+		m_vertex_data->draw();
 	}
 }

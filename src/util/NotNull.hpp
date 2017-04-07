@@ -4,6 +4,7 @@
 #define __re_util_notnull_hpp_defined
 
 #include "../defines.hpp"
+#include <type_traits>
 
 namespace re
 {
@@ -17,16 +18,27 @@ namespace re
 		{
 			T* m_data;
 		public:
+
+			NotNull(nullptr_t) = delete;
+
 			/** Constructs a non-null pointer.
 			@assert
 				The given pointer must not be null. */
-			RECXDA NotNull(T *data);
+			RECXDA NotNull(T * data);
+
+			template<class X>
+			RECXDA explicit NotNull(X * data);
 
 			/** Returns the pointer held by the structure. */
-			RECX operator T*() const;
+			RECXDA operator T*() const;
 
-			RECX T * operator->() const;
-			RECX T & operator*() const;
+			RECXDA T * operator->() const;
+			RECXDA T & operator*() const;
+
+			template<class X>
+			RECXDA operator typename std::enable_if<
+				std::is_convertible<T *, X *>::value,
+				X *>::type () const;
 		};
 
 		template<class T>
@@ -42,6 +54,9 @@ namespace re
 		template<class T>
 		/** Shorthand notation that allows omitting the template argument. */
 		RECX NotNull<T> notNull(T *);
+
+		template<class To, class From>
+		RECXDA NotNull<To> reinterpret(NotNull<From>);
 	}
 }
 

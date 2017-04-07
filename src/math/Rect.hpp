@@ -23,5 +23,6 @@ namespace re
 	}
 }
 
+#include "Rect.inl"
 
 #endif

@@ -9,7 +9,7 @@ namespace re
 		namespace gl
 		{
 
-			RECXDA GLenum get_internalformat(
+			static RECXDA GLenum get_internalformat(
 				graphics::Channel channel)
 			{
 				static util::Lookup<Channel, GLenum> const k_lookup = {
@@ -22,13 +22,13 @@ namespace re
 				return k_lookup[channel];
 			}
 
-			RECXDA GLenum get_format(
+			static RECXDA GLenum get_format(
 				Channel channel)
 			{
 				return get_internalformat(channel);
 			}
 
-			GLenum get_type(
+			static GLenum get_type(
 				Component component)
 			{
 				static util::Lookup<Component, GLenum> const k_lookup = {
@@ -39,24 +39,24 @@ namespace re
 				return k_lookup[component];
 			}
 
-			RECXDA GLenum get_target(
+			static RECXDA GLenum get_target(
 				TextureType type)
 			{
 				RE_DBG_ASSERT(RE_IN_ENUM(type, Texturetype));
 
 
 				static util::Lookup<TextureType, GLenum> const k_targets = {
-					{TextureType::k1D, GL_TEXTURE_1D},
-					{TextureType::k2D, GL_TEXTURE_2D},
-					{TextureType::k3D, GL_TEXTURE_3D},
-					{TextureType::k2DMultisample, GL_TEXTURE_2D_MULTISAMPLE},
-					{TextureType::k1DArray, GL_TEXTURE_1D_ARRAY},
-					{TextureType::k2DArray, GL_TEXTURE_2D_ARRAY},
-					{TextureType::k2DMultisampleArray, GL_TEXTURE_2D_MULTISAMPLE_ARRAY},
-					{TextureType::kRectangle, GL_TEXTURE_RECTANGLE},
-					{TextureType::kCubeMap, GL_TEXTURE_CUBE_MAP,
-					{TextureType::kCubeMapArray, GL_TEXTURE_CUBE_MAP_ARRAY},
-					{TextureType::kBuffer, GL_TEXTURE_BUFFER}
+					{ TextureType::k1D, GL_TEXTURE_1D },
+					{ TextureType::k2D, GL_TEXTURE_2D },
+					{ TextureType::k3D, GL_TEXTURE_3D },
+					{ TextureType::k2DMultisample, GL_TEXTURE_2D_MULTISAMPLE },
+					{ TextureType::k1DArray, GL_TEXTURE_1D_ARRAY },
+					{ TextureType::k2DArray, GL_TEXTURE_2D_ARRAY },
+					{ TextureType::k2DMultisampleArray, GL_TEXTURE_2D_MULTISAMPLE_ARRAY },
+					{ TextureType::kRectangle, GL_TEXTURE_RECTANGLE },
+					{ TextureType::kCubeMap, GL_TEXTURE_CUBE_MAP },
+					{ TextureType::kCubeMapArray, GL_TEXTURE_CUBE_MAP_ARRAY },
+					{ TextureType::kBuffer, GL_TEXTURE_BUFFER }
 				};
 
 				return k_targets[type];
@@ -226,6 +226,8 @@ namespace re
 					get_format(channel),
 					get_type(component),
 					nullptr));
+
+				m_size = size;
 			}
 
 			void Texture2D::set_texels(
@@ -248,28 +250,6 @@ namespace re
 					texels.data()));
 			}
 
-			void Texture2D::resize(
-				uint_t width,
-				uint_t height,
-				Channel channel,
-				Component component)
-			{
-				RE_DBG_ASSERT(exists());
-
-				bind();
-
-				RE_OGL(glTexImage2d(
-					GL_TEXTURE_2D,
-					0,
-					get_internalformat(ch),
-					width,
-					height,
-					0,
-					get_format(ch),
-					get_type(co),
-					nullptr));
-			}
-
 			void Texture2D::set_texels_mipmap(
 				Bitmap2D const& base_texels,
 				MipmapFilter filter)
@@ -285,16 +265,16 @@ namespace re
 				if(base_texels.size() > 1)
 				{
 					mip = (filter == MipmapFilter::kNearest)
-						? base_texels.mipmap_near()
-						: base_texels.mipmap_lin();
+						? base_texels.create_mipmap_near()
+						: base_texels.create_mipmap_lin();
 					set_texels(mip, 1);
 
 					uint_t lod = 1;
 					while(mip.size() > 1)
 					{
 						mip = (filter == MipmapFilter::kNearest)
-							? mip.mipmap_near()
-							: mip.mipmap_lin();
+							? mip.create_mipmap_near()
+							: mip.create_mipmap_lin();
 						set_texels(mip, ++lod);
 					}
 
@@ -302,6 +282,68 @@ namespace re
 				} else
 					return 0;
 			}
+
+			void Texture2D::resize(
+				uint_t width,
+				uint_t height,
+				Channel channel,
+				Component component)
+			{
+				RE_DBG_ASSERT(exists());
+
+				RE_DBG_ASSERT(width > 0);
+				RE_DBG_ASSERT(height > 0);
+
+				bind();
+
+				m_width = width;
+				m_height = height;
+
+				uint_t lod = 0;
+				while(width >= 1 && height >= 1)
+				{
+					RE_OGL(glTexImage2d(
+						GL_TEXTURE_2D,
+						lod++,
+						get_internalformat(ch),
+						width,
+						height,
+						0,
+						get_format(ch),
+						get_type(co),
+						nullptr));
+
+					width >>= 1;
+					height >>= 1;
+				}
+			}
+
+			void Texture3D::set_texels(
+				Bitmap3D const& texels,
+				uint_t lod)
+			{
+				RE_DBG_ASSERT(exists());
+
+				bind();
+
+				RE_OGL(glTexImage3d(
+					GL_TEXTURE_3D,
+					lod,
+					get_internalformat(texels.channel()),
+					texels.width(),
+					texels.height(),
+					texels.depth(),
+					0,
+					get_format(texels.channel()),
+					get_type(texels.component()),
+					texels.data()));
+
+				m_width = texels.width();
+				m_height = texels.height();
+				m_depth = texels.depth();
+			}
+
+			void Texture
 		}
 	}
 }

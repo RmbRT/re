@@ -24,9 +24,9 @@ namespace re
 			{
 				/** The comment line before the line that stores the key and value.
 					This is used when generating IniFiles, to create a documentation of the values. */
-				string m_comment;
+				string8_t m_comment;
 				/** The key. */
-				string m_key;
+				string8_t m_key;
 				/** Determines what field to use as value. */
 				EntryValue m_value_type;
 				/** Compact storage of the parsed value. */
@@ -37,16 +37,16 @@ namespace re
 					bool Bool;
 				} m_parsed;
 				/** The value as it is written in the IniFile. */
-				string m_content;
+				string8_t m_content;
 			public:
 				/** Creates an empty Entry. */
 				Entry();
-				/** Creates an Entry with the given key and the given string as value.
+				/** Creates an Entry with the given key and the given string8_t as value.
 				@param[in] key:
 					The name of the property stored by this Entry.
 				@param[in] parsed:
 					The value of the property stored by this Entry. */
-				Entry(string key, string parsed, string comment);
+				Entry(string8_t key, string8_t parsed, string8_t comment);
 				/** Creates an Entry with the given key and the given int as value.
 				@param[in] key:
 					The name of the property stored by this Entry.
@@ -54,7 +54,7 @@ namespace re
 					The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
 					The parsed integer value of the property stored by this Entry. */
-				Entry(string key, string content, string comment, int parsed);
+				Entry(string8_t key, string8_t content, string8_t comment, int parsed);
 				/** Creates an Entry with the given key and the given float as value.
 				@param[in] key:
 					The name of the property stored by this Entry.
@@ -62,7 +62,7 @@ namespace re
 					The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
 					The parsed float value of the property stored by this Entry. */
-				Entry(string key, string content, string comment, float parsed);
+				Entry(string8_t key, string8_t content, string8_t comment, float parsed);
 				/** Creates an Entry with the given key and the given bool as value.
 				@param[in] key:
 					The name of the property stored by this Entry.
@@ -70,15 +70,15 @@ namespace re
 					The value of the property stored by this Entry, as it is written in the IniFile.
 				@param[in] parsed:
 					The parsed bool value of the property stored by this Entry. */
-				Entry(string key, string content, string comment, bool parsed);
+				Entry(string8_t key, string8_t content, string8_t comment, bool parsed);
 
 				/** Determines what type the value of this Entry has. */
-				RECX EntryValue value_type() const;
+				REIL EntryValue value_type() const;
 
 				/** Retrieves the stored value into the given float.
 					If the stored value is a bool, stores 1.f or 0.f.
 					If the stored value is an int, stores the float representing the int.
-					If the stored value is a string, fails.
+					If the stored value is a string8_t, fails.
 				@param[out] out:
 					Where the output should be stored.
 				@return
@@ -87,7 +87,7 @@ namespace re
 				/** Retrieves the stored value into the given integer.
 					If the stored value is a bool, sets out to 1 or 0.
 					If the stored value is a float, casts the stored float into out.
-					If the stored value is a string, fails.
+					If the stored value is a string8_t, fails.
 				@param[out] out:
 					Where the output should be stored.
 				@return
@@ -96,7 +96,7 @@ namespace re
 
 				/** Retrieves the stored value into the given bool.
 					If the stored value is an int or float, sets out to true, when the stored value is not 0.
-					If the stored value is a string, fails.
+					If the stored value is a string8_t, fails.
 				@param[out] out:
 					Where the output should be stored.
 				@return
@@ -104,24 +104,23 @@ namespace re
 				bool to_bool(bool & out) const;
 
 				/** Retrieves the stored value as it was written in the file. */
-				RECX string const& content() const;
+				REIL string8_t const& content() const;
 				/** Returns the key of the Entry. */
-				RECX string const& key() const;
+				REIL string8_t const& key() const;
 				/** Returns the comment of the Entry. */
-				RECX string const& comment() const;
+				REIL string8_t const& comment() const;
 			};
 
 			/** Describes a section ("[sectionname]") of an IniFile. */
 			struct Section
 			{
 				/** The name of the section. */
-				string name;
+				string8_t name;
 				/** The contents of the section. */
 				std::vector<Entry> entries;
 				/** The comment line before the section line.
 					This is used for the creation of IniFiles, to create a documentation. */
-				string comment;
-				
+				string8_t comment;
 
 				/** Tries to find an Entry with the given name.
 				@param[in] name:
@@ -136,9 +135,9 @@ namespace re
 					If an Entry with a matching name was found, returns its address, otherwise null. */
 				Entry const* find_entry(char const * name) const;
 				/** @see find_entry. */
-				RECX14 Entry * operator[](char const * name);
+				REIL Entry * operator[](char const * name);
 				/** @see find_entry. */
-				RECX Entry const* operator[](char const * name) const;
+				REIL Entry const* operator[](char const * name) const;
 			};
 
 			/** Represents a .ini file. */
@@ -152,15 +151,15 @@ namespace re
 				/** Reads a Section out of the given lines.
 				@return
 					The number of lines consumed. */
-				int section(std::vector<string> const& lines, const int current_line, Section & out);
+				int section(std::vector<string8_t> const& lines, const int current_line, Section & out);
 				/** Reads an Entry out of the given lines.
 				@return
 					The number of lines consumed. */
-				int entry(std::vector<string> const& lines, const int current_line, Entry & out);
+				int entry(std::vector<string8_t> const& lines, const int current_line, Entry & out);
 				/** Reads a comment out of the given lines.
 				@return
 					The number of lines consumed. */
-				int comment(std::vector<string> const& lines, const int current_line, string & out);
+				int comment(std::vector<string8_t> const& lines, const int current_line, string8_t & out);
 
 			public:
 
@@ -172,14 +171,14 @@ namespace re
 				Section const* find_section(char const * name) const;
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section. */
-				RECX14 Section * operator[](char const * name);
+				REIL Section * operator[](char const * name);
 				/** Tries to find the Section with the given name.
 					Pass "" for the unnamed section. */
-				RECX Section const* operator[](char const * name) const;
+				REIL Section const* operator[](char const * name) const;
 				/** Returns the unnamed / default Section of the file. */
-				RECX14 Section & unnamed_section();
+				REIL Section & unnamed_section();
 				/** Returns the unnamed / default Section of the file. */
-				RECX Section const& unnamed_section() const;
+				REIL Section const& unnamed_section() const;
 
 				/** Tries to load the given file. */
 				bool load(char const * filename);

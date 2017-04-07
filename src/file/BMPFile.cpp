@@ -1,5 +1,6 @@
 #include "BMPFile.hpp"
 #include "../util/Error.hpp"
+#include <fstream>
 
 namespace re
 {
@@ -39,32 +40,32 @@ namespace re
 #define _addr(X) &reinterpret_cast<char&>(X)
 #define _readobj(X) read(_addr(X), sizeof(X))
 
-		bool load_bmp(char const* file, Bitmap2D & out)
+		bool load_bmp(char const* file, graphics::Bitmap2D & out)
 		{
 			std::ifstream is(file, std::ios::binary | std::ios::in);
 
 			BitmapFileHeader fh;
-			CRITICAL_DBG_LOG(is.read(_addr(fh), 14),
+			RE_CRITICAL_DBG_LOG(is.read(_addr(fh), 14),
 				"read bitmap file header", false);
 
 			uint32_t headerSize;
-			CRITICAL_DBG_LOG(is._readobj(headerSize),
+			RE_CRITICAL_DBG_LOG(is._readobj(headerSize),
 				"read bitmap header size", false);
 
 			BitmapInfoHeader header;
 			//CRITICAL(HeaderSize == 40, false);
-			CRITICAL_DBG_LOG(is.read(_addr(header)+sizeof(header.m_size), 36),
+			RE_CRITICAL_DBG_LOG(is.read(_addr(header)+sizeof(header.m_size), 36),
 				"read bitmap info header", false);
 
 			byte_t skip;
 			for(size_t i = 0; i<headerSize-40; i++)
-				CRITICAL_DBG_LOG(is._readobj(skip),
+				RE_CRITICAL_DBG_LOG(is._readobj(skip),
 					"skip unused bytes", false);
 
-			CRITICAL_DBG_LOG(header.m_bit_count == 8 || header.m_bit_count >= 24,
+			RE_CRITICAL_DBG_LOG(header.m_bit_count == 8 || header.m_bit_count >= 24,
 				"unsupported bitmap bits", false);
 
-			CRITICAL_DBG_LOG(header.m_compression == Compression::Rgb,
+			RE_CRITICAL_DBG_LOG(header.m_compression == Compression::Rgb,
 				"check for supported compression", false);
 
 			switch(header.m_bit_count)
@@ -72,10 +73,10 @@ namespace re
 			case 8:
 				{
 					out.alloc(
-						graphics::Channel::R,
-						graphics::Component::Ubyte,
+						graphics::Channel::kR,
+						graphics::Component::kUbyte,
 						header.m_width,
-						header.m_weight);
+						header.m_height);
 
 					const size_t row_w = header.m_width;
 
@@ -83,20 +84,20 @@ namespace re
 
 					for(uint32_t y = 0; y < header.m_height; y++)
 					{
-						CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
+						RE_CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
 							"read pixel row", false);
 						for(uint32_t x = 0; x<header.m_width; x++)
-							data.pixel<
-								graphics::Channel::R,
-								graphics::Component::Ubyte>(x,y)
+							out.pixel<
+								graphics::Channel::kR,
+								graphics::Component::kUbyte>(x,y)
 								= row[x];
 					}
 				} break;
 			case 24:
 				{
 					out.alloc(
-						graphics::Channel::Rgb,
-						graphics::Component::Ubyte,
+						graphics::Channel::kRgb,
+						graphics::Component::kUbyte,
 						header.m_width,
 						header.m_height);
 
@@ -106,26 +107,26 @@ namespace re
 					std::vector<ubyte_t> row(row_w);
 					for(uint32_t y = 0; y < header.m_height; y++)
 					{
-						CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
+						RE_CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
 							"read pixel row", false);
-						for(uint32_t x = 0; x<header.m_hidth; x++)
+						for(uint32_t x = 0; x<header.m_width; x++)
 						{
 							const size_t base_off = 3*x;
 							ubyte_t r = row[base_off+2];
 							ubyte_t g = row[base_off+1];
 							ubyte_t b = row[base_off];
 							out.pixel<
-								graphics::Channel::Rgb,
-								graphics::Component::Ubyte>(x,y)
-								= math::vec3<ubyte_t>(r,g,b);
+								graphics::Channel::kRgb,
+								graphics::Component::kUbyte>(x,y)
+								= math::Vec3<ubyte_t>(r,g,b);
 						}
 					}
 				} break;
 			case 32:
 				{
 					out.alloc(
-						graphics::Channel::Rgba,
-						graphics::Component::Ubyte,
+						graphics::Channel::kRgba,
+						graphics::Component::kUbyte,
 						header.m_width,
 						header.m_height);
 
@@ -134,26 +135,26 @@ namespace re
 					std::vector<ubyte_t> row(row_w);
 					for(size_t y = 0; y < header.m_height; y++)
 					{
-						CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
+						RE_CRITICAL_DBG_LOG(is.read(_addr(row[0]), row.size()),
 							"read pixel row", false);
 						for(size_t x = 0; x<header.m_width; x++)
 						{
 							const size_t base_off = x<<2;
-							byte a = row[base_off+3];
-							byte r = row[base_off+2];
-							byte g = row[base_off+1];
-							byte b = row[base_off];
+							byte_t a = row[base_off+3];
+							byte_t r = row[base_off+2];
+							byte_t g = row[base_off+1];
+							byte_t b = row[base_off];
 
 							out.pixel<
-								graphics::Channel::Rgba,
-								graphics::Component::Ubyte>(x,y)
-								= math::vec4<ubyte_t>(r,g,b,a);
+								graphics::Channel::kRgba,
+								graphics::Component::kUbyte>(x,y)
+								= math::Vec4<ubyte_t>(r,g,b,a);
 						}
 					}
 				} break;
 			default:
 				{
-					CRITICAL_DBG_LOG(false,
+					RE_CRITICAL_DBG_LOG(false,
 						"identify channel count", false);
 				} break;
 			}

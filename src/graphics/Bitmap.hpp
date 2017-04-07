@@ -44,11 +44,11 @@ namespace re
 			template<Component kComponent>
 			struct Pixel<Channel::kR, kComponent> { typedef component_t<kComponent> type; };
 			template<Component kComponent>
-			struct Pixel<Channel::kRg, kComponent> { typedef math::vec2<component_t<kComponent>> type; };
+            struct Pixel<Channel::kRg, kComponent> { typedef math::Vec2<component_t<kComponent>> type; };
 			template<Component kComponent>
-			struct Pixel<Channel::kRgb, kComponent> { typedef math::vec3<component_t<kComponent>> type; };
+            struct Pixel<Channel::kRgb, kComponent> { typedef math::Vec3<component_t<kComponent>> type; };
 			template<Component kComponent>
-			struct Pixel<Channel::kRgba, kComponent> { typedef math::vec4<component_t<kComponent>> type; };
+            struct Pixel<Channel::kRgba, kComponent> { typedef math::Vec4<component_t<kComponent>> type; };
 
 		}
 

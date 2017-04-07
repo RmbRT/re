@@ -1,16 +1,16 @@
 #ifndef __re_graphics_opengl_hpp_defined
 #define __re_graphics_opengl_hpp_defined
 
-#include <gl3/glew.h>
-#include <gl3/wglew.h>
-#define GLFW_INCLUDE_NONE
+//#include <gl3/glew.h>
+//#include <gl3/wglew.h>
+//#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <string>
 #include "../../LogFile.hpp"
 
 #define GL_ERROR_CHECK(X) ::re::graphics::gl::error_check(__FILE__, __LINE__, X, __FUNCTION__)
 #ifdef RE_DEBUG
-#define RE_OGL(X) ((void)(((X), GL_ERROR_CHECK(#X)), 0))
+#define RE_OGL(X) ((void)(((X), 0) || (GL_ERROR_CHECK(#X), 0)))
 #else
 #define RE_OGL(X) ((void)(X))
 #endif

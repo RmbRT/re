@@ -15,7 +15,7 @@ namespace re
 	{
 		template<class C>
 		size_t strlen(
-			NotNull<C const> ptr)
+			util::NotNull<C const> ptr)
 		{
 			size_t len = 0;
 			while(*ptr++)
@@ -26,7 +26,7 @@ namespace re
 
 	template<class C>
 	String<C>::String(
-		NotNull<C const> ptr):
+		util::NotNull<C const> ptr):
 		m_data(nullptr),
 		m_size(0),
 		m_capacity(0)
@@ -56,12 +56,22 @@ namespace re
 
 	template<class C>
 	String<C> &String<C>::operator=(
-		NotNull<C const> ptr)
+		util::NotNull<C const> ptr)
 	{
 		resize(detail::strlen(ptr));
 		for(size_t i = m_size; i--;)
 			m_data[i] = ptr[i];
 	}
+
+	/*
+	template<class C>
+	typename std::enable_if<
+		!std::is_same<C, typename String<C>::stdchar_t>::value,
+		String<C>>::type &String<C>::operator=(
+		util::NotNull<typename String<C>::stdchar_t const> ptr)
+	{
+		return *this = reinterpret_cast<util::NotNull<C const>&>(ptr);
+	} */
 
 	template<class C>
 	String<C> &String<C>::operator=(
@@ -97,7 +107,7 @@ namespace re
 
 	template<class C>
 	bool String<C>::operator==(
-		NotNull<C const> rhs) const
+		util::NotNull<C const> rhs) const
 	{
 		if(!m_size)
 			return *rhs == (C) '\0';
@@ -107,6 +117,30 @@ namespace re
 				return false;
 
 		return !rhs[m_size];
+	}
+
+	/*
+	template<class C>
+	REIL bool String<C>::operator==(
+			util::NotNull<typename String<C>::stdchar_t const> rhs) const
+	{
+		return *this == (util::NotNull<C const>) rhs;
+	}*/
+
+	template<class C>
+	String<C> &String<C>::operator+=(
+			util::NotNull<C const> rhs)
+	{
+		append(rhs);
+		return *this;
+	}
+
+	template<class C>
+	String<C> &String<C>::operator+=(
+			String<C> const& rhs)
+	{
+		append(rhs.data(), rhs.size());
+		return *this;
 	}
 
 	template<class C>
@@ -140,7 +174,18 @@ namespace re
 	}
 
 	template<class C>
-	NotNull<C const> String<C>::content() const
+	REIL util::NotNull<typename String<C>::stdchar_t const> String<C>::c_str() const
+	{
+		return empty()
+			? ""
+			: reinterpret_cast<
+				util::NotNull<
+					typename detail::to_std_char<C>::type const>
+					const&>(m_data);
+	}
+
+	template<class C>
+	util::NotNull<C const> String<C>::content() const
 	{
 		return empty()
 			? &s_empty
@@ -159,7 +204,9 @@ namespace re
 	{
 		if(m_capacity < capacity)
 		{
-			m_data = (C*)realloc(m_data.release(), capacity);
+			m_data = (C*)realloc(
+				m_data.release(),
+				sizeof(C) * (capacity + 1));
 			m_capacity = capacity;
 		}
 	}
@@ -169,8 +216,8 @@ namespace re
 		size_t size)
 	{
 		if(capacity() < size)
-			reserve(size+1);
-		
+			reserve(size + 1);
+
 		if(this->size() < size)
 		{	// grow.
 			m_data[m_size] = '\0';
@@ -189,5 +236,22 @@ namespace re
 		m_capacity = 0;
 	}
 
+	template<class C>
+	REIL void String<C>::append(
+		util::NotNull<C const> other)
+	{
+		append(other, detail::strlen(other));
+	}
 
+	template<class C>
+	void String<C>::append(
+		util::NotNull<C const> other,
+		size_t length)
+	{
+		size_t end = m_size;
+		resize(m_size + length);
+
+		for(size_t i = length; i--;)
+			m_data[end + i] = other[i];
+	}
 }
