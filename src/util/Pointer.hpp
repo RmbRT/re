@@ -32,7 +32,7 @@ namespace re
 			RECX operator bool() const;
 
 			template<class ...Args>
-			Shared<T> alloc(Args && ...);
+			static Shared<T> alloc(Args && ...);
 		};
 
 		template<class T>
@@ -49,6 +49,8 @@ namespace re
 			Auto(T *);
 			Auto<T> &operator=(T *);
 			~Auto();
+
+			REIL operator bool() const;
 
 			/** Releases the pointer without freeing it.
 				This resets the pointer to null.

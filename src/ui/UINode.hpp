@@ -3,8 +3,8 @@
 
 #include "../types.hpp"
 #include "../math/Vector.hpp"
-#include "../graphics/Texture.hpp"
-#include "../graphics/VertexData.hpp"
+#include "../graphics/gl/Texture.hpp"
+#include "Rendering.hpp"
 #include "Label.hpp"
 #include "layout/Layout.hpp"
 #include "../graphics/RenderSession.hpp"
@@ -17,69 +17,102 @@ namespace re
 		Contains a Box Model representation, similar to the one found in HTML / CSS.
 		Contains a list of UINodes as children.
 		@usage:
-			Deriving classes should override the method @[updateModels] to create a custom look. */
+			Deriving classes should override the method `update_models()` to create a custom look. */
 		class UINode
 		{
 		protected:
-			UINode *parent;
-			
-			strong_handle<UINode> prev_sibling;
-			strong_handle<UINode> next_sibling;
+			/** The parent UINode, if any. */
+			UINode * m_parent;
 
-			std::vector<strong_handle<UINode>> children;
+			/** The previous sibling within the same parent node. */
+			UINode * m_prev_sibling;
+			/** The next sibling within the same parent node. */
+			UINode * m_next_sibling;
 
-			string name;
-			
-			strong_handle<Font> font;
+			/** This node's children. */
+			std::vector<Auto<UINode>> m_children;
 
-			math::vec2<layout::Align> align;
-			
-			math::vec2<layout::Size> position;
-			math::vec2<layout::Size> min_size;
-			math::vec2<layout::Size> max_size;
+			/** This node's internal name. */
+			string8_t m_name;
 
-			layout::Box<layout::Size> margin;
-			layout::Box<layout::Size> padding;
-			layout::Box<layout::Border> border;
+			/** This node's default font.
+				This is used for inheriting fonts from parent nodes. */
+			Shared<Font> m_font;
 
-			layout::Image border_corner_top_left,
-				border_corner_top_right,
-				border_corner_bottom_left,
-				border_corner_bottom_right;
+			/** This node's alignment. */
+			math::Vec2<layout::Align> m_align;
 
-			strong_handle<graphics::VertexData>
-				border_corner_top_left_model,
-				border_corner_top_right_model,
-				border_corner_bottom_left_model,
-				border_corner_bottom_right_model;
+			/** The node's position. */
+			math::Vec2<layout::Size> m_position;
+			/** The node's minimum size. */
+			math::Vec2<layout::Size> m_min_size;
+			/** The node's maximum size. */
+			math::Vec2<layout::Size> m_max_size;
 
-			layout::Image background;
+			/** The node's margin around its edges. */
+			layout::Box<layout::Size> m_margin;
+			/** The node's padding within its edges. */
+			layout::Box<layout::Size> m_padding;
+			/** The node's border. */
+			layout::Box<layout::Border> m_border;
 
-			layout::Display display;
+			/** The border's corner images. */
+			layout::Image m_border_corner_top_left,
+				m_border_corner_top_right,
+				m_border_corner_bottom_left,
+				m_border_corner_bottom_right;
 
-			math::vec2<layout::ScrollBar> scrollbars;
+			/** The border's corner models. */
+			VertexArray
+				m_border_corner_top_left_model,
+				m_border_corner_top_right_model,
+				m_border_corner_bottom_left_model,
+				m_border_corner_bottom_right_model;
 
-			mutable strong_handle<graphics::VertexData> background_model;
-			mutable strong_handle<graphics::VertexData> border_model;
-			mutable strong_handle<graphics::VertexData> border_corner_model;
+			/** The node's background image. */
+			layout::Image m_background;
 
-			mutable bool invalid_background_model;
-			mutable bool invalid_border_model;
-			mutable bool invalid_children;
+			/** The node's display behaviour. */
+			layout::Display m_display;
 
-			// invalidates the calculated width and height, and the border and background models, and the children.
-			void contentChanged() const;
+			/** The node's scrollbars. */
+			math::Vec2<layout::ScrollBar> m_scrollbars;
 
-			// called by @[update].
-			virtual void updateModels() const;
-			virtual void updateBorderModel() const;
-			virtual void updateBackgroundModel() const;
+			/** The node's background model. */
+			mutable Auto<VertexArray> m_background_model;
+			/** The node's border model. */
+			mutable Auto<VertexArray> m_border_model;
+			/** The node's border cornel model.*/
+			mutable Auto<VertexArray> m_border_corner_model;
 
+			/** Whether the background model is invalid. */
+			mutable bool m_invalid_background_model;
+			/** Whether the border model is invalid. */
+			mutable bool m_invalid_border_model;
+			/** Whether the children are invalid. */
+			mutable bool m_invalid_children;
+
+			/** invalidates the calculated width and height, and the border and background models, and the children. */
+			void content_changed() const;
+
+			/** Called by `update()`.
+				Override this to create custom models. */
+			virtual void update_models() const;
+			/** Called by `update_models()`.
+				Override this to create custom border models. */
+			virtual void update_border_model() const;
+			/** Called by `update_models()`.
+				Override this to create custom background models. */
+			virtual void update_background_model() const;
 		private:
-			// Used to prevent an infinite recursion when resolving percentage based size values.
-			mutable float temp_last_absolute_content_width, temp_last_absolute_content_height;
-			// Indicates that the size values should be updated.
-			mutable bool invalid_width, invalid_height;
+			/** Used to prevent an infinite recursion when resolving percentage based size values. */
+			mutable float m_temp_last_absolute_content_width;
+			/** Used to prevent an infinite recursion when resolving percentage based size values. */
+			mutable float m_temp_last_absolute_content_height;
+			/** Indicates that the size values should be updated. */
+			mutable bool m_invalid_width;
+			/** Indicates that the size values should be updated. */
+			mutable bool m_invalid_height;
 		public:
 			UINode();
 			UINode(const UINode &) = delete;
@@ -87,134 +120,185 @@ namespace re
 
 			virtual ~UINode() {}
 
-
 			UINode &operator=(const UINode &) = delete;
 			UINode &operator=(UINode && move);
 
-			// updates contents of the children and this node.
+			/** Updates contents of the children and this node. */
 			virtual void update();
-			virtual void draw(graphics::RenderSession &session) const;
+			/** Draws the node.
+			@param[in, out] session:
+				The render session to use for drawing this node. */
+			virtual void draw(
+				graphics::RenderSession &session) const;
 
 			/// Content
 
-			void setFont(const strong_handle<Font> &font);
-			const strong_handle<Font> &getFont() const;
+			/** Sets this node's font.
+			@param[in] font:
+				This node's font, or null. */
+			void set_font(
+				Shared<Font> font);
+			/** Retrieves this node's font setting.
+				Use `inherited_font()` to also check for ancestors using a font.
+			@return
+				Null, if no font is set for this node, otherwise, this node's font. */
+			Shared<Font> const& font() const;
+			/** Retrieves the font inherited by the closest ancestor, or self.
+				Finds the closest ancestor that has a font set, and returns its font.
+			@return
+				The font that is set for this node, or null, if no font was set. */
+			Shared<Font> inherited_font() const;
 
-			const std::vector<strong_handle<UINode>> &getChildren() const;
-			// node must not be a child of any other UINode already.
-			void addChild(const strong_handle<UINode> &node);
+			/** @retunr This node's children. */
+			std::vector<Auto<UINode>> const& children() const;
 
-			strong_handle<UINode> findChild(const string &name) const;
-			
-			
+			/** Adds a node as a child.
+			@param[in] node:
+				The node to add.
+				Must not be a child of any other UINode already. */
+			void add_child(
+				Auto<UINode> node);
+
+			/** Finds a child by name.
+			@return the child with the requested name, or null. */
+			UINode * find_child(
+				char const * name) const;
+
 			/// Box Model
 
-			// returns the border of the UiNode.
-			const layout::Box<layout::Border> &getBorder() const;
-			// invalidates the border model.
-			void setBorder(const layout::Box<layout::Border> &border);
+			/** Returns the border of the UINode. */
+			layout::Box<layout::Border> const& border() const;
+			/** Sets the border and invalidates the border model. */
+			void set_border(
+				layout::Box<layout::Border> const& border);
 
-			const layout::Image &getBackground() const;
-			// sets the background image and invalidates the background model.
-			void setBackground(const layout::Image &background);
+			/** Returns the background image. */
+			layout::Image const& background() const;
+			/** sets the background image and invalidates the background model. */
+			void set_background(
+				layout::Image const& background);
 
-			// resolves the minimal width of this UINode.
-			float absoluteMinWidth() const;
-			// resolves the minimal height of this UINode.
-			float absoluteMinHeight() const;
-			// resolves the maximal width of this UINode.
-			float absoluteMaxWidth() const;
-			// resolves the maximal height of this UINode.
-			float absoluteMaxHeight() const;
+			/** resolves the minimal width of this UINode. */
+			float absolute_min_width() const;
+			/** resolves the minimal height of this UINode. */
+			float absolute_min_height() const;
+			/** resolves the maximal width of this UINode. */
+			float absolute_max_width() const;
+			/** resolves the maximal height of this UINode. */
+			float absolute_max_height() const;
 
-			// the width of the area containing all children. unaffected by min / max width.
-			float absoluteContentWidth() const;
-			// the height of the care containing all children. unaffected by min / max height.
-			float absoluteContentHeight() const;
+			/** the width of the area containing all children. unaffected by min / max width. */
+			float absolute_content_width() const;
+			/** the height of the area containing all children. unaffected by min / max height. */
+			float absolute_content_height() const;
 
-			// the width of the content area. affected by min / max width.
-			float absoluteContentAreaWidth() const;
-			// the height of the content area. affected by min / max height.
-			float absoluteContentAreaHeight() const;
+			/** the width of the content area. affected by min / max width. */
+			float absolute_content_area_width() const;
+			/** the height of the content area. affected by min / max height. */
+			float absolute_content_area_height() const;
 
-			// the width of the content area, reduced by the width of the vertical scroll bars.
-			float contentAreaDisplayWidth() const;
-			// the height of the content area, reduced by the width of the horizontal scroll bars.
-			float contentAreaDisplayHeight() const;
-			
-			// checks whether the horizontal scroll bar is visible.
-			bool visibleScrollBarH() const;
-			// checks whether the vertical scroll bar is visible.
-			bool visibleScrollBarV() const;
+			/** the width of the content area, reduced by the width of the vertical scroll bars. */
+			float content_area_display_width() const;
+			/** the height of the content area, reduced by the width of the horizontal scroll bars. */
+			float content_area_display_height() const;
 
-			// resolves the offset on the horizontal axis.
-			float absoluteLeft() const;
-			// resolves the offset on the vertical axis.
-			float absoluteTop() const;
+			/** checks whether the horizontal scroll bar is visible. */
+			bool visible_scroll_bar_h() const;
+			/** checks whether the vertical scroll bar is visible. */
+			bool visible_scroll_bar_v() const;
 
-			// resolves the left margin.
-			float absoluteMarginLeft() const;
-			// resolves the top margin.
-			float absoluteMarginTop() const;
-			// resolves the right margin.
-			float absoluteMarginRight() const;
-			// resolves the bottom margin.
-			float absoluteMarginBottom() const;
+			/** resolves the offset on the horizontal axis. */
+			float absolute_left() const;
+			/** resolves the offset on the vertical axis. */
+			float absolute_top() const;
 
-			// resolves the left padding.
-			float absolutePaddingLeft() const;
-			// resolves the top padding.
-			float absolutePaddingTop() const;
-			// resolves the right padding.
-			float absolutePaddingRight() const;
-			// resolves the bottom padding.
-			float absolutePaddingBottom() const;
+			/** resolves the left margin. */
+			float absolute_margin_left() const;
+			/** resolves the top margin. */
+			float absolute_margin_top() const;
+			/** resolves the right margin. */
+			float absolute_margin_right() const;
+			/** resolves the bottom margin. */
+			float absolute_margin_bottom() const;
+
+			/** resolves the left padding. */
+			float absolute_padding_left() const;
+			/** resolves the top padding. */
+			float absolute_padding_top() const;
+			/** resolves the right padding. */
+			float absolute_padding_right() const;
+			/** resolves the bottom padding. */
+			float absolute_padding_bottom() const;
 
 			/** Resolves the width of the whole box.
 			This contains the border, margin, padding, and content area. */
-			float absoluteBoxWidth() const;
+			float absolute_box_width() const;
 			/** Resolves the height of the whole box.
 			This contains the border, margin, padding, and content area. */
-			float absoluteBoxHeight() const;
+			float absolute_box_height() const;
 
-			// calculates the position of this UINode relative to its parents origin.
-			math::fvec2 absolutePosition() const;
+			/** calculates the position of this UINode relative to its parents origin. */
+			math::fvec2_t absolute_position() const;
 
-			void setMinWidth(const layout::Size &min_w);
-			void setMinHeight(const layout::Size &min_h);
-			void setMaxWidth(const layout::Size &max_w);
-			void setMaxHeight(const layout::Size &max_h);
-			// sets both min and max width to <width>
-			void setWidth(const layout::Size &width);
-			// sets both min and max height to <height>
-			void setHeight(const layout::Size &height);
+			void set_min_width(
+				layout::Size const& min_w);
+			void set_min_height(
+				layout::Size const& min_h);
+			void set_max_width(
+				layout::Size const& max_w);
+			void set_max_height(
+				layout::Size const& max_h);
+			/** sets both min and max width to `width`. */
+			void set_width(
+				layout::Size const& width);
+			/** sets both min and max height to `height`. */
+			void set_height(
+				layout::Size const& height);
 
-			void setMargin(const layout::Box<layout::Size> &margin);
-			void setMarginLeft(const layout::Size &margin);
-			void setMarginRight(const layout::Size &margin);
-			void setMarginTop(const layout::Size &margin);
-			void setMarginBottom(const layout::Size &margin);
+			void setMargin(
+				layout::Box<layout::Size> const& margin);
+			void setMargin_left(
+				layout::Size const& margin);
+			void setMargin_right(
+				layout::Size const& margin);
+			void setMargin_top(
+				layout::Size const& margin);
+			void setMargin_bottom(
+				layout::Size const& margin);
 
-			void setPadding(const layout::Box<layout::Size> &padding);
-			void setPaddingLeft(const layout::Size &padding);
-			void setPaddingTop(const layout::Size &padding);
-			void setPaddingRight(const layout::Size &padding);
-			void setPaddingBottom(const layout::Size &padding);
+			void set_padding(
+				layout::Box<layout::Size> const& padding);
+			void set_padding_left(
+				layout::Size const& padding);
+			void set_padding_top(
+				layout::Size const& padding);
+			void set_padding_right(
+				layout::Size const& padding);
+			void set_padding_bottom(
+				layout::Size const& padding);
 
-			void setBorderLeft(const layout::Border &border);
-			void setBorderTop(const layout::Border &border);
-			void setBorderRight(const layout::Border &border);
-			void setBorderBottom(const layout::Border &border);
+			void set_border_left(
+				layout::Border const& border);
+			void set_border_top(
+				layout::Border const& border);
+			void set_border_right(
+				layout::Border const& border);
+			void set_border_bottom(
+				layout::Border const& border);
 
-			void setBorderTopLeftCorner(const layout::Image &corner);
-			void setBorderTopRightCorner(const layout::Image &corner);
-			void setBorderBottomLeftCorner(const layout::Image &corner);
-			void setBorderBottomRightCorner(const layout::Image &corner);
+			void set_border_top_left_corner(
+				layout::Image const& corner);
+			void set_border_top_right_corner(
+				layout::Image const& corner);
+			void set_border_bottom_left_corner(
+				layout::Image const& corner);
+			void set_border_bottom_right_corner(
+				layout::Image const& corner);
 
-			void setLeft(const layout::Size &left);
-			void setTop(const layout::Size &top);
-
-
+			void set_left(
+				layout::Size const& left);
+			void set_top(
+				layout::Size const& top);
 		};
 	}
 }

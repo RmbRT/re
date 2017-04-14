@@ -1,5 +1,5 @@
 #include "Renderer.hpp"
-#include "graphics/OpenGL.hpp"
+#include "graphics/gl/OpenGL.hpp"
 #include "Scene.hpp"
 #include "SceneNode.hpp"
 
@@ -9,14 +9,14 @@ namespace re
 {
 	Renderer::Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, graphics::ShaderProgram::uniform_t transform_uniform): shader(shader), transform_uniform(transform_uniform), scene(scene), window(window), camera(camera), projection(math::fmat4x4::perspective(math::deg(65), 2,2, 0, 1000.f)) {}
 	Renderer::Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, const string &transform_uniform): shader(shader), transform_uniform(shader->getUniform(transform_uniform.c_str())), scene(scene), window(window), camera(camera), projection(math::fmat4x4::perspective(math::deg(65), 2,2, 0, 1000.f)) {}
-	
+
 	void Renderer::render()
 	{
 		window->makeContextCurrent();
 		shader->use();
-		
+
 		math::fmat4x4 camera_mat(camera->getViewMatrix());
-		
+
 		render(scene->getRoot(), projection * camera_mat);
 	}
 

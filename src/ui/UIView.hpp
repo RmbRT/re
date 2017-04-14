@@ -1,8 +1,7 @@
 #ifndef __re_ui_uiview_hpp_defined
 #define __re_ui_uiview_hpp_defined
 
-#include "UIElement.hpp"
-#include "UIManager.hpp"
+#include "UINode.hpp"
 #include "../math/Vector.hpp"
 #include "../math/Matrix.hpp"
 #include "../math/Angle.hpp"
@@ -18,7 +17,7 @@ namespace re
 		struct UIView
 		{
 			/** The root UIElement / container for this UIView. */
-			UIElement content;
+			Auto<UINode> content;
 
 			/** The Position of this UIView in 3D space. */
 			math::fvec3_t position;
@@ -49,7 +48,7 @@ namespace re
 			void update_cursor(math::fvec2_t const& cursor);
 
 			/** Searches and returns the UIElement described by the name, if exists. */
-			const strong_handle<UIElement> &findElement(string8_t const& name) const;
+			UIElement * findElement(string8_t const& name) const;
 
 		};
 	}

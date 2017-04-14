@@ -37,13 +37,13 @@ namespace re
 		@param[in] content:
 			The bitmap of the asset. */
 		REIL BitmapAsset(
-			Utf8String name,
+			string8_t name,
 			graphics::Bitmap2D content);
 		/** Creates a bitmap asset with the given name but no content.
 		@param[in] name:
 			The name string of the asset. */
 		REIL BitmapAsset(
-			Utf8String name);
+			string8_t name);
 		/** Creates an unnamed bitmap asset with the given content.
 		@param[in] content:
 			The bitmap of the asset. */

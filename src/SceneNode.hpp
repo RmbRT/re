@@ -11,6 +11,7 @@
 
 namespace re
 {
+	class Scene;
 	/** The base scene node class used for representing entities in a scene.
 	It has a tree-based layout. */
 	class SceneNode
@@ -21,19 +22,19 @@ namespace re
 		/** The SceneNode this SceneNode belongs to. */
 		SceneNode * parent_node;
 		/** The Model this SceneNode has. */
-		strong_handle<Model> model;
+		Shared<Model> model;
 
 		/** The child nodes of this Node. */
 		std::vector<SceneNode> child_nodes;
-		
+
 		SceneNode(Scene &scene);
 	public:
 		/** The rotation of this SceneNode. */
-		math::vec3<math::Angle> rotation;
+		math::Vec3<math::Angle> rotation;
 		/** The scaling of this SceneNode. */
-		math::fvec3 scaling;
+		math::fvec3_t scaling;
 		/** The position of this SceneNode. */
-		math::fvec3 position;
+		math::fvec3_t position;
 
 		SceneNode();
 		SceneNode(const SceneNode &copy);
@@ -48,7 +49,7 @@ namespace re
 
 		/** Returns whether this SceneNode is part of the given Scene. */
 		bool belongsToScene(const Scene &scene);
-		
+
 		bool isLeaf() const;
 		SceneNode * nextSibling();
 		const SceneNode * nextSibling() const;
@@ -72,9 +73,9 @@ namespace re
 		Use the returned NotNull instead to access the copy owned by this SceneNode. */
 		NotNull<SceneNode> addChild(const SceneNode &node);
 
-		void setModel(strong_handle<Model> model);
-		strong_handle<Model> getModel();
-		strong_handle<const Model> getModel() const;
+		void setModel(Shared<Model> model);
+		Shared<Model> getModel();
+		Shared<const Model> getModel() const;
 
 		/** If the new parent is child or a child of child, or this SceneNode, does nothing. */
 		NotNull<SceneNode> transferChild(NotNull<SceneNode> child, SceneNode &new_parent);
@@ -85,7 +86,7 @@ namespace re
 
 		/** This function calculates the transformation matrix of this SceneNode.
 		Be sure not to call it redundantly. */
-		math::fmat4x4 getTransformation() const;
+		math::fmat4x4_t getTransformation() const;
 	};
 }
 

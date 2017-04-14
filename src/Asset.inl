@@ -5,16 +5,16 @@ namespace re
 	{
 	}
 
-	REIL AssetBase::AssetBase(Utf8String name):
+	REIL AssetBase::AssetBase(string8_t name):
 		m_name(std::move(name))
 	{
 	}
 
-	Utf8String const& AssetBase::name() const
+	string8_t const& AssetBase::name() const
 	{
 		return m_name;
 	}
-	Utf8String & AssetBase::name()
+	string8_t & AssetBase::name()
 	{
 		return m_name;
 	}

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <vector>
+#include <cstring>
 
 namespace re
 {
@@ -215,9 +216,9 @@ namespace re
 						out = Entry(name.data(), value.data(), comment, Int);
 					else if(sscanf(value.data(), "%f", &Float))
 						out = Entry(name.data(), value.data(), comment, Float);
-					else if(!strcmp(value, "true") || !strcmp(value, "yes"))
+					else if(!std::strcmp(value.data(), "true") || !std::strcmp(value.data(), "yes"))
 						out = Entry(name.data(), value.data(), comment, true);
-					else if(!strcmp(value, "false") || !strcmp(value, "no"))
+					else if(!std::strcmp(value.data(), "false") || !std::strcmp(value.data(), "no"))
 						out = Entry(name.data(), value.data(), comment, false);
 					else
 						out = Entry(name.data(), value.data(), comment);
@@ -230,10 +231,10 @@ namespace re
 			{
 				std::vector<string8_t> lines;
 				std::ifstream file(filename, std::ios::in);
-				string8_t line;
+				std::string line;
 
 				while(std::getline(file, line))
-					lines.push_back(line);
+					lines.push_back(line.c_str());
 
 				file.close();
 
@@ -247,11 +248,11 @@ namespace re
 				Section section;
 				while(int temp = this->section(lines, current_line, section))
 				{
-					if(Section const* sect = find_section(section.name))
+					if(Section * sect = find_section(section.name.c_str()))
 					{
 						for(Entry & entry : section.entries)
 						{
-							if(Entry * ent = sect->find_entry(entry.key()))
+							if(Entry * ent = sect->find_entry(entry.key().c_str()))
 								*ent = std::move(entry);
 							else
 								sect->entries.push_back(std::move(entry));
@@ -267,9 +268,10 @@ namespace re
 				return current_line == lines.size();
 			}
 
-			Section * IniFile::find_section(string8_t const& name)
+			Section * IniFile::find_section(char const * name)
 			{
-				if(name.empty())
+				RE_DBG_ASSERT(name != nullptr);
+				if(!*name)
 					return &m_unnamed_section;
 				for(Section & section : m_sections)
 					if(section.name == name)
@@ -277,9 +279,10 @@ namespace re
 				return nullptr;
 			}
 
-			Section const* IniFile::find_section(string8_t const& name) const
+			Section const * IniFile::find_section(char const * name) const
 			{
-				if(name.empty())
+				RE_DBG_ASSERT(name != nullptr);
+				if(!*name)
 					return &m_unnamed_section;
 				for(Section const& section : m_sections)
 					if(section.name == name)

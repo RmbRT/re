@@ -3,7 +3,7 @@
 
 #include "../../types.hpp"
 #include "../../math/Vector.hpp"
-#include "../../graphics/Texture.hpp"
+#include "../../graphics/gl/Texture.hpp"
 
 namespace re
 {
@@ -48,20 +48,20 @@ namespace re
 
 			struct Image
 			{
-				math::vec2<Repeat> repeat;
-				math::fvec4 color;
-				strong_handle<graphics::Texture> texture;
+				math::Vec2<Repeat> repeat;
+				math::fvec4_t color;
+				Shared<graphics::gl::Texture> texture;
 
-				Image &operator=(const math::fvec4 &color)
+				Image &operator=(const math::fvec4_t &color)
 				{
 					this->color = color;
 					texture = nullptr;
 					return *this;
 				}
-				Image &operator=(const strong_handle<graphics::Texture> &texture)
+				Image &operator=(Shared<graphics::gl::Texture> texture)
 				{
-					color = math::fvec4(1,1,1,1);
-					this->texture = texture;
+					color = math::fvec4_t(1,1,1,1);
+					this->texture = std::move(texture);
 					return *this;
 				}
 			};
@@ -75,14 +75,14 @@ namespace re
 				T top, right, bottom, left;
 
 				// sets all values of the box.
-				inline Box &operator=(const T& value) { top = right = bottom = left = value; return *this; }
+				inline Box<T> &operator=(const T& value) { top = right = bottom = left = value; return *this; }
 			};
 
 			struct Border
 			{
 				float width;
 				Image image;
-				strong_handle<graphics::VertexData> model;
+				VertexArray model;
 			};
 
 			enum class ScrollBarVisibility

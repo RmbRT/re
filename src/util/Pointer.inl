@@ -154,6 +154,12 @@ namespace re
 		}
 
 		template<class T>
+		Auto<T>::operator bool() const
+		{
+			return m_obj != nullptr;
+		}
+
+		template<class T>
 		T * Auto<T>::release()
 		{
 			T * value = m_obj;

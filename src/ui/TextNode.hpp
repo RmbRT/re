@@ -16,7 +16,7 @@ namespace re
 			TextNode();
 			TextNode(const u32string &text);
 			TextNode(const u32string &text, const strong_handle<Font> &font);
-			
+
 			void setText(const u32string &text);
 			const u32string &getText() const;
 

@@ -15,7 +15,7 @@ namespace re
 		Directional,
 		Following
 	};
-	
+
 	class LookAtCamera;
 	class DirectionalCamera;
 	class FollowingCamera;
@@ -24,8 +24,8 @@ namespace re
 
 	struct CameraBase
 	{
-		math::fvec3 a,b,c;
-		CameraBase(const math::fvec3 &a, const math::fvec3 &b, const math::fvec3 &c);
+		math::fvec3_t a,b,c;
+		CameraBase(const math::fvec3_t &a, const math::fvec3_t &b, const math::fvec3_t &c);
 	};
 	class Camera
 	{
@@ -36,12 +36,12 @@ namespace re
 		Camera(const DirectionalCamera &directional);
 		Camera(const FollowingCamera &following);
 
-		math::fmat4x4 getViewMatrix() const;
+		math::fmat4x4_t getViewMatrix() const;
 		CameraType getType() const;
 
 		template<CameraType type>
 		void convert();
-		
+
 		LookAtCamera * getLookAt();
 		const LookAtCamera * getLookAt() const;
 		DirectionalCamera * getDirectional();
@@ -54,49 +54,49 @@ namespace re
 	class LookAtCamera: public CameraBase
 	{
 	public:
-		LookAtCamera(const math::fvec3 &position, const math::fvec3 &target, const math::fvec3 &up = math::fvec3(0,1,0));
-			
-		void setPosition(const math::fvec3 &position);
-		void setTarget(const math::fvec3 &target);
-		void setUp(const math::fvec3 &up);
+		LookAtCamera(const math::fvec3_t &position, const math::fvec3_t &target, const math::fvec3_t &up = math::fvec3_t(0,1,0));
 
-		const math::fvec3 &getPosition() const;
-		const math::fvec3 &getTarget() const;
-		const math::fvec3 &getUp() const;
+		void setPosition(const math::fvec3_t &position);
+		void setTarget(const math::fvec3_t &target);
+		void setUp(const math::fvec3_t &up);
 
-		math::fmat4x4 getViewMatrix() const;
+		const math::fvec3_t &getPosition() const;
+		const math::fvec3_t &getTarget() const;
+		const math::fvec3_t &getUp() const;
+
+		math::fmat4x4_t getViewMatrix() const;
 	};
 
 	class DirectionalCamera: public CameraBase
 	{
 	public:
-		DirectionalCamera(const math::fvec3 &position, const math::fvec3 &direction, const math::fvec3 &up = math::fvec3(0,1,0));
+		DirectionalCamera(const math::fvec3_t &position, const math::fvec3_t &direction, const math::fvec3_t &up = math::fvec3_t(0,1,0));
 
-		void setPosition(const math::fvec3 &position);
-		void setDirection(const math::fvec3 &direction);
-		void setUp(const math::fvec3 &up);
+		void setPosition(const math::fvec3_t &position);
+		void setDirection(const math::fvec3_t &direction);
+		void setUp(const math::fvec3_t &up);
 
-		const math::fvec3 &getPosition() const;
-		const math::fvec3 &getDirection() const;
-		const math::fvec3 &getUp() const;
+		const math::fvec3_t &getPosition() const;
+		const math::fvec3_t &getDirection() const;
+		const math::fvec3_t &getUp() const;
 
-		math::fmat4x4 getViewMatrix() const;
+		math::fmat4x4_t getViewMatrix() const;
 	};
-		
+
 	class FollowingCamera: public CameraBase
 	{
 	public:
-		FollowingCamera(const math::fvec3 &target, const math::fvec3 &distance, const math::fvec3 &up = math::fvec3(0,1,0));
+		FollowingCamera(const math::fvec3_t &target, const math::fvec3_t &distance, const math::fvec3_t &up = math::fvec3_t(0,1,0));
 
-		void setTarget(const math::fvec3 &position);
-		void setDistance(const math::fvec3 &distance);
-		void setUp(const math::fvec3 &up);
+		void setTarget(const math::fvec3_t &position);
+		void setDistance(const math::fvec3_t &distance);
+		void setUp(const math::fvec3_t &up);
 
-		const math::fvec3 &getTarget() const;
-		const math::fvec3 &getDistance() const;
-		const math::fvec3 &getUp() const;
+		const math::fvec3_t &getTarget() const;
+		const math::fvec3_t &getDistance() const;
+		const math::fvec3_t &getUp() const;
 
-		math::fmat4x4 getViewMatrix() const;
+		math::fmat4x4_t getViewMatrix() const;
 	};
 }
 

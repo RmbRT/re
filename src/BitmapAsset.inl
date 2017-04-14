@@ -7,7 +7,7 @@ namespace re
 	}
 
 	BitmapAsset::BitmapAsset(
-		Utf8String name,
+		string8_t name,
 		graphics::Bitmap2D content):
 		m_content(std::move(content)),
 		AssetBase(std::move(name))
@@ -22,7 +22,7 @@ namespace re
 	}
 
 	BitmapAsset::BitmapAsset(
-		Utf8String name):
+		string8_t name):
 		m_content(),
 		AssetBase(std::move(name))
 	{

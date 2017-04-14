@@ -31,14 +31,6 @@ namespace re
 				size_t offset;
 			};
 
-
-#define RE_VERTEX_ELEMENT(VertexClass,ElementName) \
-	re::graphics::gl::VertexElement( \
-		static_cast<decltype(VertexClass::ElementName) *>(0)->ELEM_TYPE, \
-		static_cast<decltype(VertexClass::ElementName) *>(0)->ELEM_COUNT, \
-		offsetof(VertexClass,ElementName))
-
-
 			template<class Vertex>
 			/** Describes a vertex class. */
 			struct VertexType

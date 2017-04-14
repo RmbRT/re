@@ -73,7 +73,7 @@ namespace re
 			The string to copy.
 			The string must be null-terminated. */
 		String(
-			util::NotNull<C const> ptr);
+			C const * ptr);
 
 		template<typename StdChar = stdchar_t>
 		/** Creates a string from a std-char literal.
@@ -84,8 +84,8 @@ namespace re
 			typename std::enable_if<
 				std::is_same<StdChar, stdchar_t>::value &&
 				!std::is_same<C, stdchar_t>::value,
-			util::NotNull<stdchar_t const>>::type ptr):
-			String(util::reinterpret<C const>(ptr))
+			stdchar_t const *>::type ptr):
+			String((C const *)ptr)
 		{
 		}
 
@@ -94,6 +94,7 @@ namespace re
 			The string to copy. */
 		String(
 			String<C> const& copy);
+
 		/** Moves a string to another instance.
 			The argument will give up ownership of its data.
 		@param[in] move:
@@ -108,7 +109,7 @@ namespace re
 			@assert
 				Must not be this string. */
 		String<C> &operator=(
-			util::NotNull<C const> ptr);
+			C const * ptr);
 
 		/** Copies the given string into this string.
 		@param[in] ptr:
@@ -120,9 +121,9 @@ namespace re
 		typename std::enable_if<
 			!std::is_same<C, StdChar>::value,
 			String<C>>::type &operator=(
-			util::NotNull<stdchar_t const> ptr)
+			stdchar_t const * ptr)
 		{
-			return *this = util::reinterpret<C const>(ptr);
+			return *this = (C const *)ptr;
 		}
 
 		/** Copies the given string into this string.
@@ -132,6 +133,7 @@ namespace re
 				Must not be this string. */
 		String<C> &operator=(
 			String<C> const& copy);
+
 		/** Moves the given string into this string.
 		@param[in] move:
 			The string to move from.
@@ -145,29 +147,34 @@ namespace re
 			The string to compare to this string. */
 		bool operator==(
 			String<C> const& rhs) const;
+
 		/** Compares this string to the given string.
 		@param[in] rhs:
 			The string to compare to this string.
 			The string must be null-terminated. */
 		bool operator==(
-			util::NotNull<C const> rhs) const;
+			C const * rhs) const;
+
 		template<typename StdChar = stdchar_t>
+		/** Compares this string to the given string.
+		@param[in] rhs:
+			The stc-char string to compare to this string. */
 		REIL typename std::enable_if<
 			std::is_same<StdChar, stdchar_t>::value &&
 			!std::is_same<C, stdchar_t>::value,
 			bool>::type operator==(
-			util::NotNull<stdchar_t const> rhs) const
+			stdchar_t const * rhs) const
 		{
-			return *this == (util::NotNull<C const>) rhs;
+			return *this == (C const *) rhs;
 		}
 
 		String<C> &operator+=(
-			util::NotNull<C const> rhs);
+			C const * rhs);
 		template<typename StdChar = stdchar_t>
 		typename std::enable_if<
 			!std::is_same<C, StdChar>::value,
 			String<C>>::type &operator+=(
-			util::NotNull<stdchar_t const> rhs);
+			stdchar_t const * rhs);
 		String<C> &operator+=(
 			String<C> const& rhs);
 
@@ -182,13 +189,15 @@ namespace re
 		REIL size_t length() const;
 		/** The string data - might be null. */
 		REIL C const * data() const;
+		/** The string data - might be null. */
 		REIL C * data();
+
 		/** The string contents.
 			If the string is null, an empty string is returned.*/
-		REIL util::NotNull<C const> content() const;
+		REIL C const * content() const;
 
 		/** The string contents, usable by the STL functions. */
-		REIL util::NotNull<stdchar_t const> c_str() const;
+		REIL stdchar_t const * c_str() const;
 		/** The number of elements allocated. */
 		REIL size_t capacity() const;
 
@@ -213,10 +222,10 @@ namespace re
 		@param[in] other:
 			The string to append to this string. */
 		REIL void append(
-			util::NotNull<C const> other);
+			C const * other);
 
 		void append(
-			util::NotNull<C const> other,
+			C const * other,
 			size_t length);
 	};
 }

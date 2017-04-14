@@ -1,9 +1,9 @@
 #ifndef __re_renderer_hpp_defined
 #define __re_renderer_hpp_defined
 
-#include "graphics/ShaderProgram.hpp"
+#include "graphics/gl/ShaderProgram.hpp"
+#include "graphics/Window.hpp"
 #include "types.hpp"
-#include "Window.hpp"
 #include "Camera.hpp"
 #include "Scene.hpp"
 
@@ -15,9 +15,9 @@ namespace re
 	class Renderer
 	{
 		NotNull<graphics::ShaderProgram> shader;
-		
+
 		graphics::ShaderProgram::uniform_t transform_uniform;
-		
+
 		NotNull<Scene> scene;
 		NotNull<Window> window;
 		NotNull<Camera> camera;

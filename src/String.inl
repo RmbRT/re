@@ -15,7 +15,7 @@ namespace re
 	{
 		template<class C>
 		size_t strlen(
-			util::NotNull<C const> ptr)
+			C const * ptr)
 		{
 			size_t len = 0;
 			while(*ptr++)
@@ -26,7 +26,7 @@ namespace re
 
 	template<class C>
 	String<C>::String(
-		util::NotNull<C const> ptr):
+		C const * ptr):
 		m_data(nullptr),
 		m_size(0),
 		m_capacity(0)
@@ -39,7 +39,7 @@ namespace re
 	template<class C>
 	String<C>::String(
 		String<C> const& copy):
-		String(copy.m_data)
+		String(copy.m_data.operator->())
 	{
 	}
 
@@ -56,7 +56,7 @@ namespace re
 
 	template<class C>
 	String<C> &String<C>::operator=(
-		util::NotNull<C const> ptr)
+		C const * ptr)
 	{
 		resize(detail::strlen(ptr));
 		for(size_t i = m_size; i--;)
@@ -68,9 +68,9 @@ namespace re
 	typename std::enable_if<
 		!std::is_same<C, typename String<C>::stdchar_t>::value,
 		String<C>>::type &String<C>::operator=(
-		util::NotNull<typename String<C>::stdchar_t const> ptr)
+		typename String<C>::stdchar_t const * ptr)
 	{
-		return *this = reinterpret_cast<util::NotNull<C const>&>(ptr);
+		return *this = reinterpret_cast<C const>& *(ptr);
 	} */
 
 	template<class C>
@@ -107,7 +107,7 @@ namespace re
 
 	template<class C>
 	bool String<C>::operator==(
-		util::NotNull<C const> rhs) const
+		C const * rhs) const
 	{
 		if(!m_size)
 			return *rhs == (C) '\0';
@@ -122,14 +122,14 @@ namespace re
 	/*
 	template<class C>
 	REIL bool String<C>::operator==(
-			util::NotNull<typename String<C>::stdchar_t const> rhs) const
+			typename String<C>::stdchar_t const * rhs) const
 	{
-		return *this == (util::NotNull<C const>) rhs;
+		return *this == (C const *) rhs;
 	}*/
 
 	template<class C>
 	String<C> &String<C>::operator+=(
-			util::NotNull<C const> rhs)
+			C const * rhs)
 	{
 		append(rhs);
 		return *this;
@@ -164,7 +164,7 @@ namespace re
 	template<class C>
 	C const * String<C>::data() const
 	{
-		return m_data;
+		return m_data.operator->();
 	}
 
 	template<class C>
@@ -174,18 +174,16 @@ namespace re
 	}
 
 	template<class C>
-	REIL util::NotNull<typename String<C>::stdchar_t const> String<C>::c_str() const
+	REIL typename String<C>::stdchar_t const * String<C>::c_str() const
 	{
 		return empty()
 			? ""
 			: reinterpret_cast<
-				util::NotNull<
-					typename detail::to_std_char<C>::type const>
-					const&>(m_data);
+					typename detail::to_std_char<C>::type const *>(m_data.operator->());
 	}
 
 	template<class C>
-	util::NotNull<C const> String<C>::content() const
+	C const * String<C>::content() const
 	{
 		return empty()
 			? &s_empty
@@ -238,14 +236,14 @@ namespace re
 
 	template<class C>
 	REIL void String<C>::append(
-		util::NotNull<C const> other)
+		C const * other)
 	{
 		append(other, detail::strlen(other));
 	}
 
 	template<class C>
 	void String<C>::append(
-		util::NotNull<C const> other,
+		C const * other,
 		size_t length)
 	{
 		size_t end = m_size;
