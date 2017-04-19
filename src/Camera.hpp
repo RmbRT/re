@@ -25,78 +25,79 @@ namespace re
 	struct CameraBase
 	{
 		math::fvec3_t a,b,c;
-		CameraBase(const math::fvec3_t &a, const math::fvec3_t &b, const math::fvec3_t &c);
+		CameraBase(math::fvec3_t const& a, math::fvec3_t const& b, math::fvec3_t const& c);
 	};
 	class Camera
 	{
-		CameraType type;
-		CameraBase base;
+		CameraType m_type;
+		CameraBase m_base;
 	public:
-		Camera(const LookAtCamera &lookat);
-		Camera(const DirectionalCamera &directional);
-		Camera(const FollowingCamera &following);
+		Camera(LookAtCamera const& lookat);
+		Camera(DirectionalCamera const& directional);
+		Camera(FollowingCamera const& following);
 
-		math::fmat4x4_t getViewMatrix() const;
-		CameraType getType() const;
+		math::fmat4x4_t view_matrix() const;
+		CameraType type() const;
 
 		template<CameraType type>
 		void convert();
 
-		LookAtCamera * getLookAt();
-		const LookAtCamera * getLookAt() const;
-		DirectionalCamera * getDirectional();
-		const DirectionalCamera * getDirectional() const;
-		FollowingCamera * getFollowing();
-		const FollowingCamera * getFollowing() const;
+		LookAtCamera * look_at();
+		const LookAtCamera * look_at() const;
+		DirectionalCamera * directional();
+		const DirectionalCamera * directional() const;
+		FollowingCamera * following();
+		const FollowingCamera * following() const;
 
 	};
 
 	class LookAtCamera: public CameraBase
 	{
 	public:
-		LookAtCamera(const math::fvec3_t &position, const math::fvec3_t &target, const math::fvec3_t &up = math::fvec3_t(0,1,0));
+		LookAtCamera(math::fvec3_t const& position, math::fvec3_t const& target, math::fvec3_t const& up = math::fvec3_t(0,1,0));
 
-		void setPosition(const math::fvec3_t &position);
-		void setTarget(const math::fvec3_t &target);
-		void setUp(const math::fvec3_t &up);
+		void set_position(
+			math::fvec3_t const& position);
+		void set_target(math::fvec3_t const& target);
+		void set_up(math::fvec3_t const& up);
 
-		const math::fvec3_t &getPosition() const;
-		const math::fvec3_t &getTarget() const;
-		const math::fvec3_t &getUp() const;
+		math::fvec3_t const& position() const;
+		math::fvec3_t const& target() const;
+		math::fvec3_t const& up() const;
 
-		math::fmat4x4_t getViewMatrix() const;
+		math::fmat4x4_t view_matrix() const;
 	};
 
 	class DirectionalCamera: public CameraBase
 	{
 	public:
-		DirectionalCamera(const math::fvec3_t &position, const math::fvec3_t &direction, const math::fvec3_t &up = math::fvec3_t(0,1,0));
+		DirectionalCamera(math::fvec3_t const& position, math::fvec3_t const& direction, math::fvec3_t const& up = math::fvec3_t(0,1,0));
 
-		void setPosition(const math::fvec3_t &position);
-		void setDirection(const math::fvec3_t &direction);
-		void setUp(const math::fvec3_t &up);
+		void set_position(math::fvec3_t const& position);
+		void set_direction(math::fvec3_t const& direction);
+		void set_up(math::fvec3_t const& up);
 
-		const math::fvec3_t &getPosition() const;
-		const math::fvec3_t &getDirection() const;
-		const math::fvec3_t &getUp() const;
+		math::fvec3_t const& position() const;
+		math::fvec3_t const& direction() const;
+		math::fvec3_t const& up() const;
 
-		math::fmat4x4_t getViewMatrix() const;
+		math::fmat4x4_t view_matrix() const;
 	};
 
 	class FollowingCamera: public CameraBase
 	{
 	public:
-		FollowingCamera(const math::fvec3_t &target, const math::fvec3_t &distance, const math::fvec3_t &up = math::fvec3_t(0,1,0));
+		FollowingCamera(math::fvec3_t const& target, math::fvec3_t const& distance, math::fvec3_t const& up = math::fvec3_t(0,1,0));
 
-		void setTarget(const math::fvec3_t &position);
-		void setDistance(const math::fvec3_t &distance);
-		void setUp(const math::fvec3_t &up);
+		void set_target(math::fvec3_t const& position);
+		void set_distance(math::fvec3_t const& distance);
+		void set_up(math::fvec3_t const& up);
 
-		const math::fvec3_t &getTarget() const;
-		const math::fvec3_t &getDistance() const;
-		const math::fvec3_t &getUp() const;
+		math::fvec3_t const& target() const;
+		math::fvec3_t const& distance() const;
+		math::fvec3_t const& up() const;
 
-		math::fmat4x4_t getViewMatrix() const;
+		math::fmat4x4_t view_matrix() const;
 	};
 }
 

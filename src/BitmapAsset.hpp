@@ -53,6 +53,8 @@ namespace re
 			the bitmap of the asset. */
 		REIL graphics::Bitmap2D const& bitmap() const;
 		REIL graphics::Bitmap2D & bitmap();
+
+		AssetType type() const override;
 	};
 }
 

@@ -29,7 +29,7 @@ namespace re
 		void draw(math::fmat4x4_t const& mvp) const;
 
 		/** Returns the BoundingBox of the VertexData. */
-		math::fAABB const& getAABB() const;
+		math::faabb_t const& aabb() const;
 		/** Returns the VertexData of this Model. */
 		Shared<graphics::gl::VertexArrayBase> const& vertex_data() const&;
 		void setVertexData(Shared<graphics::gl::VertexArrayBase> vertex_data);

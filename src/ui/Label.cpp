@@ -1,81 +1,104 @@
 #include "Label.hpp"
-#include "../graphics/OpenGL.hpp"
+#include "../graphics/gl/OpenGL.hpp"
 
 namespace re
 {
 	namespace ui
 	{
-		Label::Label(): font(), text() { }
-		Label::Label(const Label &copy) : font(copy.font), vertexData(copy.vertexData), text(copy.text) { }
-		Label::Label(Label &&move): font(move.font), vertexData(std::move(move.vertexData)), text(std::move(move.text)) { }
+		Label::Label():
+			m_font(),
+			m_text(),
+			m_vertex_array(),
+			m_settings(),
+			m_pen_position()
+		{
+		}
+
+		Label::Label(Label &&move):
+			m_font(std::move(move.m_font)),
+			m_vertex_array(std::move(move.m_vertex_array)),
+			m_text(std::move(move.m_text)),
+			m_settings(std::move(move.m_settings)),
+			m_pen_position(std::move(move.m_pen_position))
+		{
+		}
+
 		Label& Label::operator=(Label &&move)
 		{
 			if(this == &move)
 				return *this;
-			font = move.font;
-			vertexData = move.vertexData;
-			text = move.text;
+			m_font = std::move(move.m_font);
+			m_vertex_array = std::move(move.m_vertex_array);
+			m_text = std::move(move.m_text);
+			m_settings = std::move(move.m_settings);
+			m_pen_position = std::move(move.m_pen_position);
+
 			return *this;
 		}
 
-		void Label::setFont(const strong_handle<Font> &font)
+		void Label::set_font(
+			Shared<Font> const& font)
 		{
-			this->font = font;
+			this->m_font = font;
 		}
-		const strong_handle<Font> &Label::getFont() const
+		Shared<Font> const& Label::font() const
 		{
-			return font;
+			return m_font;
 		}
-		void Label::setText(const u32string &text)
+		void Label::set_text(
+			string32_t const& text)
 		{
-			this->text = text;
+			this->m_text = text;
 		}
-		const u32string &Label::getText() const
+		string32_t const& Label::text() const
 		{
-			return text;
+			return m_text;
 		}
 
 		void Label::update()
 		{
-			if(font)
-				vertexData = font->compile(text, settings, pen_position);
+			if(m_font)
+				m_vertex_array = m_font->compile(
+					m_text,
+					m_settings,
+					m_pen_position);
 		}
 
-		const strong_handle<graphics::VertexData> &Label::getVertexData() const
+		Auto<VertexArray> const& Label::vertex_array() const
 		{
-			return vertexData;
+			return m_vertex_array;
 		}
 
-		math::fvec2 Label::getSize() const
+		math::fvec2_t Label::size() const
 		{
-			if(text.empty())
-				return math::fvec2(0,0);
+			if(m_text.empty())
+				return math::fvec2_t(0,0);
 			else
-				return math::vec2<float>(vertexData->getAABB().size());
+				return math::fvec2_t(m_vertex_array->aabb().size());
 		}
-		math::fvec2 Label::getMinPosition() const
+		math::fvec2_t Label::min_position() const
 		{
-			if(vertexData)
-				return math::fvec2(vertexData->getAABB().min());
-			else return math::fvec2(0,0);
+			if(m_vertex_array)
+				return math::fvec2_t(m_vertex_array->aabb().min());
+			else return math::fvec2_t(0,0);
 		}
 
 		void Label::draw() const
 		{
 			RE_OGL(glEnable(GL_BLEND));
 			RE_OGL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-			font->getTexture()->bind();
-			vertexData->draw();
+			m_font->getTexture()->bind();
+			m_vertex_array->draw();
 			RE_OGL(glDisable(GL_BLEND));
 		}
 
-		FontSettings &Label::fontSettings()
+		FontSettings &Label::font_settings()
 		{
-			return settings;
+			return m_settings;
 		}
-		const FontSettings &Label::fontSettings() const
+		const FontSettings &Label::font_settings() const
 		{
-			return settings;
+			return m_settings;
 		}
 
 	}

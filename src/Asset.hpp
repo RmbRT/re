@@ -65,7 +65,7 @@ namespace re
 		/** Writes an AssetFileHeader describing this Asset to the given file stream. */
 		void write_asset_file_header(std::ofstream &file) const;
 		/** Loads an AssetFileHeader describing this Asset from the given file stream. */
-		static bool load_asset_write_header(std::ifstream &file, AssetFileHeader &fileHeader);
+		static bool load_asset_file_header(std::ifstream &file, AssetFileHeader &fileHeader);
 	};
 }
 

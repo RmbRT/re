@@ -9,6 +9,9 @@
 #include "layout/Layout.hpp"
 #include "../graphics/RenderSession.hpp"
 
+#include "../util/Delegate.hpp"
+#include "../input/Input.hpp"
+
 namespace re
 {
 	namespace ui
@@ -16,8 +19,11 @@ namespace re
 		/** The base class for all UI elements.
 		Contains a Box Model representation, similar to the one found in HTML / CSS.
 		Contains a list of UINodes as children.
+		Has a configurable event handling system.
 		@usage:
-			Deriving classes should override the method `update_models()` to create a custom look. */
+			Deriving classes should override the method `update_models()` to create a custom look.
+		@todo
+			Add joystick / gamepad input callback support. Basically, the gamepads and joysticks should be able to be integrated into a mouse / keyboard setup, but should also work alone, implying that something like a focus movement event for switching between controls via direction buttons should be made possible. So, if button `A` and `B` are next to each other on screen, one should be able to select `B` by either moving the axis nipple or arrow keys of the gamepad. */
 		class UINode
 		{
 		protected:
@@ -163,6 +169,18 @@ namespace re
 			@return the child with the requested name, or null. */
 			UINode * find_child(
 				char const * name) const;
+
+			// - Events -
+
+			/** Called when the cursor enters the node's boundaries (excludes the borders). */
+			virtual void on_cursor_enter();
+			/** Called when the cursor leaves the node's boundaries (excludes the borders). */
+			virtual void on_cursor_leave();
+			/** Called when the cursor moves inside the node's boundaries.
+			@param[in] cursor:
+				The cursor's location relative to this node's origin. */
+			virtual void on_cursor_move(
+				math::fvec2_t const& cursor);
 
 			/// Box Model
 

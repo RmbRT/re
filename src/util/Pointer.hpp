@@ -29,6 +29,7 @@ namespace re
 			~Shared();
 
 			REIL T* operator->() const;
+			REIL T& operator*() const;
 			RECX operator bool() const;
 
 			template<class ...Args>

@@ -7,6 +7,8 @@
 #include "../types.hpp"
 #include "../defines.hpp"
 
+#include "Rendering.hpp"
+
 namespace re
 {
 	namespace ui
@@ -110,12 +112,12 @@ namespace re
 				uint32_t codepoint) const;
 
 			/** Creates a model from */
-			Auto<graphics::gl::VertexArrayBase> compile(
+			Auto<VertexArray> compile(
 				string8_t const& text,
 				FontSettings const& settings,
 				math::fvec2_t &pen_position) const;
 
-			Auto<graphics::gl::VertexArrayBase> compile(
+			Auto<VertexArray> compile(
 				string32_t const& text,
 				FontSettings const& settings,
 				math::fvec2_t &pen_position) const;

@@ -4,6 +4,7 @@
 #include "../defines.hpp"
 #include "../types.hpp"
 #include "../graphics/gl/VertexArray.hpp"
+#include "../math/Vector.hpp"
 
 namespace re
 {

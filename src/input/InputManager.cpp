@@ -1,6 +1,8 @@
 #include "InputManager.hpp"
 #include "../LogFile.hpp"
 
+#include <cstring>
+
 namespace re
 {
 	namespace input
@@ -10,12 +12,12 @@ namespace re
 
 		InputManager::InputManager() : messaging::Receiver<KeyEvent>()
 		{
-			memset(keystate, (int)KeyState::Idle, KEY_COUNT);
+			std::memset(keystate, (int)KeyState::Idle, KEY_COUNT);
 		}
 
 		InputManager::InputManager(messaging::Emitter<KeyEvent> &emitter) : messaging::Receiver<KeyEvent>(emitter)
 		{
-			memset(keystate, (int)KeyState::Idle, KEY_COUNT);
+			std::memset(keystate, (int)KeyState::Idle, KEY_COUNT);
 		}
 
 		KeyState InputManager::getKeyState(Key key) const
@@ -25,7 +27,7 @@ namespace re
 
 		bool InputManager::isKeyDown(Key key) const
 		{
-			return (byte(keystate[int(key)]) & ~byte(KeyState::Changed)) == byte(KeyState::Held); 
+			return (byte_t(keystate[int(key)]) & ~byte_t(KeyState::Changed)) == byte_t(KeyState::Held);
 		}
 
 		void InputManager::onReceive(const KeyEvent &event)
@@ -38,7 +40,7 @@ namespace re
 		void InputManager::updateKeyStates()
 		{
 			for(size_t i = 0; i < _countof(keystate); i++)
-				keystate[i] = KeyState(byte(keystate[i]) & ~byte(KeyState::Changed));
+				keystate[i] = KeyState(byte_t(keystate[i]) & ~byte_t(KeyState::Changed));
 		}
 	}
 }

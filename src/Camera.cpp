@@ -14,175 +14,230 @@
 
 namespace re
 {
-	LookAtCamera::LookAtCamera(const math::fvec3 &position, const math::fvec3 &target, const math::fvec3 &up): CameraBase(position, target, up)	{	}
-	void LookAtCamera::setPosition(const math::fvec3 &position)
+	LookAtCamera::LookAtCamera(
+		math::fvec3_t const& position,
+		math::fvec3_t const& target,
+		math::fvec3_t const& up):
+		CameraBase(position, target, up)
+	{
+	}
+
+	void LookAtCamera::set_position(
+		math::fvec3_t const& position)
 	{
 		this->LookAtCameraPosition= position;
 	}
-	void LookAtCamera::setTarget(const math::fvec3 &target)
+	void LookAtCamera::set_target(
+		math::fvec3_t const& target)
 	{
 		this->LookAtCameraTarget= target;
 	}
-	void LookAtCamera::setUp(const math::fvec3 &up)
+	void LookAtCamera::set_up(
+		math::fvec3_t const& up)
 	{
 		this->LookAtCameraUp = up;
 	}
-	const math::fvec3 &LookAtCamera::getPosition() const
+
+	math::fvec3_t const& LookAtCamera::position() const
 	{
 		return LookAtCameraPosition;
 	}
-	const math::fvec3 &LookAtCamera::getTarget() const
+	math::fvec3_t const& LookAtCamera::target() const
 	{
 		return LookAtCameraTarget;
 	}
-	const math::fvec3 &LookAtCamera::getUp() const
+	math::fvec3_t const& LookAtCamera::up() const
 	{
 		return LookAtCameraUp;
 	}
-	math::fmat4x4 LookAtCamera::getViewMatrix() const
+	math::fmat4x4_t LookAtCamera::view_matrix() const
 	{
-		return math::fmat4x4::lookAt(LookAtCameraPosition, LookAtCameraTarget-LookAtCameraPosition, LookAtCameraUp);
+		return math::fmat4x4_t::look_at(
+			LookAtCameraPosition,
+			LookAtCameraTarget-LookAtCameraPosition,
+			LookAtCameraUp);
 	}
 
 
-	DirectionalCamera::DirectionalCamera(const math::fvec3 &position, const math::fvec3 &direction, const math::fvec3 &up): CameraBase(position, direction, up)	{	}
+	DirectionalCamera::DirectionalCamera(
+		math::fvec3_t const& position,
+		math::fvec3_t const& direction,
+		math::fvec3_t const& up):
+		CameraBase(position, direction, up)
+	{
+	}
 
-	void DirectionalCamera::setPosition(const math::fvec3 &position)
+	void DirectionalCamera::set_position(
+		math::fvec3_t const& position)
 	{
 		this->DirectionalCameraPosition = position;
 	}
-	void DirectionalCamera::setDirection(const math::fvec3 &direction)
+	void DirectionalCamera::set_direction(
+		math::fvec3_t const& direction)
 	{
 		this->DirectionalCameraDirection = direction;
 	}
-	void DirectionalCamera::setUp(const math::fvec3 &up)
+	void DirectionalCamera::set_up(
+		math::fvec3_t const& up)
 	{
 		this->DirectionalCameraUp = up;
 	}
 
-	const math::fvec3 &DirectionalCamera::getPosition() const
+	math::fvec3_t const& DirectionalCamera::position() const
 	{
 		return DirectionalCameraPosition;
 	}
-	const math::fvec3 &DirectionalCamera::getDirection() const
+	math::fvec3_t const& DirectionalCamera::direction() const
 	{
 		return DirectionalCameraDirection;
 	}
-	const math::fvec3 &DirectionalCamera::getUp() const
+	math::fvec3_t const& DirectionalCamera::up() const
 	{
 		return DirectionalCameraUp;
 	}
-	math::fmat4x4 DirectionalCamera::getViewMatrix() const
+	math::fmat4x4_t DirectionalCamera::view_matrix() const
 	{
-		return math::fmat4x4::lookAt(DirectionalCameraPosition, DirectionalCameraDirection, DirectionalCameraUp);
+		return math::fmat4x4_t::look_at(
+			DirectionalCameraPosition,
+			DirectionalCameraDirection,
+			DirectionalCameraUp);
 	}
 
-	FollowingCamera::FollowingCamera(const math::fvec3 &target, const math::fvec3 &distance, const math::fvec3 &up): CameraBase(target, distance, up)	{	}
+	FollowingCamera::FollowingCamera(
+		math::fvec3_t const& target,
+		math::fvec3_t const& distance,
+		math::fvec3_t const& up):
+		CameraBase(target, distance, up)
+	{
+	}
 
-	void FollowingCamera::setTarget(const math::fvec3 &target)
+	void FollowingCamera::set_target(
+		math::fvec3_t const& target)
 	{
 		this->FollowingCameraTarget = target;
 	}
-	void FollowingCamera::setDistance(const math::fvec3 &distance)
+	void FollowingCamera::set_distance(
+		math::fvec3_t const& distance)
 	{
 		this->FollowingCameraDistance = distance;
 	}
-	void FollowingCamera::setUp(const math::fvec3 &up)
+	void FollowingCamera::set_up(
+		math::fvec3_t const& up)
 	{
 		this->FollowingCameraUp = up;
 	}
-		
-	const math::fvec3 &FollowingCamera::getTarget() const
+
+	math::fvec3_t const& FollowingCamera::target() const
 	{
 		return FollowingCameraTarget;
 	}
-	const math::fvec3 &FollowingCamera::getDistance() const
+	math::fvec3_t const& FollowingCamera::distance() const
 	{
 		return FollowingCameraDistance;
 	}
-	const math::fvec3 &FollowingCamera::getUp() const
+	math::fvec3_t const& FollowingCamera::up() const
 	{
 		return FollowingCameraUp;
 	}
 
-	math::fmat4x4 FollowingCamera::getViewMatrix() const
+	math::fmat4x4_t FollowingCamera::view_matrix() const
 	{
-		return math::fmat4x4::lookAt(FollowingCameraTarget-FollowingCameraDistance, FollowingCameraDistance, FollowingCameraUp);
+		return math::fmat4x4_t::look_at(
+			FollowingCameraTarget-FollowingCameraDistance,
+			FollowingCameraDistance,
+			FollowingCameraUp);
 	}
 
 
-	
-	Camera::Camera(const LookAtCamera &lookat) : type(CameraType::LookAt), base(lookat) {}
-	Camera::Camera(const DirectionalCamera &directional) : type(CameraType::Directional), base(directional) {}
-	Camera::Camera(const FollowingCamera &following): type(CameraType::Following), base(following) {}
-	math::fmat4x4 Camera::getViewMatrix() const
+	Camera::Camera(
+		LookAtCamera const& lookat):
+		m_type(CameraType::LookAt),
+		m_base(lookat)
 	{
-		switch(type)
+	}
+
+	Camera::Camera(
+		DirectionalCamera const& directional):
+		m_type(CameraType::Directional),
+		m_base(directional)
+	{
+	}
+
+	Camera::Camera(
+		FollowingCamera const& following):
+		m_type(CameraType::Following),
+		m_base(following)
+	{
+	}
+
+	math::fmat4x4_t Camera::view_matrix() const
+	{
+		switch(m_type)
 		{
-		case CameraType::LookAt: return reinterpret<const LookAtCamera>(base)->getViewMatrix();
-		case CameraType::Directional: return reinterpret<const DirectionalCamera>(base)->getViewMatrix();
-		case CameraType::Following: return reinterpret<const FollowingCamera>(base)->getViewMatrix();
+		case CameraType::LookAt: return reinterpret_cast<LookAtCamera const&>(m_base).view_matrix();
+		case CameraType::Directional: return reinterpret_cast<DirectionalCamera const&>(m_base).view_matrix();
+		case CameraType::Following: return reinterpret_cast<FollowingCamera const&>(m_base).view_matrix();
 		default:
 			RE_ASSERTION_FAILURE("INVALID ENUM");
 		}
 	}
-	CameraType Camera::getType() const
+	CameraType Camera::type() const
 	{
-		return type;
+		return m_type;
 	}
-	template<CameraType type>
+	template<CameraType m_type>
 	void Camera::convert()
 	{
-		switch(this->type)
+		switch(this->m_type)
 		{
 		case CameraType::Directional:
 			{
-				switch(type)
+				switch(m_type)
 				{
 				case CameraType::Directional:
 					return;
 				case CameraType::Following:
 					{
-						base = FollowingCamera(base.DirectionalCameraPosition+base.DirectionalCameraDirection, base.DirectionalCameraDirection, base.DirectionalCameraUp);
+						m_base = FollowingCamera(m_base.DirectionalCameraPosition+m_base.DirectionalCameraDirection, m_base.DirectionalCameraDirection, m_base.DirectionalCameraUp);
 						return;
 					} break;
 				case CameraType::LookAt:
 					{
-						base = LookAtCamera(base.DirectionalCameraPosition, base.DirectionalCameraPosition+base.DirectionalCameraDirection, base.DirectionalCameraUp);
+						m_base = LookAtCamera(m_base.DirectionalCameraPosition, m_base.DirectionalCameraPosition+m_base.DirectionalCameraDirection, m_base.DirectionalCameraUp);
 						return;
 					} break;
 				}
 			} break;
 		case CameraType::Following:
 			{
-				switch(type)
+				switch(m_type)
 				{
 				case CameraType::Directional:
 					{
-						base = DirectionalCamera(base.FollowingCameraTarget-base.FollowingCameraDistance, base.FollowingCameraDistance, base.FollowingCameraUp);
+						m_base = DirectionalCamera(m_base.FollowingCameraTarget-m_base.FollowingCameraDistance, m_base.FollowingCameraDistance, m_base.FollowingCameraUp);
 						return;
 					}
 				case CameraType::Following:
 						return;
 				case CameraType::LookAt:
 					{
-						base = LookAtCamera(base.FollowingCameraTarget-base.FollowingCameraDistance, base.FollowingCameraTarget, base.FollowingCameraUp);
+						m_base = LookAtCamera(m_base.FollowingCameraTarget-m_base.FollowingCameraDistance, m_base.FollowingCameraTarget, m_base.FollowingCameraUp);
 						return;
 					} break;
 				}
 			} break;
 		case CameraType::LookAt:
 			{
-				switch(type)
+				switch(m_type)
 				{
 				case CameraType::Directional:
 					{
-						base = DirectionalCamera(base.LookAtCameraPosition, base.LookAtCameraTarget-base.LookAtCameraPosition, base.LookAtCameraUp);
+						m_base = DirectionalCamera(m_base.LookAtCameraPosition, m_base.LookAtCameraTarget-m_base.LookAtCameraPosition, m_base.LookAtCameraUp);
 						return;
 					}
 				case CameraType::Following:
 					{
-						base = FollowingCamera(base.LookAtCameraTarget, base.LookAtCameraTarget-base.LookAtCameraPosition, base.LookAtCameraUp);
+						m_base = FollowingCamera(m_base.LookAtCameraTarget, m_base.LookAtCameraTarget-m_base.LookAtCameraPosition, m_base.LookAtCameraUp);
 						return;
 					} break;
 				case CameraType::LookAt:
@@ -191,41 +246,49 @@ namespace re
 			} break;
 		}
 	}
-	LookAtCamera * Camera::getLookAt()
+	LookAtCamera * Camera::look_at()
 	{
-		if(type == CameraType::LookAt)
-			return base;
+		if(m_type == CameraType::LookAt)
+			return static_cast<LookAtCamera *>(&m_base);
 		else return nullptr;
 	}
-	const LookAtCamera * Camera::getLookAt() const
+	const LookAtCamera * Camera::look_at() const
 	{
-		if(type == CameraType::LookAt)
-			return base;
+		if(m_type == CameraType::LookAt)
+			return static_cast<LookAtCamera const*>(&m_base);
 		else return nullptr;
 	}
-	DirectionalCamera * Camera::getDirectional()
+	DirectionalCamera * Camera::directional()
 	{
-		if(type == CameraType::Directional)
-			return base;
+		if(m_type == CameraType::Directional)
+			return static_cast<DirectionalCamera *>(&m_base);
 		else return nullptr;
 	}
-	const DirectionalCamera * Camera::getDirectional() const
+	const DirectionalCamera * Camera::directional() const
 	{
-		if(type == CameraType::Directional)
-			return base;
+		if(m_type == CameraType::Directional)
+			return static_cast<DirectionalCamera const*>(&m_base);
 		else return nullptr;
 	}
-	FollowingCamera * Camera::getFollowing()
+	FollowingCamera * Camera::following()
 	{
-		if(type == CameraType::Following)
-			return base;
+		if(m_type == CameraType::Following)
+			return static_cast<FollowingCamera *>(&m_base);
 		else return nullptr;
 	}
-	const FollowingCamera * Camera::getFollowing() const
+	const FollowingCamera * Camera::following() const
 	{
-		if(type == CameraType::Following)
-			return base;
+		if(m_type == CameraType::Following)
+			return static_cast<FollowingCamera const*>(&m_base);
 		else return nullptr;
 	}
-	CameraBase::CameraBase(const math::fvec3 &a, const math::fvec3 &b, const math::fvec3 &c): a(a),b(b),c(c) {}
+	CameraBase::CameraBase(
+		math::fvec3_t const& a,
+		math::fvec3_t const& b,
+		math::fvec3_t const& c):
+		a(a),
+		b(b),
+		c(c)
+	{
+	}
 }

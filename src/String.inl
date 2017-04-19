@@ -77,7 +77,7 @@ namespace re
 	String<C> &String<C>::operator=(
 		String<C> const& copy)
 	{
-		*this = copy.m_data;
+		*this = copy.m_data.operator->();
 	}
 
 	template<class C>

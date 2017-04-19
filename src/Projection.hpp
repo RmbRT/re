@@ -21,8 +21,8 @@ namespace re
 	{
 		ProjectionType type;
 		math::Angle fov;
-		math::fvec2 position;
-		math::fvec2 size;
+		math::fvec2_t position;
+		math::fvec2_t size;
 		float near_plane;
 		float far_plane;
 	public:
@@ -35,7 +35,11 @@ namespace re
 			the near clip plane.
 		@param[in] far_plane:
 			the far clip plane. */
-		Projection(const math::Angle &fov, const math::fvec2 &size, float near_plane, float far_plane);
+		Projection(
+			math::Angle const& fov,
+			math::fvec2_t const& size,
+			float near_plane,
+			float far_plane);
 
 		/** Creates an Orthogonal Projection.
 		@param[in] pos:
@@ -46,16 +50,21 @@ namespace re
 			the near clip plane.
 		@param[in] far_plane:
 			the far clip plane. */
-		Projection(const math::fvec2 &pos, const math::fvec2 &size, float near_plane, float far_plane);
-		
+		Projection(
+			math::fvec2_t const& pos,
+			math::fvec2_t const& size,
+			float near_plane,
+			float far_plane);
+
 		/** Calculates the projection Matrix.
 		@note: this can be expensive, so avoid redundant calls. */
-		math::fmat4x4 projectionMatrix() const;
+		math::fmat4x4_t projectionMatrix() const;
 
 		/** Creates a ray for ray casting.
 		@param[in] position:
 			the local position of the ray (i.e. cursor position). */
-		math::Ray<float> unproject(const math::fvec2 &position) const;
+		math::Ray<float> unproject(
+			math::fvec2_t const& position) const;
 
 		/** Creates a ray for ray casting.
 		@param[in] position:
@@ -63,15 +72,19 @@ namespace re
 		@param[in] inv_view:
 			the inverse view / camera matrix.
 		@note: not tested yet. */
-		math::Ray<float> unproject(const math::fvec2 &position, const math::fmat4x4 &inv_view) const;
+		math::Ray<float> unproject(
+			math::fvec2_t const& position,
+			math::fmat4x4_t const& inv_view) const;
 		/** Projects an input vector into projected space.
 		@note:
 			this calculates the projection matrix, so it uses redundant calculation!
 			To avoid this overhead, call project with a collection of input vectors. */
-		math::fvec2 project(const math::fvec3 &position) const;
+		math::fvec2_t project(
+			math::fvec3_t const& position) const;
 
 		/** Projects a collection of input vectors into projected space. */
-		std::vector<math::fvec2> project(const std::vector<math::fvec3> &position) const;
+		std::vector<math::fvec2_t> project(
+			std::vector<const math::fvec3_t> const& position) const;
 	};
 }
 

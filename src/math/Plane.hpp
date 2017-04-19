@@ -11,13 +11,19 @@ namespace re
 		/** Represents a plane consisting of a position and the normal vector of the plane. */
 		struct NormalPlane
 		{
-			NormalPlane(const vec3<T> &position, const vec3<T> &normal): position(position), normal(normal) { }
-			NormalPlane(const vec3<T> &position, const vec3<T> &u, const vec3<T> &v) : position(position), normal(cross(u,v)) { }
+			NormalPlane(
+				Vec3<T> const& position,
+				Vec3<T> const& normal): position(position), normal(normal) { }
+			NormalPlane(
+				Vec3<T> const& position,
+				Vec3<T> const& u,
+				Vec3<T> const& v) : position(position), normal(cross(u,v)) { }
 
-			bool contains(const vec3<T> &x) { return dot(x-position, normal) == 0; }
+			bool contains(
+				Vec3<T> const& x) { return dot(x-position, normal) == 0; }
 
-			vec3<T> position;
-			vec3<T> normal;
+			Vec3<T> position;
+			Vec3<T> normal;
 		};
 
 		template<class T>
@@ -25,12 +31,16 @@ namespace re
 		struct STPlane
 		{
 			STPlane() : position(), s(), t() { }
-			STPlane(const vec3<T> position, const vec3<T> &s, const vec3<T> &t): position(position), s(s), t(t) { }
+			STPlane(
+				Vec3<T> position,
+				Vec3<T> const& s,
+				Vec3<T> const& t): position(position), s(s), t(t) { }
 
-			bool contains(const vec3<T> &x) { return dot(x-position, cross(s,t)) == 0; }
+			bool contains(
+				Vec3<T> const& x) { return dot(x-position, cross(s,t)) == 0; }
 
-			vec3<T> position;
-			vec3<T> s, t;
+			Vec3<T> position;
+			Vec3<T> s, t;
 		};
 	}
 }

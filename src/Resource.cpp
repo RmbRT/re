@@ -4,30 +4,39 @@
 
 #include "TextAsset.hpp"
 #include "BitmapAsset.hpp"
-#include "ModelAsset.hpp"
 
 
 namespace re
 {
-	Resource::Resource(const string &filename):
-		filename(filename), loaded(false), texts(0), bitmaps(0), models(0)
+	Resource::Resource(
+		string8_t const& filename):
+		filename(filename),
+		loaded(false),
+		texts(0),
+		bitmaps(0)
 	{
 		load(filename);
 	}
-	Resource::Resource(): filename(), loaded(false), texts(0), bitmaps(0), models(0)	{	}
+	Resource::Resource():
+		filename(),
+		loaded(false),
+		texts(0),
+		bitmaps(0)
+	{
+	}
 
 	Resource::~Resource()
 	{
 	}
 
-	bool Resource::load(const string &filename)
+	bool Resource::load(
+		string8_t const& filename)
 	{
 		if(loaded)
 		{
-			LogFile::GetInst()->writefln("Resource::load: Resource already had data, discarding. (previous: %s, current: %s)", this->filename.c_str(), filename.c_str());
+			RE_LOG("Resource::load: Resource already had data, discarding. (previous: %s, current: %s)", this->filename.c_str(), filename.c_str());
 			texts.clear();
 			bitmaps.clear();
-			models.clear();
 			loaded = false;
 		}
 		std::ifstream file(filename.c_str(), std::ios::binary | std::ios::in);
@@ -37,9 +46,9 @@ namespace re
 			try
 			{
 				AssetFileHeader header;
-				if(!AssetBase::loadAssetFileHeader(file, header))
+				if(!AssetBase::load_asset_file_header(file, header))
 				{
-					LogFile::GetInst()->writefln("Resource::load: corrupt Asset file header #%i in %s", index, filename.c_str());
+					RE_LOG("Resource::load: corrupt Asset file header #%i in %s", index, filename.c_str());
 					file.close();
 					return false;
 				}
@@ -49,10 +58,12 @@ namespace re
 					{
 					case AssetType::AT_TEXT:
 						{
-							TextAsset asset(header.name, std::string());
-							if(!asset.loadFromFile(file))
+							TextAsset asset(
+								header.name,
+								string8_t());
+							if(!asset.load_from_file(file))
 							{
-								LogFile::GetInst()->writefln("Resource::load: corrupt Asset section of type TEXT #%i in %s", index, filename.c_str());
+								RE_LOG("Resource::load: corrupt Asset section of type TEXT #%i in %s", index, filename.c_str());
 								file.close();
 								return false;
 							}
@@ -61,31 +72,19 @@ namespace re
 						} break;
 					case AssetType::AT_BITMAP:
 						{
-							BitmapAsset asset(header.name, graphics::Bitmap());
-							if(!asset.loadFromFile(file))
+							BitmapAsset asset(header.name, graphics::Bitmap2D());
+							if(!asset.load_from_file(file))
 							{
-								LogFile::GetInst()->writefln("Resource::load: corrupt Asset section of type BITMAP #%i in %s", index, filename.c_str());
+								RE_LOG("corrupt Asset section of type BITMAP #%i in %s", index, filename.c_str());
 								file.close();
 								return false;
 							}
 							else
 								addBitmap(std::move(asset));
 						} break;
-					case AssetType::AT_MODEL:
-						{
-							ModelAsset asset(header.name);
-							if(!asset.loadFromFile(file))
-							{
-								LogFile::GetInst()->writefln("Resource::load: corrupt Asset section of type MODEL %i in %s", index, filename.c_str());
-								file.close();
-								return false;
-							}
-							else
-								addModel(std::move(asset));
-						} break;
 					default:
 						{
-							LogFile::GetInst()->writefln("Resource::load: unsupported Asset Type %i at #%i in %s", header.type, index, filename.c_str());
+							RE_LOG("unsupported Asset Type %i at #%i in %s", header.type, index, filename.c_str());
 							file.close();
 							return false;
 						} break;
@@ -93,7 +92,7 @@ namespace re
 				}
 			} catch(...)
 			{
-				LogFile::GetInst()->writefln("Resource::load: exception.");
+				RE_LOG("exception.");
 				std::abort();
 			}
 		}
@@ -103,21 +102,20 @@ namespace re
 		return true;
 	}
 
-	void Resource::writeToFile(const string &filename)
+	void Resource::writeToFile(
+		string8_t const& filename)
 	{
 		std::ofstream file(filename.c_str(), std::ios::binary | std::ios::out);
-		
+
 		for(auto &text: texts)
-			text->readLock()->writeToFile(file);
-		for(auto &model: models)
-			model->readLock()->writeToFile(file);
+			lock::read_lock(*text)->write_to_file(file);
 		for(auto &bitmap: bitmaps)
-			bitmap->readLock()->writeToFile(file);
+			lock::read_lock(*bitmap)->write_to_file(file);
 
 		file.close();
 	}
 
-	const string &Resource::getFilename() const
+	string8_t const& Resource::getFilename() const
 	{
 		return filename;
 	}
@@ -127,19 +125,14 @@ namespace re
 		return loaded;
 	}
 
-	strong_handle<lock::ThreadSafe<ModelAsset>> Resource::addModel(ModelAsset &&asset)
+	Shared<lock::ThreadSafe<TextAsset>> Resource::addText(TextAsset &&asset)
 	{
-		models.push_back(alloc<lock::ThreadSafe<ModelAsset>>(std::forward<ModelAsset>(asset)));
-		return models.back();
-	}
-	strong_handle<lock::ThreadSafe<TextAsset>> Resource::addText(TextAsset &&asset)
-	{
-		texts.push_back(alloc<lock::ThreadSafe<TextAsset>>(std::forward<TextAsset>(asset)));
+		texts.push_back(Shared<lock::ThreadSafe<TextAsset>>::alloc(std::forward<TextAsset>(asset)));
 		return texts.back();
 	}
-	strong_handle<lock::ThreadSafe<BitmapAsset>> Resource::addBitmap(BitmapAsset &&asset)
+	Shared<lock::ThreadSafe<BitmapAsset>> Resource::addBitmap(BitmapAsset &&asset)
 	{
-		bitmaps.push_back(alloc<lock::ThreadSafe<BitmapAsset>>(std::forward<BitmapAsset>(asset)));
+		bitmaps.push_back(Shared<lock::ThreadSafe<BitmapAsset>>::alloc(std::forward<BitmapAsset>(asset)));
 		return bitmaps.back();
 	}
 }

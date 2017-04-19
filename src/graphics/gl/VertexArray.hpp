@@ -6,6 +6,8 @@
 #include "Handle.hpp"
 #include "Buffer.hpp"
 
+#include "../../math/AxisAlignedBoundingBox.hpp"
+
 namespace re
 {
 	namespace graphics
@@ -194,6 +196,8 @@ namespace re
 			template<class Vertex>
 			class VertexArray : public VertexArrayBase
 			{
+				std::vector<Vertex> m_data;
+				math::faabb_t m_aabb;
 			public:
 				RECX VertexArray(BufferAccess access, BufferUsage usage);
 				VertexArray(VertexArray<Vertex> &&) = default;
@@ -218,7 +222,18 @@ namespace re
 					uint32_t const * index_data,
 					size_t indices);
 
+				void set_data(
+					std::vector<Vertex> vertex_data,
+					RenderMode render_mode);
+
+				void set_data(
+					std::vector<Vertex> vertex_data,
+					RenderMode render_mode,
+					std::vector<uint32_t> index_data);
+
 				using VertexArrayBase::draw;
+
+				math::faabb_t const& aabb() const;
 			};
 		}
 	}

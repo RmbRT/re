@@ -88,6 +88,13 @@ namespace re
 		}
 
 		template<class T>
+		T& Shared<T>::operator*() const
+		{
+			RE_DBG_ASSERT(m_obj != nullptr);
+			return m_obj->get();
+		}
+
+		template<class T>
 		template<class ...Args>
 		Shared<T> Shared<T>::alloc(Args && ... args)
 		{

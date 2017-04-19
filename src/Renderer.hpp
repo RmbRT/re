@@ -14,28 +14,43 @@ namespace re
 {
 	class Renderer
 	{
-		NotNull<graphics::ShaderProgram> shader;
+		NotNull<graphics::gl::ShaderProgram> shader;
 
-		graphics::ShaderProgram::uniform_t transform_uniform;
+		graphics::gl::ShaderProgram::uniform_t transform_uniform;
 
 		NotNull<Scene> scene;
-		NotNull<Window> window;
+		NotNull<graphics::Window> window;
 		NotNull<Camera> camera;
-		math::fmat4x4 projection;
+		math::fmat4x4_t projection;
 
 
 	public:
-		Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, graphics::ShaderProgram::uniform_t transform_uniform);
-		Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, const string &transform_uniform);
-		NotNull<graphics::ShaderProgram> getShader();
+		Renderer(
+			NotNull<graphics::gl::ShaderProgram> shader,
+			NotNull<Scene> scene,
+			NotNull<graphics::Window> window,
+			NotNull<Camera> camera,
+			graphics::gl::ShaderProgram::uniform_t transform_uniform);
+		Renderer(
+			NotNull<graphics::gl::ShaderProgram> shader,
+			NotNull<Scene> scene,
+			NotNull<graphics::Window> window,
+			NotNull<Camera> camera,
+			string8_t const& transform_uniform);
+		NotNull<graphics::gl::ShaderProgram> getShader();
 
-		void setTransformUniform(graphics::ShaderProgram::uniform_t uniform);
-		void setTransformUniform(const string &name);
+		void setTransformUniform(
+			graphics::gl::ShaderProgram::uniform_t uniform);
+		void setTransformUniform(
+			string8_t const& name);
 
-		void setProjection(const math::fmat4x4 &projection);
+		void setProjection(
+			math::fmat4x4_t const& projection);
 
 		virtual void render();
-		virtual void render(const SceneNode &node, math::fmat4x4 &camera_mat);
+		virtual void render(
+			SceneNode const& node,
+			math::fmat4x4_t const& camera_mat);
 	};
 }
 

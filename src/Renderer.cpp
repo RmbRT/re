@@ -7,22 +7,64 @@
 
 namespace re
 {
-	Renderer::Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, graphics::ShaderProgram::uniform_t transform_uniform): shader(shader), transform_uniform(transform_uniform), scene(scene), window(window), camera(camera), projection(math::fmat4x4::perspective(math::deg(65), 2,2, 0, 1000.f)) {}
-	Renderer::Renderer(NotNull<graphics::ShaderProgram> shader, NotNull<Scene> scene, NotNull<Window> window, NotNull<Camera> camera, const string &transform_uniform): shader(shader), transform_uniform(shader->getUniform(transform_uniform.c_str())), scene(scene), window(window), camera(camera), projection(math::fmat4x4::perspective(math::deg(65), 2,2, 0, 1000.f)) {}
+	Renderer::Renderer(
+		NotNull<graphics::gl::ShaderProgram> shader,
+		NotNull<Scene> scene,
+		NotNull<graphics::Window> window,
+		NotNull<Camera> camera,
+		graphics::gl::ShaderProgram::uniform_t transform_uniform):
+		shader(shader),
+		transform_uniform(transform_uniform),
+		scene(scene),
+		window(window),
+		camera(camera),
+		projection(
+			math::fmat4x4_t::perspective(
+				math::deg(65),
+				2,
+				2,
+				0,
+				1000.f))
+	{
+	}
+
+	Renderer::Renderer(
+		NotNull<graphics::gl::ShaderProgram> shader,
+		NotNull<Scene> scene,
+		NotNull<graphics::Window> window,
+		NotNull<Camera> camera,
+		string8_t const& transform_uniform):
+		shader(shader),
+		transform_uniform(
+			shader->get_uniform(transform_uniform.c_str())),
+		scene(scene),
+		window(window),
+		camera(camera),
+		projection(
+			math::fmat4x4_t::perspective(
+				math::deg(65),
+				2,
+				2,
+				0,
+				1000.f))
+	{
+	}
 
 	void Renderer::render()
 	{
-		window->makeContextCurrent();
+		RE_DBG_ASSERT(window->context().current());
 		shader->use();
 
-		math::fmat4x4 camera_mat(camera->getViewMatrix());
+		math::fmat4x4_t camera_mat(camera->view_matrix());
 
 		render(scene->getRoot(), projection * camera_mat);
 	}
 
-	void Renderer::render(const SceneNode &node, math::fmat4x4 &camera_mat)
+	void Renderer::render(
+		SceneNode const& node,
+		math::fmat4x4_t const& camera_mat)
 	{
-		math::fmat4x4 mvp = camera_mat * node.getTransformation();
+		math::fmat4x4_t mvp = camera_mat * node.getTransformation();
 
 		if(auto model = node.getModel())
 		{
@@ -36,17 +78,20 @@ namespace re
 		}
 	}
 
-	void Renderer::setTransformUniform(graphics::ShaderProgram::uniform_t uniform)
+	void Renderer::setTransformUniform(
+		graphics::gl::ShaderProgram::uniform_t uniform)
 	{
 		transform_uniform = uniform;
 	}
 
-	void Renderer::setTransformUniform(const string &name)
+	void Renderer::setTransformUniform(
+		string8_t const& name)
 	{
-		transform_uniform = shader->getUniform(name.c_str());
+		transform_uniform = shader->get_uniform(name.c_str());
 	}
 
-	void Renderer::setProjection(const math::fmat4x4 &projection)
+	void Renderer::setProjection(
+		math::fmat4x4_t const& projection)
 	{
 		this->projection = projection;
 	}

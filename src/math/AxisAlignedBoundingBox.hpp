@@ -79,7 +79,7 @@ namespace re
 			T size_z() const;
 			/** Returns the difference between the min and max point of @<this>.
 			If @<this> is empty, returns a negative value. */
-			Vec3<T> const& size() const;
+			Vec3<T> size() const;
 
 			/** Extends the BoundingBox to contain @<position>. */
 			void make_contain(
@@ -94,9 +94,9 @@ namespace re
 			void set_to_empty();
 		};
 
-		typedef AxisAlignedBoundingBox<int> iAABB;
-		typedef AxisAlignedBoundingBox<float> fAABB;
-		typedef AxisAlignedBoundingBox<double> dAABB;
+		typedef AxisAlignedBoundingBox<int> iaabb_t;
+		typedef AxisAlignedBoundingBox<float> faabb_t;
+		typedef AxisAlignedBoundingBox<double> daabb_t;
 
 	}
 }
@@ -298,7 +298,7 @@ namespace re
 		}
 
 		template<class T>
-		Vec3<T> const& AxisAlignedBoundingBox<T>::size() const
+		Vec3<T> AxisAlignedBoundingBox<T>::size() const
 		{
 			return _empty?Vec3<T>(T(-1),T(-1),T(-1)):_max-_min;
 		}

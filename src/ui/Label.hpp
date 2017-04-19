@@ -3,6 +3,7 @@
 
 #include "Font.hpp"
 #include "../graphics/gl/ShaderProgram.hpp"
+#include "Rendering.hpp"
 
 namespace re
 {
@@ -11,46 +12,45 @@ namespace re
 		class Label
 		{
 
-			Shared<Font> font;
-			Shared<graphics::gl::VertexArrayBase> vertexData;
+			Shared<Font> m_font;
+			Auto<VertexArray> m_vertex_array;
 
-			string32_t text;
+			string32_t m_text;
 
-			FontSettings settings;
+			FontSettings m_settings;
 
 			// The last pen position of this Label. Used to append Labels.
-			math::fvec2_t pen_position;
+			math::fvec2_t m_pen_position;
 
 		public:
 			Label();
-			Label(const Label &copy);
 			Label(Label &&move);
 			Label& operator=(Label &&move);
 
 			/** Sets the Font of the Label and compiles the text to match the new Font. */
-			void setFont(
+			void set_font(
 				Shared<Font> const& font);
-			Shared<Font> const& getFont() const;
+			Shared<Font> const& font() const;
 			/** Sets he text of the Label and compiles it. */
-			void setText(
+			void set_text(
 				string32_t const& text);
 			/** Sets the X offset for inline appending labels. */
-			void setXOffset(
+			void set_x_offset(
 				float xOffset);
 
-			string32_t const& getText() const;
+			string32_t const& text() const;
 
-			Shared<graphics::gl::VertexArrayBase> const& getVertexData() const;
+			Auto<VertexArray> const& vertex_array() const;
 
-			FontSettings &fontSettings();
-			FontSettings const& fontSettings() const;
+			FontSettings &font_settings();
+			FontSettings const& font_settings() const;
 
 			void update();
 
-			math::fvec2_t const& getSize() const;
-			math::fvec2_t const& getMinPosition() const;
+			math::fvec2_t size() const;
+			math::fvec2_t min_position() const;
 
-			math::fvec2_t const& penPosition() const;
+			math::fvec2_t const& pen_position() const;
 
 			void draw() const;
 		};

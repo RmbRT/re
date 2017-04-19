@@ -84,8 +84,7 @@ namespace re
 
 		/** Manages input events and stores the current input state.
 		@usage:
-			Can be registered as a KeyEvent Receiver to a @{re::Window}. After being registered, it can be used to
-			fetch the current input state for that Window. @see @{re::input::KeyState}. */
+			Can be registered as a KeyEvent Receiver to a `Window`. After being registered, it can be used to fetch the current input state for that Window. @see `KeyState`. */
 		class InputManager : public messaging::Receiver<KeyEvent>
 		{
 			/** Stores the input state of the InputManager. */

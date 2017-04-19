@@ -30,7 +30,7 @@ namespace re
 			@note: This can be quite expensive so avoid redundant calls.
 			@return
 				the transformation Matrix. */
-			math::fmat4x4 transformation() const;
+			math::fmat4x4_t transformation() const;
 
 			/** The plane of this UIView in the 3D space.
 			Can be used to determine the local cursor position via intersection.
@@ -48,7 +48,7 @@ namespace re
 			void update_cursor(math::fvec2_t const& cursor);
 
 			/** Searches and returns the UIElement described by the name, if exists. */
-			UIElement * findElement(string8_t const& name) const;
+			UINode * findElement(string8_t const& name) const;
 
 		};
 	}

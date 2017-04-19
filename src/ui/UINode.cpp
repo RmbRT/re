@@ -238,14 +238,18 @@ namespace re
 			border_corner_model->setData(border_corner_verts, _countof(border_corner_verts));
 		}
 
-		void UINode::updateBackgroundModel() const
+		void UINode::update_background_model() const
 		{
 			if(!invalid_background_model)
 				return;
 			invalid_background_model = false;
 
-			const math::fvec2 inner_pos(absoluteLeft() + border.left.width, absoluteTop() + border.top.width);
-			const math::fvec2 inner_size(absoluteContentAreaWidth(), absoluteContentAreaHeight());
+			const math::fvec2 inner_pos(
+				absolute_left() + border.left.width,
+				absolute_top() + border.top.width);
+			const math::fvec2 inner_size(
+				absolute_content_area_width(),
+				absolute_content_area_height());
 
 			const float il = inner_pos.x;
 			const float ir = inner_pos.x+inner_size.x;
@@ -454,11 +458,11 @@ namespace re
 
 		}
 
-		void UINode::setFont(const strong_handle<Font> &font)
+		void UINode::set_font(Shared<Font> const& font)
 		{
 			this->font = font;
 		}
-		const strong_handle<Font> &UINode::getFont() const
+		const Shared<Font> &UINode::font() const
 		{
 			for(UINode const * node = this; node->parent != nullptr; node = node->parent)
 				if(node->font)
@@ -468,7 +472,7 @@ namespace re
 		}
 
 
-		const layout::Box<layout::Border> &UINode::getBorder() const
+		layout::Box<layout::Border> const& UINode::border() const
 		{
 			return border;
 		}
@@ -482,23 +486,23 @@ namespace re
 				name.absolute + name.relative * m_parent->parentGetter() :	\
 				name.absolute;
 
-#define WIDTH_DEPEND absoluteContentAreaWidth
-#define HEIGHT_DEPEND absoluteContentAreaHeight
+#define WIDTH_DEPEND absolute_content_area_width
+#define HEIGHT_DEPEND absolute_content_area_height
 
 
-		float UINode::absoluteMinWidth() const
+		float UINode::absolute_min_width() const
 		{ IMPLEMENT_SIZE_GETTER(min_size.x, WIDTH_DEPEND) }
 
-		float UINode::absoluteMinHeight() const
+		float UINode::absolute_min_height() const
 		{ IMPLEMENT_SIZE_GETTER(min_size.y, HEIGHT_DEPEND) }
 
-		float UINode::absoluteMaxWidth() const
+		float UINode::absolute_max_height() const
 		{ IMPLEMENT_SIZE_GETTER(max_size.x, WIDTH_DEPEND) }
 
-		float UINode::absoluteMaxHeight() const
+		float UINode::absolute_max_height() const
 		{ IMPLEMENT_SIZE_GETTER(max_size.y, HEIGHT_DEPEND) }
 
-		float UINode::absoluteContentWidth() const
+		float UINode::absolute_content_width() const
 		{
 			if(invalid_width)
 			{
@@ -506,13 +510,13 @@ namespace re
 				float w = 0;
 
 				for(const auto &child: children)
-					w = math::max(w, child->absoluteBoxWidth());
+					w = math::max(w, child->absolute_box_width());
 				temp_last_absolute_content_width = w;
 			}
 			return temp_last_absolute_content_width;
 		}
 
-		float UINode::absoluteContentHeight() const
+		float UINode::absolute_content_height() const
 		{
 			if(invalid_height)
 			{
@@ -520,41 +524,47 @@ namespace re
 				float h = 0;
 
 				for(const auto &child: children)
-					h = math::max(h, child->absoluteBoxWidth());
+					h = math::max(h, child->absolute_box_height());
 				temp_last_absolute_content_height = h;
 			}
 			return temp_last_absolute_content_height;
 		}
 
 
-		float UINode::absoluteContentAreaWidth() const
+		float UINode::absolute_content_area_width() const
 		{
-			return math::cap(absoluteContentWidth(), absoluteMinWidth(), absoluteMaxWidth());
+			return math::cap(
+				absolute_content_width(),
+				absolute_min_width(),
+				absolute_max_width());
 		}
 
-		float UINode::absoluteContentAreaHeight() const
+		float UINode::absolute_content_area_height() const
 		{
-			return math::cap(absoluteContentHeight(), absoluteMinHeight(), absoluteMaxHeight());
+			return math::cap(
+				absolute_content_height(),
+				absolute_min_height(),
+				absolute_max_height());
 		}
 
 
-		float UINode::contentAreaDisplayWidth() const
+		float UINode::content_area_display_width() const
 		{
-			return (visibleScrollBarV() && scrollbars.y.obstructVision) ?
-				absoluteContentAreaWidth() - scrollbars.y.width :
-				absoluteContentAreaWidth();
+			return (visible_scrollbar_v() && scrollbars.y.obstructVision) ?
+				absolute_content_area_width() - scrollbars.y.width :
+				absolute_content_area_width();
 		}
 
-		float UINode::contentAreaDisplayHeight() const
+		float UINode::content_area_display_height() const
 		{
 			return (visibleScrollBarH() && scrollbars.x.obstructVision) ?
-				absoluteContentAreaHeight() - scrollbars.y.width :
-				absoluteContentAreaHeight();
+				absolute_content_area_height() - scrollbars.x.width :
+				absolute_content_area_height();
 		}
 
 
 
-		bool UINode::visibleScrollBarH() const
+		bool UINode::visible_scrollbar_h() const
 		{
 			switch(scrollbars.x.visibility)
 			{
@@ -563,7 +573,7 @@ namespace re
 			case layout::ScrollBarVisibility::Never:
 				return false;
 			case layout::ScrollBarVisibility::WhenOverflow:
-				return absoluteContentWidth() > absoluteMaxWidth();
+				return absolute_content_width() > absolute_max_width();
 			case layout::ScrollBarVisibility::WhenScrolling:
 				return scrollbars.x.scrolling != 0;
 			default:
@@ -571,7 +581,7 @@ namespace re
 			}
 		}
 
-		bool UINode::visibleScrollBarV() const
+		bool UINode::visible_scrollbar_v() const
 		{
 			switch(scrollbars.y.visibility)
 			{
@@ -580,7 +590,7 @@ namespace re
 			case layout::ScrollBarVisibility::Never:
 				return false;
 			case layout::ScrollBarVisibility::WhenOverflow:
-				return absoluteContentHeight() > absoluteMaxHeight();
+				return absolute_content_height() > absolute_max_height();
 			case layout::ScrollBarVisibility::WhenScrolling:
 				return scrollbars.y.scrolling != 0;
 			default:
@@ -588,69 +598,69 @@ namespace re
 			}
 		}
 
-		float UINode::absoluteLeft() const
+		float UINode::absolute_left() const
 		{ IMPLEMENT_SIZE_GETTER(position.x, WIDTH_DEPEND) }
 
-		float UINode::absoluteTop() const
+		float UINode::absolute_top() const
 		{ IMPLEMENT_SIZE_GETTER(position.y, HEIGHT_DEPEND) }
 
-		float UINode::absoluteMarginLeft() const
+		float UINode::absolute_margin_left() const
 		{ IMPLEMENT_SIZE_GETTER(margin.left, WIDTH_DEPEND) }
 
-		float UINode::absoluteMarginTop() const
+		float UINode::absolute_margin_top() const
 		{ IMPLEMENT_SIZE_GETTER(margin.top, HEIGHT_DEPEND) }
 
-		float UINode::absoluteMarginRight() const
+		float UINode::absolute_margin_right() const
 		{ IMPLEMENT_SIZE_GETTER(margin.right, WIDTH_DEPEND) }
 
-		float UINode::absoluteMarginBottom() const
+		float UINode::absolute_margin_bottom() const
 		{ IMPLEMENT_SIZE_GETTER(margin.bottom, HEIGHT_DEPEND) }
 
-		float UINode::absolutePaddingLeft() const
+		float UINode::absolute_padding_left() const
 		{ IMPLEMENT_SIZE_GETTER(padding.left, WIDTH_DEPEND) }
 
-		float UINode::absolutePaddingTop() const
+		float UINode::absolute_padding_top() const
 		{ IMPLEMENT_SIZE_GETTER(padding.top, HEIGHT_DEPEND) }
 
-		float UINode::absolutePaddingRight() const
+		float UINode::absolute_padding_right() const
 		{ IMPLEMENT_SIZE_GETTER(padding.right, WIDTH_DEPEND) }
 
-		float UINode::absolutePaddingBottom() const
+		float UINode::absolute_padding_bottom() const
 		{ IMPLEMENT_SIZE_GETTER(padding.bottom, HEIGHT_DEPEND) }
 
-		float UINode::absoluteBoxWidth() const
+		float UINode::absolute_box_width() const
 		{
 			return
-				absoluteMarginLeft()
+				absolute_margin_left()
 					+ border.left.width
-						+ absolutePaddingLeft()
-							+ absoluteContentAreaWidth()
-						+ absolutePaddingRight()
+						+ absolute_padding_left()
+							+ absolute_content_area_width()
+						+ absolute_padding_right()
 					+ border.right.width;
-				+ absoluteMarginRight();
+				+ absolute_margin_right();
 		}
 
-		float UINode::absoluteBoxHeight() const
+		float UINode::absolute_box_height() const
 		{
 			return
-				absoluteMarginTop()
+				absolute_margin_top()
 					+ border.top.width
-						+ absolutePaddingTop()
-							+ absoluteContentAreaHeight()
-						+ absolutePaddingBottom()
+						+ absolute_padding_top()
+							+ absolute_content_area_height()
+						+ absolute_padding_bottom()
 					+ border.bottom.width
-				+ absoluteMarginBottom();
+				+ absolute_margin_bottom();
 		}
 
-		math::fvec2 UINode::absolutePosition() const
+		math::fvec2_t UINode::absolute_position() const
 		{
-			math::fvec2 pos;
+			math::fvec2_t pos;
 			const UINode * node = this;
 
 			while(node)
 			{
-				pos.x += node->absoluteLeft() + node->absoluteBoxWidth();
-				pos.y += node->absoluteTop() + node->absoluteBoxHeight();
+				pos.x += node->absolute_left() + node->absolute_box_width();
+				pos.y += node->absolute_top() + node->absolute_box_height();
 				node = node->prev_sibling;
 			}
 			return pos;

@@ -2,11 +2,24 @@
 
 namespace re
 {
-	TextAsset::TextAsset(const string &name, const string &text):
-		AssetBase(name, AssetType::AT_TEXT), content(text)	{	}
-	TextAsset::TextAsset(): AssetBase(AssetType::AT_TEXT), content()	{	}
+	TextAsset::TextAsset(
+		string8_t const& name,
+		string8_t const& text):
+		AssetBase(
+			name,
+			AssetType::AT_TEXT),
+		content(text)
+	{
+	}
 
-	bool TextAsset::loadFromFile(std::ifstream &file)
+	TextAsset::TextAsset():
+		AssetBase(AssetType::AT_TEXT),
+		content()
+	{
+	}
+
+	bool TextAsset::load_from_file(
+		std::ifstream &file)
 	{
 		if(!file.is_open())
 			return false;
@@ -18,22 +31,29 @@ namespace re
 		content[len] = '\0';
 		return true;
 	}
-	void TextAsset::writeToFile(std::ofstream &file) const
+	void TextAsset::write_to_file(
+		std::ofstream &file) const
 	{
-		writeAssetFileHeader(file);
-		
+		write_asset_file_header(file);
+
 		size_t len = content.length();
 		file.write(_ADDRESSOF(len), sizeof(len));
 		file.write(content.c_str(), len);
 	}
 
-	const string &TextAsset::getText() const
+	string8_t const& TextAsset::getText() const
 	{
 		return content;
 	}
 
-	void TextAsset::setText(const string &text)
+	void TextAsset::setText(
+		string8_t const& text)
 	{
 		content.assign(text);
+	}
+
+	AssetType TextAsset::type() const override
+	{
+		return AssetType::AT_TEXT);
 	}
 }

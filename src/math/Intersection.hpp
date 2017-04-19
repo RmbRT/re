@@ -26,7 +26,7 @@ namespace re
 		{
 
 			// Compute the determinant.
-			vec3<T> directionCrossEdge2 = cross(ray.direction, plane.t);
+			Vec3<T> directionCrossEdge2 = cross(ray.direction, plane.t);
 
 			float determinant = dot(plane.s, directionCrossEdge2);
 
@@ -37,12 +37,12 @@ namespace re
 			float inverseDeterminant = 1.0f / determinant;
 
 			// Calculate the U parameter of the intersection point.
-			vec3<T> distanceVector = ray.position - plane.position;
+			Vec3<T> distanceVector = ray.position - plane.position;
 			if(u)
 				*u = dot(distanceVector, directionCrossEdge2) * inverseDeterminant;
 
 			// Calculate the V parameter of the intersection point.
-			vec3<T> distanceCrossEdge1 = cross(distanceVector, plane.s);
+			Vec3<T> distanceCrossEdge1 = cross(distanceVector, plane.s);
 			if(v)
 				*v = dot(ray.direction, distanceCrossEdge1) * inverseDeterminant;
 
