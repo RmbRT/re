@@ -187,7 +187,7 @@ namespace re
 	{
 		return empty()
 			? &s_empty
-			: m_data;
+			: m_data.operator->();
 	}
 
 	template<class C>

@@ -1,6 +1,6 @@
 #include "Context.hpp"
 #include "OpenGL.hpp"
-#include "Window.hpp"
+#include "../Window.hpp"
 
 namespace re
 {
@@ -8,7 +8,7 @@ namespace re
 	{
 		namespace gl
 		{
-			lock::ThreadSafe<Context *> Context::s_current_context(nullptr);
+			thread_local lock::ThreadSafe<Context *> Context::s_current_context(nullptr);
 
 			void Context::make_current()
 			{
@@ -17,18 +17,18 @@ namespace re
 
 				lock::WriteLock<Context *> w_current_context(s_current_context);
 
-				glfwMakeContextCurrent(m_context);
-
 				if(*w_current_context)
 					(*w_current_context)->on_deselect();
 
-				*w_current_context = (Window *) this;
-				m_current = *w_current_context;
+				*w_current_context = this;
+				m_current_thread = &s_current_context;
+
+				on_select();
 			}
 
 			void Context::make_none_current()
 			{
-				lock::WriteLock<Context *> w_current_context(tlsm_current);
+				lock::WriteLock<Context *> w_current_context(s_current_context);
 
 				if(*w_current_context)
 				{

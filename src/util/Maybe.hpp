@@ -26,6 +26,6 @@ namespace re
 	}
 }
 
-#include "Maybe.hpp"
+#include "Maybe.inl"
 
 #endif

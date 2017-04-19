@@ -33,7 +33,7 @@
 #endif
 
 #define RE_LAST(Enumerator) Enumerator,  __re_last_field = Enumerator
-#define RE_COUNT(Enum) size_t(Enum::__re_last_field)
+#define RE_COUNT(Enum) (size_t(Enum::__re_last_field)+1)
 #define RE_IN_ENUM(Constant, Enum) (size_t(Constant) < RE_COUNT(Enum))
 
 /** Constexpr with debug assertions. */

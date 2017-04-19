@@ -36,6 +36,32 @@ namespace re
 					m_values[i] = std::move(values[i].second);
 			}
 
+			REIL Lookup(
+				std::initializer_list<
+					std::pair<
+						Enum,
+						Target>> values):
+				m_values()
+			{
+				RE_DBG_ASSERT(values.size() == RE_COUNT(Enum));
+
+#ifdef RE_DEBUG
+				for(size_t i = 0; i<RE_COUNT(Enum); i++)
+					RE_DBG_ASSERT((values[i].first == (Enum) i
+						&& "Invalid order of lookup table entries.");
+#endif
+
+				for(size_t i = 0; i < m_values.size(); i++)
+					m_values[i] = std::move((values.begin()+i)->second);
+			}
+
+			REIL Target & operator[](
+				Enum index)
+			{
+				RE_DBG_ASSERT(RE_IN_ENUM(index, Enum));
+				return m_values[(size_t) index];
+			}
+
 			REIL Target const& operator[](
 				Enum index) const
 			{

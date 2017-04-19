@@ -1,6 +1,7 @@
 #include "Texture.hpp"
 #include "OpenGL.hpp"
 #include "../../util/Lookup.hpp"
+#include "../../util/AllocationBuffer.hpp"
 
 namespace re
 {
@@ -8,21 +9,20 @@ namespace re
 	{
 		namespace gl
 		{
-
-			static RECXDA GLenum get_internalformat(
+			static REIL GLenum get_internalformat(
 				graphics::Channel channel)
 			{
 				static util::Lookup<Channel, GLenum> const k_lookup = {
-					{Channel::kR, GL_RED},
-					{Channel::kRg, GL_RG},
-					{Channel::kRgb, GL_RGB},
-					{Channel::kRgba, GL_RGBA}
+					{Channel::kR, (GLenum) GL_RED},
+					{Channel::kRg, (GLenum) GL_RG},
+					{Channel::kRgb, (GLenum) GL_RGB},
+					{Channel::kRgba, (GLenum) GL_RGBA}
 				};
 
 				return k_lookup[channel];
 			}
 
-			static RECXDA GLenum get_format(
+			static REIL GLenum get_format(
 				Channel channel)
 			{
 				return get_internalformat(channel);
@@ -39,12 +39,9 @@ namespace re
 				return k_lookup[component];
 			}
 
-			static RECXDA GLenum get_target(
+			static REIL GLenum get_target(
 				TextureType type)
 			{
-				RE_DBG_ASSERT(RE_IN_ENUM(type, Texturetype));
-
-
 				static util::Lookup<TextureType, GLenum> const k_targets = {
 					{ TextureType::k1D, GL_TEXTURE_1D },
 					{ TextureType::k2D, GL_TEXTURE_2D },
@@ -62,13 +59,27 @@ namespace re
 				return k_targets[type];
 			}
 
+			static REIL GLenum get_wrap(
+				TextureWrap wrap)
+			{
+				static util::Lookup<TextureWrap, GLenum> const k_lookup = {
+					{TextureWrap::kClamp, GL_CLAMP},
+					{TextureWrap::kRepeat, GL_REPEAT},
+					{TextureWrap::kClampToBorder, GL_CLAMP_TO_BORDER},
+					{TextureWrap::kClampToEdge, GL_CLAMP_TO_EDGE},
+					{TextureWrap::kMirroredRepeat, GL_MIRRORED_REPEAT}
+				};
+
+				return k_lookup[wrap];
+			}
+
 			void Texture::alloc(
 				Texture ** textures,
 				size_t count)
 			{
 				RE_DBG_ASSERT(textures);
 
-				Handle * const handles = util::allocation_buffer<Handle>(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				RE_OGL(glGenTextures(count, handles));
 
@@ -86,7 +97,7 @@ namespace re
 			{
 				RE_DBG_ASSERT(textures);
 
-				Handle * const handles = util::allocation_buffer<Handle>(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				for(size_t i = count; i--;)
 				{
@@ -96,7 +107,7 @@ namespace re
 
 					handles[i] = textures[i]->handle();
 
-					s_binding[textures[i]->type()].on_invalidate(texures[i]->handle());
+					s_binding[textures[i]->type()].on_invalidate(textures[i]->handle());
 				}
 
 				RE_OGL(glDeleteTextures(count, handles));
@@ -114,7 +125,7 @@ namespace re
 
 				bind();
 
-				RE_OGL(glTexParameteri(GL_TEXTURE_MAG_FILTER, k_lookup[filter]));
+				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_MAG_FILTER, k_lookup[filter]));
 			}
 
 			void Texture::set_min_filter(
@@ -133,16 +144,37 @@ namespace re
 
 				bind();
 
-				RE_OGL(glTexParameteri(GL_TEXTURE_MIN_FILTER, k_lookup[filter]));
+				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_MIN_FILTER, k_lookup[filter]));
 			}
 
-			void Texture::generate_mipmaps()
+			void Texture::set_s_wrap(
+				TextureWrap wrap)
 			{
 				RE_DBG_ASSERT(exists());
-				RE_DBG_ASSERT(Context::require_version(Version(3,0)));
+				RE_DBG_ASSERT(graphics::Context::require());
 
 				bind();
-				RE_OGL(glGenerateMipmap(get_target(type())));
+				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_WRAP_S, get_wrap(wrap)));
+			}
+
+			void Texture::set_t_wrap(
+				TextureWrap wrap)
+			{
+				RE_DBG_ASSERT(exists());
+				RE_DBG_ASSERT(graphics::Context::require());
+
+				bind();
+				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_WRAP_T, get_wrap(wrap)));
+			}
+
+			void Texture::set_r_wrap(
+				TextureWrap wrap)
+			{
+				RE_DBG_ASSERT(exists());
+				RE_DBG_ASSERT(graphics::Context::require());
+
+				bind();
+				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_WRAP_R, get_wrap(wrap)));
 			}
 
 			void Texture::bind()
@@ -167,11 +199,11 @@ namespace re
 
 				bind();
 
-				RE_OGL(glTexImage1d(
+				RE_OGL(glTexImage1D(
 					GL_TEXTURE_1D,
 					lod,
 					get_internalformat(texels.channel()),
-					texels.width(),
+					texels.size(),
 					0,
 					get_format(texels.channel()),
 					get_type(texels.component()),
@@ -190,16 +222,16 @@ namespace re
 				if(base_texels.size() > 1)
 				{
 					mip = (filter == MipmapFilter::kNearest)
-						? base_texels.mipmap_near()
-						: base_texels.mipmap_lin();
+						? base_texels.create_mipmap_near()
+						: base_texels.create_mipmap_lin();
 					set_texels(mip, 1);
 
 					uint_t lod = 1;
 					while(mip.size() > 1)
 					{
 						mip = (filter == MipmapFilter::kNearest)
-							? mip.mipmap_near()
-							: mip.mipmap_lin();
+							? mip.create_mipmap_near()
+							: mip.create_mipmap_lin();
 						set_texels(mip, ++lod);
 					}
 
@@ -210,14 +242,14 @@ namespace re
 
 			void Texture1D::resize(
 				uint_t size,
-				Channel channel,
-				Component component)
+				Component component,
+				Channel channel)
 			{
 				RE_DBG_ASSERT(exists());
 
 				bind();
 
-				RE_OGL(glTexImage1d(
+				RE_OGL(glTexImage1D(
 					GL_TEXTURE_1D,
 					0,
 					get_internalformat(channel),
@@ -238,7 +270,7 @@ namespace re
 
 				bind();
 
-				RE_OGL(glTexImage2d(
+				RE_OGL(glTexImage2D(
 					GL_TEXTURE_2D,
 					lod,
 					get_internalformat(texels.channel()),
@@ -250,7 +282,7 @@ namespace re
 					texels.data()));
 			}
 
-			void Texture2D::set_texels_mipmap(
+			uint_t Texture2D::set_texels_mipmap(
 				Bitmap2D const& base_texels,
 				MipmapFilter filter)
 			{
@@ -302,15 +334,15 @@ namespace re
 				uint_t lod = 0;
 				while(width >= 1 && height >= 1)
 				{
-					RE_OGL(glTexImage2d(
+					RE_OGL(glTexImage2D(
 						GL_TEXTURE_2D,
 						lod++,
-						get_internalformat(ch),
+						get_internalformat(channel),
 						width,
 						height,
 						0,
-						get_format(ch),
-						get_type(co),
+						get_format(channel),
+						get_type(component),
 						nullptr));
 
 					width >>= 1;
@@ -326,7 +358,7 @@ namespace re
 
 				bind();
 
-				RE_OGL(glTexImage3d(
+				RE_OGL(glTexImage3D(
 					GL_TEXTURE_3D,
 					lod,
 					get_internalformat(texels.channel()),
@@ -342,8 +374,6 @@ namespace re
 				m_height = texels.height();
 				m_depth = texels.depth();
 			}
-
-			void Texture
 		}
 	}
 }

@@ -151,5 +151,23 @@ namespace re
 		{
 			return exists() && m_first;
 		}
+
+		REIL size_t Heap::Header::capacity() const
+		{
+			return m_size + hole();
+		}
+
+		REIL size_t Heap::Header::hole() const
+		{
+#ifdef RE_HEAP_DEBUG
+			RE_ASSERT(m_next != nullptr && "cannot calculate hole size.");
+#endif
+			return (uintptr_t)m_next - end();
+		}
+
+		REIL uintptr_t Heap::Header::end() const
+		{
+			return uintptr_t(&this[1]) + m_size;
+		}
 	}
 }

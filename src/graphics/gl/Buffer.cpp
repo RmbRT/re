@@ -1,35 +1,35 @@
 #include "Buffer.hpp"
 #include "OpenGL.hpp"
 
+#include "../../util/Lookup.hpp"
+
 namespace re
 {
 	namespace graphics
 	{
 		namespace gl
 		{
-			RECXDA GLenum opengl_target(
+			REIL GLenum opengl_target(
 				BufferType type)
 			{
-				static GLenum const table[] = {
-					GL_ARRAY_BUFFER,
-					GL_ATOMIC_COUNTER_BUFFER,
-					GL_COPY_READ_BUFFER,
-					GL_COPY_WRITE_BUFFER,
-					GL_DISPATCH_INDIRECT_BUFFER,
-					GL_DRAW_INDIRECT_BUFFER,
-					GL_ELEMENT_ARRAY_BUFFER,
-					GL_PIXEL_PACK_BUFFER,
-					GL_PIXEL_UNPACK_BUFFER,
-					GL_QUERY_BUFFER,
-					GL_SHADER_STORAGE_BUFFER,
-					GL_TEXTURE_BUFFER,
-					GL_TRANSFORM_FEEDBACK_BUFFER,
-					GL_UNIFORM_BUFFER
+				static util::Lookup<BufferType, GLenum> const table = {
+					{BufferType::Array, GL_ARRAY_BUFFER},
+					{BufferType::AtomicCounter, GL_ATOMIC_COUNTER_BUFFER},
+					{BufferType::CopyRead, GL_COPY_READ_BUFFER},
+					{BufferType::CopyWrite, GL_COPY_WRITE_BUFFER},
+					{BufferType::DispatchIndirect, GL_DISPATCH_INDIRECT_BUFFER},
+					{BufferType::DrawIndirect, GL_DRAW_INDIRECT_BUFFER},
+					{BufferType::ElementArray, GL_ELEMENT_ARRAY_BUFFER},
+					{BufferType::PixelPack, GL_PIXEL_PACK_BUFFER},
+					{BufferType::PixelUnpack, GL_PIXEL_UNPACK_BUFFER},
+					{BufferType::Query, GL_QUERY_BUFFER},
+					{BufferType::ShaderStorage, GL_SHADER_STORAGE_BUFFER},
+					{BufferType::Texture, GL_TEXTURE_BUFFER},
+					{BufferType::TransformFeedback, GL_TRANSFORM_FEEDBACK_BUFFER},
+					{BufferType::Uniform, GL_UNIFORM_BUFFER}
 				};
 
-				RE_DBG_ASSERT(size_t(type) <= _countof(table));
-
-				return table[size_t(type)];
+				return table[type];
 			}
 
 			void Buffer::bind() &

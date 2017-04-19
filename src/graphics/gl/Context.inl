@@ -64,11 +64,8 @@ namespace re
 
 			Context::~Context()
 			{
-				if(m_version.valid())
-				{
-					if(current())
-						*lock::write_lock(*m_current_thread) = nullptr;
-				}
+				if(current())
+					*lock::write_lock(*m_current_thread) = nullptr;
 			}
 
 			Version const& Context::version() const
@@ -84,6 +81,11 @@ namespace re
 			uint_t Context::references() const
 			{
 				return m_references;
+			}
+
+			ContextHints const& Context::hints() const
+			{
+				return m_hints;
 			}
 
 			bool Context::require_version(

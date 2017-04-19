@@ -45,7 +45,7 @@ namespace re
 				thread_local static lock::ThreadSafe<Context *> s_current_context;
 
 				/** If this Context is current, points to the pointer pointing to this Context. */
-				lock::ThreadSafe<Context const *> * m_current_thread;
+				lock::ThreadSafe<Context *> * m_current_thread;
 
 				/** The API Version of this Context.
 					This may not be equal to the requested Version. */
@@ -83,11 +83,16 @@ namespace re
 
 				REIL ContextHints const& hints() const;
 
+				static void make_none_current();
+
 				/** Returns whether a context with a version >= the requested version is active. */
 				REIL static bool require_version(
 					Version const& minimum);
 				/** Returns whether a context is active. */
 				REIL static bool require();
+
+				virtual void on_select() = 0;
+				virtual void on_deselect() = 0;
 			};
 
 			/** Used to keep track of how many Windows are sharing a Context. */
