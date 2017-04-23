@@ -37,16 +37,16 @@ namespace re
 			const math::fvec2_t box_size(absolute_box_width(), absolute_box_height());
 			const math::fvec2_t inner_size(absolute_content_area_width(), absolute_content_area_height());
 
-			float ol(box_pos.x);
-			float il(ol+m_border.left.width);
-			float ir(il+inner_size.x);
-			float or(box_pos.x+box_size.x);
-			float ot(-box_pos.y);
-			float it(-box_pos.y-m_border.top.width);
-			float ib(it-inner_size.y);
-			float ob(-box_pos.y-box_size.y);
+			float o_l(box_pos.x);
+			float i_l(o_l+m_border.left.width());
+			float i_r(i_l+inner_size.x);
+			float o_r(box_pos.x+box_size.x);
+			float o_t(-box_pos.y);
+			float i_t(-box_pos.y-m_border.top.width());
+			float i_b(i_t-inner_size.y);
+			float o_b(-box_pos.y-box_size.y);
 
-			math::fvec4 color(1,1,1,1);
+			math::fvec4_t color(1,1,1,1);
 
 			float t_top_s = 1; // horizontal border horizontal tex coord
 			float t_top_t = 1; // horizontal border vertical tex coord
@@ -57,84 +57,84 @@ namespace re
 			float t_left_s = 1;
 			float t_left_t = 1;
 
-			if(m_border.top.image.texture)
+			if(m_border.top.image().texture)
 			{
-				uint32_t tex_w = m_border.top.image.texture->getWidth();
-				uint32_t tex_h = m_border.top.image.texture->getHeight();
+				size_t tex_w = m_border.top.image().texture->width();
+				size_t tex_h = m_border.top.image().texture->height();
 
-				if(m_border.top.image.repeat.x == layout::Repeat::Tile)
+				if(m_border.top.image().repeat.x == layout::Repeat::Tile)
 					t_top_s = inner_size.x / tex_w;
-				if(m_border.top.image.repeat.y == layout::Repeat::Tile)
-					t_top_t = -m_border.top.width / tex_h;
+				if(m_border.top.image().repeat.y == layout::Repeat::Tile)
+					t_top_t = -m_border.top.width() / tex_h;
 			}
-			if(m_border.right.image.texture)
+			if(m_border.right.image().texture)
 			{
-				uint32_t tex_w = m_border.right.image.texture->getWidth();
-				uint32_t tex_h = m_border.right.image.texture->getHeight();
+				size_t tex_w = m_border.right.image().texture->width();
+				size_t tex_h = m_border.right.image().texture->height();
 
-				if(m_border.right.image.repeat.x == layout::Repeat::Tile)
+				if(m_border.right.image().repeat.x == layout::Repeat::Tile)
 					t_right_s = inner_size.y / tex_w;
-				if(m_border.right.image.repeat.y == layout::Repeat::Tile)
-					t_right_t = -m_border.right.width / tex_h;
+				if(m_border.right.image().repeat.y == layout::Repeat::Tile)
+					t_right_t = -m_border.right.width() / tex_h;
 			}
-			if(m_border.bottom.image.texture)
+			if(m_border.bottom.image().texture)
 			{
-				uint32_t tex_w = m_border.bottom.image.texture->getWidth();
-				uint32_t tex_h = m_border.bottom.image.texture->getHeight();
+				size_t tex_w = m_border.bottom.image().texture->width();
+				size_t tex_h = m_border.bottom.image().texture->height();
 
-				if(m_border.bottom.image.repeat.x == layout::Repeat::Tile)
+				if(m_border.bottom.image().repeat.x == layout::Repeat::Tile)
 					t_bot_s = inner_size.x / tex_w;
-				if(m_border.bottom.image.repeat.y == layout::Repeat::Tile)
-					t_bot_t = -m_border.bottom.width / tex_h;
+				if(m_border.bottom.image().repeat.y == layout::Repeat::Tile)
+					t_bot_t = -m_border.bottom.width() / tex_h;
 			}
-			if(m_border.left.image.texture)
+			if(m_border.left.image().texture)
 			{
-				uint32_t tex_w = m_border.left.image.texture->getWidth();
-				uint32_t tex_h = m_border.left.image.texture->getHeight();
+				uint32_t tex_w = m_border.left.image().texture->width();
+				uint32_t tex_h = m_border.left.image().texture->height();
 
-				if(m_border.left.image.repeat.x == layout::Repeat::Tile)
+				if(m_border.left.image().repeat.x == layout::Repeat::Tile)
 					t_left_s = inner_size.x / tex_w;
-				if(m_border.left.image.repeat.y == layout::Repeat::Tile)
-					t_left_t = -m_border.left.width / tex_h;
+				if(m_border.left.image().repeat.y == layout::Repeat::Tile)
+					t_left_t = -m_border.left.width() / tex_h;
 			}
 
-			graphics::Vertex border_verts[3*2*4] = {
+			std::vector<Vertex> border_verts = {
 				// top border
-				graphics::Vertex(math::fvec3(il,ot,0), math::fvec2(0,0), border.top.image.color),
-				graphics::Vertex(math::fvec3(il,it,0), math::fvec2(0,t_top_t), border.top.image.color),
-				graphics::Vertex(math::fvec3(ir,it,0), math::fvec2(t_top_s,t_top_t), border.top.image.color),
+				Vertex(math::fvec3_t(i_l,o_t,0), math::fvec2_t(0,0), m_border.top.image().color),
+				Vertex(math::fvec3_t(i_l,i_t,0), math::fvec2_t(0,t_top_t), m_border.top.image().color),
+				Vertex(math::fvec3_t(i_r,i_t,0), math::fvec2_t(t_top_s,t_top_t), m_border.top.image().color),
 
-				graphics::Vertex(math::fvec3(il,ot,0), math::fvec2(0,0), border.top.image.color),
-				graphics::Vertex(math::fvec3(ir,it,0), math::fvec2(t_top_s,t_top_t), border.top.image.color),
-				graphics::Vertex(math::fvec3(ir,ot,0), math::fvec2(t_top_s,0), border.top.image.color),
+				Vertex(math::fvec3_t(i_l,o_t,0), math::fvec2_t(0,0), m_border.top.image().color),
+				Vertex(math::fvec3_t(i_r,i_t,0), math::fvec2_t(t_top_s,t_top_t), m_border.top.image().color),
+				Vertex(math::fvec3_t(i_r,o_t,0), math::fvec2_t(t_top_s,0), m_border.top.image().color),
 
 
 				// bottom border
-				graphics::Vertex(math::fvec3(il,ib,0), math::fvec2(0,0), border.bottom.image.color),
-				graphics::Vertex(math::fvec3(il,ob,0), math::fvec2(0,t_bot_t), border.bottom.image.color),
-				graphics::Vertex(math::fvec3(ir,ob,0), math::fvec2(t_bot_s,t_bot_t), border.bottom.image.color),
+				Vertex(math::fvec3_t(i_l,i_b,0), math::fvec2_t(0,0), m_border.bottom.image().color),
+				Vertex(math::fvec3_t(i_l,o_b,0), math::fvec2_t(0,t_bot_t), m_border.bottom.image().color),
+				Vertex(math::fvec3_t(i_r,o_b,0), math::fvec2_t(t_bot_s,t_bot_t), m_border.bottom.image().color),
 
-				graphics::Vertex(math::fvec3(il,ib,0), math::fvec2(0,0), border.bottom.image.color),
-				graphics::Vertex(math::fvec3(ir,ob,0), math::fvec2(t_bot_s,t_bot_t), border.bottom.image.color),
-				graphics::Vertex(math::fvec3(ir,ib,0), math::fvec2(t_bot_s,0), border.bottom.image.color),
+				Vertex(math::fvec3_t(i_l,i_b,0), math::fvec2_t(0,0), m_border.bottom.image().color),
+				Vertex(math::fvec3_t(i_r,o_b,0), math::fvec2_t(t_bot_s,t_bot_t), m_border.bottom.image().color),
+				Vertex(math::fvec3_t(i_r,i_b,0), math::fvec2_t(t_bot_s,0), m_border.bottom.image().color),
 
 				// left border
-				graphics::Vertex(math::fvec3(ol,it,0), math::fvec2(0,0), border.left.image.color),
-				graphics::Vertex(math::fvec3(ol,ib,0), math::fvec2(0,t_left_t), border.left.image.color),
-				graphics::Vertex(math::fvec3(il,ib,0), math::fvec2(t_left_s,t_left_t), border.left.image.color),
+				Vertex(math::fvec3_t(o_l,i_t,0), math::fvec2_t(0,0), m_border.left.image().color),
+				Vertex(math::fvec3_t(o_l,i_b,0), math::fvec2_t(0,t_left_t), m_border.left.image().color),
+				Vertex(math::fvec3_t(i_l,i_b,0), math::fvec2_t(t_left_s,t_left_t), m_border.left.image().color),
 
-				graphics::Vertex(math::fvec3(ol,it,0), math::fvec2(0,0), border.left.image.color),
-				graphics::Vertex(math::fvec3(il,ib,0), math::fvec2(t_left_s,t_left_t), border.left.image.color),
-				graphics::Vertex(math::fvec3(il,it,0), math::fvec2(t_left_s,0), border.left.image.color),
+				Vertex(math::fvec3_t(o_l,i_t,0), math::fvec2_t(0,0), m_border.left.image().color),
+				Vertex(math::fvec3_t(i_l,i_b,0), math::fvec2_t(t_left_s,t_left_t), m_border.left.image().color),
+				Vertex(math::fvec3_t(i_l,i_t,0), math::fvec2_t(t_left_s,0), m_border.left.image().color),
 
 				// right border
-				graphics::Vertex(math::fvec3(ir,it,0), math::fvec2(0,0), border.right.image.color),
-				graphics::Vertex(math::fvec3(ir,ib,0), math::fvec2(0,t_right_t), border.right.image.color),
-				graphics::Vertex(math::fvec3(or,ib,0), math::fvec2(t_right_s,t_right_t), border.right.image.color),
+				Vertex(math::fvec3_t(i_r,i_t,0), math::fvec2_t(0,0), m_border.right.image().color),
+				Vertex(math::fvec3_t(i_r,i_b,0), math::fvec2_t(0,t_right_t), m_border.right.image().color),
+				Vertex(math::fvec3_t(o_r,i_b,0), math::fvec2_t(t_right_s,t_right_t), m_border.right.image().color),
 
-				graphics::Vertex(math::fvec3(ir,it,0), math::fvec2(0,0), border.right.image.color),
-				graphics::Vertex(math::fvec3(or,ib,0), math::fvec2(t_right_s,t_right_t), border.right.image.color),
-				graphics::Vertex(math::fvec3(or,it,0), math::fvec2(t_right_s,0), border.right.image.color)
+				Vertex(math::fvec3_t(i_r,i_t,0), math::fvec2_t(0,0), m_border.right.image().color),
+				Vertex(math::fvec3_t(o_r,i_b,0), math::fvec2_t(t_right_s,t_right_t), m_border.right.image().color),
+				Vertex(math::fvec3_t(o_r,i_t,0), math::fvec2_t(t_right_s,0), m_border.right.image().color)
 			};
 
 			float t_tl_s = 1;
@@ -148,157 +148,178 @@ namespace re
 
 			if(m_border_corner_top_left.texture)
 			{
-				uint32_t tex_w = m_border_corner_top_left.texture->getWidth();
-				uint32_t tex_h = m_border_corner_top_left.texture->getHeight();
+				uint32_t tex_w = m_border_corner_top_left.texture->width();
+				uint32_t tex_h = m_border_corner_top_left.texture->height();
 
 				if(m_border_corner_top_left.repeat.x == layout::Repeat::Tile)
-					t_tl_s = m_border.left.width / tex_w;
+					t_tl_s = m_border.left.width() / tex_w;
 				if(m_border_corner_top_left.repeat.y == layout::Repeat::Tile)
-					t_tl_t = -m_border.top.width / tex_h;
+					t_tl_t = -m_border.top.width() / tex_h;
 			}
 			if(m_border_corner_top_right.texture)
 			{
-				uint32_t tex_w = m_border_corner_top_right.texture->getWidth();
-				uint32_t tex_h = m_border_corner_top_right.texture->getHeight();
+				uint32_t tex_w = m_border_corner_top_right.texture->width();
+				uint32_t tex_h = m_border_corner_top_right.texture->height();
 
 				if(m_border_corner_top_right.repeat.x == layout::Repeat::Tile)
-					t_tr_s = m_border.right.width / tex_w;
+					t_tr_s = m_border.right.width() / tex_w;
 				if(m_border_corner_top_right.repeat.y == layout::Repeat::Tile)
-					t_tr_t = -m_border.top.width / tex_h;
+					t_tr_t = -m_border.top.width() / tex_h;
 			}
 			if(m_border_corner_bottom_left.texture)
 			{
-				uint32_t tex_w = m_border_corner_bottom_left.texture->getWidth();
-				uint32_t tex_h = m_border_corner_bottom_left.texture->getHeight();
+				uint32_t tex_w = m_border_corner_bottom_left.texture->width();
+				uint32_t tex_h = m_border_corner_bottom_left.texture->height();
 
 				if(m_border_corner_bottom_left.repeat.x == layout::Repeat::Tile)
-					t_bl_s = m_border.left.width / tex_w;
+					t_bl_s = m_border.left.width() / tex_w;
 				if(m_border_corner_bottom_left.repeat.y == layout::Repeat::Tile)
-					t_bl_t = -m_border.bottom.width / tex_h;
+					t_bl_t = -m_border.bottom.width() / tex_h;
 			}
 			if(m_border_corner_bottom_right.texture)
 			{
-				uint32_t tex_w = m_border_corner_bottom_right.texture->getWidth();
-				uint32_t tex_h = m_border_corner_bottom_right.texture->getHeight();
+				uint32_t tex_w = m_border_corner_bottom_right.texture->width();
+				uint32_t tex_h = m_border_corner_bottom_right.texture->height();
 
 				if(m_border_corner_bottom_right.repeat.x == layout::Repeat::Tile)
-					t_br_s = m_border.right.width / tex_w;
+					t_br_s = m_border.right.width() / tex_w;
 				if(m_border_corner_bottom_right.repeat.y == layout::Repeat::Tile)
-					t_br_t = -m_border.bottom.width / tex_h;
+					t_br_t = -m_border.bottom.width() / tex_h;
 			}
 
 
 
-			graphics::Vertex border_corner_verts[3*2*4] = {
+			std::vector<Vertex> border_corner_verts = {
 				// top left corner
-				graphics::Vertex(math::fvec3(ol,ot,0), math::fvec2(0,0), m_border_corner_top_left.color),
-				graphics::Vertex(math::fvec3(ol,it,0), math::fvec2(0,t_tl_t), m_border_corner_top_left.color),
-				graphics::Vertex(math::fvec3(il,it,0), math::fvec2(t_tl_s,t_tl_t), m_border_corner_top_left.color),
+				Vertex(math::fvec3_t(o_l,o_t,0), math::fvec2_t(0,0), m_border_corner_top_left.color),
+				Vertex(math::fvec3_t(o_l,i_t,0), math::fvec2_t(0,t_tl_t), m_border_corner_top_left.color),
+				Vertex(math::fvec3_t(i_l,i_t,0), math::fvec2_t(t_tl_s,t_tl_t), m_border_corner_top_left.color),
 
-				graphics::Vertex(math::fvec3(ol,ot,0), math::fvec2(0,0), m_border_corner_top_left.color),
-				graphics::Vertex(math::fvec3(il,it,0), math::fvec2(t_tl_s,t_tl_t), m_border_corner_top_left.color),
-				graphics::Vertex(math::fvec3(il,ot,0), math::fvec2(t_tl_s,0), m_border_corner_top_left.color),
+				Vertex(math::fvec3_t(o_l,o_t,0), math::fvec2_t(0,0), m_border_corner_top_left.color),
+				Vertex(math::fvec3_t(i_l,i_t,0), math::fvec2_t(t_tl_s,t_tl_t), m_border_corner_top_left.color),
+				Vertex(math::fvec3_t(i_l,o_t,0), math::fvec2_t(t_tl_s,0), m_border_corner_top_left.color),
 
 				// top right corner
-				graphics::Vertex(math::fvec3(ir,ot,0), math::fvec2(0,0), m_border_corner_top_right.color),
-				graphics::Vertex(math::fvec3(ir,it,0), math::fvec2(0,t_tr_t), m_border_corner_top_right.color),
-				graphics::Vertex(math::fvec3(or,it,0), math::fvec2(t_tr_s,t_tr_t), m_border_corner_top_right.color),
+				Vertex(math::fvec3_t(i_r,o_t,0), math::fvec2_t(0,0), m_border_corner_top_right.color),
+				Vertex(math::fvec3_t(i_r,i_t,0), math::fvec2_t(0,t_tr_t), m_border_corner_top_right.color),
+				Vertex(math::fvec3_t(o_r,i_t,0), math::fvec2_t(t_tr_s,t_tr_t), m_border_corner_top_right.color),
 
-				graphics::Vertex(math::fvec3(ir,ot,0), math::fvec2(0,0), m_border_corner_top_right.color),
-				graphics::Vertex(math::fvec3(or,it,0), math::fvec2(t_tr_s,t_tr_t), m_border_corner_top_right.color),
-				graphics::Vertex(math::fvec3(or,ot,0), math::fvec2(t_tr_s,0), m_border_corner_top_right.color),
+				Vertex(math::fvec3_t(i_r,o_t,0), math::fvec2_t(0,0), m_border_corner_top_right.color),
+				Vertex(math::fvec3_t(o_r,i_t,0), math::fvec2_t(t_tr_s,t_tr_t), m_border_corner_top_right.color),
+				Vertex(math::fvec3_t(o_r,o_t,0), math::fvec2_t(t_tr_s,0), m_border_corner_top_right.color),
 
 				// bottom right corner
-				graphics::Vertex(math::fvec3(ir,ib,0), math::fvec2(0,0), m_border_corner_bottom_right.color),
-				graphics::Vertex(math::fvec3(ir,ob,0), math::fvec2(0,t_br_t), m_border_corner_bottom_right.color),
-				graphics::Vertex(math::fvec3(or,ob,0), math::fvec2(t_br_s,t_br_t), m_border_corner_bottom_right.color),
+				Vertex(math::fvec3_t(i_r,i_b,0), math::fvec2_t(0,0), m_border_corner_bottom_right.color),
+				Vertex(math::fvec3_t(i_r,o_b,0), math::fvec2_t(0,t_br_t), m_border_corner_bottom_right.color),
+				Vertex(math::fvec3_t(o_r,o_b,0), math::fvec2_t(t_br_s,t_br_t), m_border_corner_bottom_right.color),
 
-				graphics::Vertex(math::fvec3(ir,ib,0), math::fvec2(0,0), m_border_corner_bottom_right.color),
-				graphics::Vertex(math::fvec3(or,ob,0), math::fvec2(t_br_s,t_br_t), m_border_corner_bottom_right.color),
-				graphics::Vertex(math::fvec3(or,ib,0), math::fvec2(t_br_s,0), m_border_corner_bottom_right.color),
+				Vertex(math::fvec3_t(i_r,i_b,0), math::fvec2_t(0,0), m_border_corner_bottom_right.color),
+				Vertex(math::fvec3_t(o_r,o_b,0), math::fvec2_t(t_br_s,t_br_t), m_border_corner_bottom_right.color),
+				Vertex(math::fvec3_t(o_r,i_b,0), math::fvec2_t(t_br_s,0), m_border_corner_bottom_right.color),
 
 				// bottom left corner
-				graphics::Vertex(math::fvec3(ol,ib,0), math::fvec2(0,0), m_border_corner_bottom_left.color),
-				graphics::Vertex(math::fvec3(ol,ob,0), math::fvec2(0,t_bl_t), m_border_corner_bottom_left.color),
-				graphics::Vertex(math::fvec3(il,ob,0), math::fvec2(t_bl_s,t_bl_t), m_border_corner_bottom_left.color),
+				Vertex(math::fvec3_t(o_l,i_b,0), math::fvec2_t(0,0), m_border_corner_bottom_left.color),
+				Vertex(math::fvec3_t(o_l,o_b,0), math::fvec2_t(0,t_bl_t), m_border_corner_bottom_left.color),
+				Vertex(math::fvec3_t(i_l,o_b,0), math::fvec2_t(t_bl_s,t_bl_t), m_border_corner_bottom_left.color),
 
-				graphics::Vertex(math::fvec3(ol,ib,0), math::fvec2(0,0), m_border_corner_bottom_left.color),
-				graphics::Vertex(math::fvec3(il,ob,0), math::fvec2(t_bl_s,t_bl_t), m_border_corner_bottom_left.color),
-				graphics::Vertex(math::fvec3(il,ib,0), math::fvec2(t_bl_s,0), m_border_corner_bottom_left.color)
+				Vertex(math::fvec3_t(o_l,i_b,0), math::fvec2_t(0,0), m_border_corner_bottom_left.color),
+				Vertex(math::fvec3_t(i_l,o_b,0), math::fvec2_t(t_bl_s,t_bl_t), m_border_corner_bottom_left.color),
+				Vertex(math::fvec3_t(i_l,i_b,0), math::fvec2_t(t_bl_s,0), m_border_corner_bottom_left.color)
 			};
 
-			if(!m_border_model)
-				m_border_model = alloc<graphics::VertexData>(graphics::RenderMode::RM_TRIANGLES, graphics::AllocationStrategy::AS_STATIC);
+			if(!m_border_model.exists() || !m_border_corner_model.exists())
+			{
+				auto * buffer = util::allocation_buffer<VertexArray *>(2);
+				size_t elements = 0;
+				if(!m_border_corner_model.exists())
+					buffer[elements++] = &m_border_corner_model;
+				if(!m_border_model.exists())
+					buffer[elements++] = &m_border_model;
 
-			border_model->setData(border_verts, _countof(border_verts));
+				VertexArray::alloc(buffer, elements);
+			}
 
-			if(!border_corner_model)
-				border_corner_model = alloc<graphics::VertexData>(graphics::RenderMode::RM_TRIANGLES, graphics::AllocationStrategy::AS_STATIC);
+			m_border_model.set_data(
+				std::move(border_verts),
+				graphics::gl::RenderMode::Triangles);
 
-			border_corner_model->setData(border_corner_verts, _countof(border_corner_verts));
+			if(!m_border_corner_model.exists())
+				m_border_corner_model.alloc();
+
+			m_border_corner_model.set_data(
+				std::move(border_corner_verts),
+				graphics::gl::RenderMode::Triangles);
 		}
 
 		void UINode::update_background_model() const
 		{
-			if(!invalid_background_model)
+			if(!m_invalid_background_model)
 				return;
-			invalid_background_model = false;
+			m_invalid_background_model = false;
 
-			const math::fvec2 inner_pos(
-				absolute_left() + border.left.width,
-				absolute_top() + border.top.width);
-			const math::fvec2 inner_size(
+			const math::fvec2_t inner_pos(
+				absolute_left() + m_border.left.width(),
+				absolute_top() + m_border.top.width());
+			const math::fvec2_t inner_size(
 				absolute_content_area_width(),
 				absolute_content_area_height());
 
-			const float il = inner_pos.x;
-			const float ir = inner_pos.x+inner_size.x;
-			const float it = -inner_pos.y;
-			const float ib = -inner_pos.y-inner_size.y;
+			const float i_l = inner_pos.x;
+			const float i_r = inner_pos.x+inner_size.x;
+			const float i_t = -inner_pos.y;
+			const float i_b = -inner_pos.y-inner_size.y;
 
 
 			float t_s = 1;
 			float t_t = 1;
 
-			if(background.texture)
+			if(m_background.texture)
 			{
-				uint32_t tex_w = background.texture->getWidth();
-				uint32_t tex_h = background.texture->getHeight();
+				uint32_t tex_w = m_background.texture->width();
+				uint32_t tex_h = m_background.texture->height();
 
-				if(background.repeat.x == layout::Repeat::Tile)
+				if(m_background.repeat.x == layout::Repeat::Tile)
 					t_s = inner_size.x / tex_w;
-				if(background.repeat.y == layout::Repeat::Tile)
+				if(m_background.repeat.y == layout::Repeat::Tile)
 					t_t = inner_size.y / tex_h;
 			}
 
-			graphics::Vertex background_verts[2*3] = {
-				graphics::Vertex(math::fvec3(il,it,0), math::fvec2(0,0), background.color),
-				graphics::Vertex(math::fvec3(il,ib,0), math::fvec2(0,t_t), background.color),
-				graphics::Vertex(math::fvec3(ir,ib,0), math::fvec2(t_s,t_t), background.color),
+			std::vector<Vertex> background_verts = {
+				Vertex(math::fvec3_t(i_l,i_t,0), math::fvec2_t(0,0), m_background.color),
+				Vertex(math::fvec3_t(i_l,i_b,0), math::fvec2_t(0,t_t), m_background.color),
+				Vertex(math::fvec3_t(i_r,i_b,0), math::fvec2_t(t_s,t_t), m_background.color),
 
-				graphics::Vertex(math::fvec3(il,it,0), math::fvec2(0,0), background.color),
-				graphics::Vertex(math::fvec3(ir,ib,0), math::fvec2(t_s,t_t), background.color),
-				graphics::Vertex(math::fvec3(ir,it,0), math::fvec2(t_s,0), background.color)
+				Vertex(math::fvec3_t(i_l,i_t,0), math::fvec2_t(0,0), m_background.color),
+				Vertex(math::fvec3_t(i_r,i_b,0), math::fvec2_t(t_s,t_t), m_background.color),
+				Vertex(math::fvec3_t(i_r,i_t,0), math::fvec2_t(t_s,0), m_background.color)
 			};
 
-			if(!background_model)
-				background_model = alloc<graphics::VertexData>(graphics::RenderMode::RM_TRIANGLES, graphics::AllocationStrategy::AS_STATIC);
+			if(!m_background_model.exists())
+				m_background_model.alloc();
 
-			background_model->setData(background_verts, _countof(background_verts));
+			m_background_model.set_data(
+				std::move(background_verts),
+				graphics::gl::RenderMode::Triangles);
 		}
 
 
-		UINode::UINode(): parent(nullptr),
-			invalid_width(true),
-			invalid_height(true),
-			temp_last_absolute_content_height(0),
-			temp_last_absolute_content_width(0),
-			invalid_background_model(true),
-			invalid_border_model(true),
-			invalid_children(true),
-			font(nullptr),
-			prev_sibling(nullptr),
-			next_sibling(nullptr)
+		UINode::UINode():
+			m_parent(nullptr),
+			m_invalid_width(true),
+			m_invalid_height(true),
+			m_temp_last_absolute_content_height(0),
+			m_temp_last_absolute_content_width(0),
+			m_invalid_background_model(true),
+			m_invalid_border_model(true),
+			m_invalid_children(true),
+			m_font(nullptr),
+			m_prev_sibling(nullptr),
+			m_next_sibling(nullptr),
+			m_border_corner_top_left_model(graphics::gl::BufferAccess::Dynamic, graphics::gl::BufferUsage::Draw),
+			m_border_corner_top_right_model(graphics::gl::BufferAccess::Dynamic, graphics::gl::BufferUsage::Draw),
+			m_border_corner_bottom_left_model(graphics::gl::BufferAccess::Dynamic, graphics::gl::BufferUsage::Draw),
+			m_border_corner_bottom_right_model(graphics::gl::BufferAccess::Dynamic, graphics::gl::BufferUsage::Draw)
+
 		{ }
 
 		UINode::UINode(UINode && move):
@@ -333,7 +354,7 @@ namespace re
 			prev_sibling(std::move(move.prev_sibling)),
 			next_sibling(std::move(move.next_sibling))
 		{
-			for(const auto &child : children)
+			for(auto const& child : children)
 				child->parent = this;
 		}
 
@@ -373,7 +394,7 @@ namespace re
 			prev_sibling = std::move(move.prev_sibling);
 			next_sibling = std::move(move.next_sibling);
 
-			for(const auto &child : children)
+			for(auto const& child : children)
 				child->parent = this;
 
 			return *this;
@@ -384,43 +405,43 @@ namespace re
 		{
 			updateModels();
 
-			for(const auto &child: children)
+			for(auto const& child: children)
 				child->update();
 		}
 
 		void UINode::draw(graphics::RenderSession &session) const
 		{
-			if(border.left.image.texture)
-				border.left.image.texture->bind();
+			if(m_border.left.image.texture)
+				m_border.left.image.texture->bind();
 			else graphics::Texture::unbind();
-			session.push_color(border.left.image.color);
+			session.push_color(m_border.left.image.color);
 			session.pass_values();
 			session.pop_color();
-			border.left.model->draw();
+			m_border.left.model->draw();
 
-			if(border.top.image.texture)
-				border.top.image.texture->bind();
+			if(m_border.top.image.texture)
+				m_border.top.image.texture->bind();
 			else graphics::Texture::unbind();
-			session.push_color(border.top.image.color);
+			session.push_color(m_border.top.image.color);
 			session.pass_values();
 			session.pop_color();
-			border.top.model->draw();
+			m_border.top.model->draw();
 
-			if(border.right.image.texture)
-				border.right.image.texture->bind();
+			if(m_border.right.image.texture)
+				m_border.right.image.texture->bind();
 			else graphics::Texture::unbind();
-			session.push_color(border.right.image.color);
+			session.push_color(m_border.right.image.color);
 			session.pass_values();
 			session.pop_color();
-			border.right.model->draw();
+			m_border.right.model->draw();
 
-			if(border.bottom.image.texture)
-				border.bottom.image.texture->bind();
+			if(m_border.bottom.image.texture)
+				m_border.bottom.image.texture->bind();
 			else graphics::Texture::unbind();
-			session.push_color(border.bottom.image.color);
+			session.push_color(m_border.bottom.image.color);
 			session.pass_values();
 			session.pop_color();
-			border.bottom.model->draw();
+			m_border.bottom.model->draw();
 
 			if(border_corner_top_right.texture)
 				border_corner_top_right.texture->bind();
@@ -462,7 +483,7 @@ namespace re
 		{
 			this->font = font;
 		}
-		const Shared<Font> &UINode::font() const
+		Shared<Font> const& UINode::font() const
 		{
 			for(UINode const * node = this; node->parent != nullptr; node = node->parent)
 				if(node->font)
@@ -509,7 +530,7 @@ namespace re
 				invalid_width = false;
 				float w = 0;
 
-				for(const auto &child: children)
+				for(auto const& child: children)
 					w = math::max(w, child->absolute_box_width());
 				temp_last_absolute_content_width = w;
 			}
@@ -523,7 +544,7 @@ namespace re
 				invalid_height = false;
 				float h = 0;
 
-				for(const auto &child: children)
+				for(auto const& child: children)
 					h = math::max(h, child->absolute_box_height());
 				temp_last_absolute_content_height = h;
 			}
@@ -632,11 +653,11 @@ namespace re
 		{
 			return
 				absolute_margin_left()
-					+ border.left.width
+					+ m_border.left.width
 						+ absolute_padding_left()
 							+ absolute_content_area_width()
 						+ absolute_padding_right()
-					+ border.right.width;
+					+ m_border.right.width;
 				+ absolute_margin_right();
 		}
 
@@ -644,11 +665,11 @@ namespace re
 		{
 			return
 				absolute_margin_top()
-					+ border.top.width
+					+ m_border.top.width
 						+ absolute_padding_top()
 							+ absolute_content_area_height()
 						+ absolute_padding_bottom()
-					+ border.bottom.width
+					+ m_border.bottom.width
 				+ absolute_margin_bottom();
 		}
 
@@ -666,164 +687,165 @@ namespace re
 			return pos;
 		}
 
-		void UINode::setMinWidth(const layout::Size &min_w)
+		void UINode::set_min_width(layout::Size const& min_w)
 		{
 			min_size.x = min_w;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setMinHeight(const layout::Size &min_h)
+		void UINode::set_min_height(layout::Size const& min_h)
 		{
 			min_size.y = min_h;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setMaxWidth(const layout::Size &max_w)
+		void UINode::set_max_width(layout::Size const& max_w)
 		{
 			max_size.x = max_w;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setMaxHeight(const layout::Size &max_h)
+		void UINode::set_max_height(layout::Size const& max_h)
 		{
 			max_size.y = max_h;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setWidth(const layout::Size &width)
+		void UINode::set_width(layout::Size const& width)
 		{
 			min_size.x = max_size.x = width;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setHeight(const layout::Size &height)
+		void UINode::set_height(layout::Size const& height)
 		{
 			min_size.y = max_size.y = height;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setMargin(const layout::Box<layout::Size> &margin)
+		void UINode::set_margin(layout::Box<layout::Size> const& margin)
 		{
 			this->margin = margin;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setMarginLeft(const layout::Size &margin)
+		void UINode::set_margin_left(layout::Size const& margin)
 		{
 			this->margin.left = margin;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setMarginTop(const layout::Size &margin)
+		void UINode::set_margin_top(layout::Size const& margin)
 		{
 			this->margin.top = margin;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setMarginRight(const layout::Size &margin)
+		void UINode::set_margin_right(layout::Size const& margin)
 		{
 			this->margin.right = margin;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setMarginBottom(const layout::Size &margin)
+		void UINode::set_margin_bottom(layout::Size const& margin)
 		{
 			this->margin.bottom = margin;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setPadding(const layout::Box<layout::Size> &padding)
+		void UINode::set_padding(layout::Box<layout::Size> const& padding)
 		{
 			this->padding = padding;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setPaddingLeft(const layout::Size &padding)
+		void UINode::set_padding_left(layout::Size const& padding)
 		{
 			this->padding.left = padding;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setPaddingTop(const layout::Size &padding)
+		void UINode::set_padding_top(layout::Size const& padding)
 		{
 			this->padding.top = padding;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setPaddingRight(const layout::Size &padding)
+		void UINode::set_padding_right(layout::Size const& padding)
 		{
 			this->padding.right = padding;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setPaddingBottom(const layout::Size &padding)
+		void UINode::set_padding_bottom(layout::Size const& padding)
 		{
 			this->padding.bottom = padding;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setBackground(const layout::Image &background)
+		void UINode::set_background(layout::Image const& background)
 		{
 			this->background = background;
 			invalid_background_model = true;
 		}
 
-		void UINode::setBorder(const layout::Box<layout::Border> &border)
+		void UINode::set_border(layout::Box<layout::Border> const& border)
 		{
 			this->border = border;
-			contentChanged();
+			content_changed();
 		}
 
-		void UINode::setBorderLeft(const layout::Border &border)
+		void UINode::set_border_left(layout::Border const& border)
 		{
-			this->border.left = border;
-			contentChanged();
+			this->m_border.left = border;
+			content_changed();
 		}
-		void UINode::setBorderTop(const layout::Border &border)
+		void UINode::set_border_top(layout::Border const& border)
 		{
-			this->border.top = border;
-			contentChanged();
+			this->m_border.top = border;
+			content_changed();
 		}
-		void UINode::setBorderRight(const layout::Border &border)
+		void UINode::set_border_right(layout::Border const& border)
 		{
-			this->border.right = border;
-			contentChanged();
+			this->m_border.right = border;
+			content_changed();
 		}
-		void UINode::setBorderBottom(const layout::Border &border)
+		void UINode::set_border_bottom(layout::Border const& border)
 		{
-			this->border.bottom = border;
-			contentChanged();
+			this->m_border.bottom = border;
+			content_changed();
 		}
 
-		void UINode::setBorderTopLeftCorner(const layout::Image &corner)
+		void UINode::set_border_top_left_corner(layout::Image const& corner)
 		{
 			this->border_corner_top_left = corner;
 			invalid_border_model = true;
 		}
-		void UINode::setBorderTopRightCorner(const layout::Image &corner)
+		void UINode::set_border_top_right_corner(layout::Image const& corner)
 		{
 			this->border_corner_top_right = corner;
 			invalid_border_model = true;
 		}
-		void UINode::setBorderBottomLeftCorner(const layout::Image &corner)
+		void UINode::set_border_bottom_left_corner(layout::Image const& corner)
 		{
 			this->border_corner_bottom_left = corner;
 			invalid_border_model = true;
 		}
-		void UINode::setBorderBottomRightCorner(const layout::Image &corner)
+		void UINode::set_border_bottom_right_corner(layout::Image const& corner)
 		{
 			this->border_corner_bottom_right = corner;
 			invalid_border_model = true;
 		}
 
-		void UINode::setLeft(const layout::Size &left)
+		void UINode::set_left(layout::Size const& left)
 		{
 			position.x = left;
-			contentChanged();
+			content_changed();
 		}
-		void UINode::setTop(const layout::Size &top)
+		void UINode::set_top(layout::Size const& top)
 		{
 			position.y = top;
-			contentChanged();
+			content_changed();
 		}
 
-		const std::vector<strong_handle<UINode>> &UINode::getChildren() const
+		std::vector<Auto<UINode>> const& UINode::getChildren() const
 		{
 			return children;
 		}
-		void UINode::addChild(const strong_handle<UINode> &node)
+		void UINode::add_child(
+			Auto<UINode> node)
 		{
 			RE_ASSERT(node);
 			RE_ASSERT(node->parent == nullptr);
@@ -840,7 +862,7 @@ namespace re
 
 			children.push_back(node);
 			node->parent = this;
-			contentChanged();
+			content_changed();
 		}
 
 

@@ -17,6 +17,12 @@ namespace re
 			math::fvec2_t texture;
 			math::fvec4_t color;
 
+			Vertex() = default;
+			RECX Vertex(
+				math::fvec3_t const& position,
+				math::fvec2_t const& texture,
+				math::fvec4_t const& color);
+
 			enum { ELEMENTS = 3 };
 
 			static graphics::gl::VertexType<Vertex> const type;
@@ -35,5 +41,7 @@ namespace re
 		};
 	}
 }
+
+#include "Rendering.inl"
 
 #endif

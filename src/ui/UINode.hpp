@@ -84,17 +84,6 @@ namespace re
 			/** The node's scrollbars. */
 			math::Vec2<layout::ScrollBar> m_scrollbars;
 
-			/** The node's background model. */
-			mutable Auto<VertexArray> m_background_model;
-			/** The node's border model. */
-			mutable Auto<VertexArray> m_border_model;
-			/** The node's border cornel model.*/
-			mutable Auto<VertexArray> m_border_corner_model;
-
-			/** Whether the background model is invalid. */
-			mutable bool m_invalid_background_model;
-			/** Whether the border model is invalid. */
-			mutable bool m_invalid_border_model;
 			/** Whether the children are invalid. */
 			mutable bool m_invalid_children;
 

@@ -1,59 +1,127 @@
 #include "Font.hpp"
 #include "Label.hpp"
 
+#include "../util/AllocationBuffer.hpp"
+
 namespace re
 {
 	namespace ui
 	{
 
-		FontSettings::FontSettings(): color(1,1,1,1), size(1.0), letterSpacing(0.f), lineHeight(1.f), direction(TextDirection::Right), orientation(TextOrientation::Horizontal), align(TextAlign::Left) {}
-		FontSettings::FontSettings(const math::fvec4 &color, float size, float letterSpacing, float lineHeight, TextDirection direction, TextOrientation orientation, TextAlign align)
-			: color(color), size(size), letterSpacing(letterSpacing), lineHeight(lineHeight), direction(direction), orientation(orientation), align(align) {}
+		FontSettings::FontSettings():
+			color(1,1,1,1),
+			size(1.0),
+			letterSpacing(0.f),
+			lineHeight(1.f),
+			direction(TextDirection::Right),
+			orientation(TextOrientation::Horizontal),
+			align(TextAlign::Left)
+		{
+		}
+
+		FontSettings::FontSettings(
+			math::fvec4_t const& color,
+			float size,
+			float letterSpacing,
+			float lineHeight,
+			TextDirection direction,
+			TextOrientation orientation,
+			TextAlign align):
+			color(color),
+			size(size),
+			letterSpacing(letterSpacing),
+			lineHeight(lineHeight),
+			direction(direction),
+			orientation(orientation),
+			align(align)
+		{
+		}
+
 		typedef Font::Entry Entry;
-		Font::Entry::Entry(uint32_t codepoint, const math::uivec2 &tex_origin, const math::hvec2 &bearing_h, const math::hvec2 &bearing_v, const math::hvec2 &size, const math::hvec2 &advance)
+		Font::Entry::Entry(
+			uint32_t codepoint,
+			math::uivec2_t const& tex_origin,
+			math::hvec2_t const& bearing_h,
+			math::hvec2_t const& bearing_v,
+			math::hvec2_t const& size,
+			math::hvec2_t const& advance)
 			: codepoint(codepoint), tex_origin(tex_origin), bearing_h(bearing_h), bearing_v(bearing_v), size(size), advance(advance) { }
 		Font::Entry::Entry() : codepoint(), tex_origin(), bearing_h(), bearing_v(), size(), advance() { }
 
-		Font::Font(const strong_handle<graphics::Texture> &atlas, std::unordered_map<uint32_t, Entry> &&entries, uint32_t defaultEntry, uint_t lineHeight, uint_t tabWidth, uint_t spaceWidth):
-			atlas(atlas), entries(entries), defaultEntry(defaultEntry), lineHeight(lineHeight), tabWidth(tabWidth), spaceWidth(spaceWidth) { }
+		Font::Font(
+			Shared<graphics::gl::Texture2D> const& atlas,
+			std::unordered_map<uint32_t, Entry> && entries,
+			uint32_t defaultEntry,
+			uint_t lineHeight,
+			uint_t tabWidth,
+			uint_t spaceWidth):
+			m_atlas(atlas),
+			m_entries(entries),
+			m_default_entry(defaultEntry),
+			m_line_height(lineHeight),
+			m_tab_width(tabWidth),
+			m_space_width(spaceWidth)
+		{
+		}
 
-		Font::Font(Font &&move) : entries(std::move(move.entries)), atlas(std::move(move.atlas)), defaultEntry(move.defaultEntry), spaceWidth(move.spaceWidth), lineHeight(move.lineHeight), tabWidth(move.tabWidth) { }
+		Font::Font(Font &&move):
+			m_entries(std::move(move.m_entries)),
+			m_atlas(std::move(move.m_atlas)),
+			m_default_entry(move.m_default_entry),
+			m_space_width(move.m_space_width),
+			m_line_height(move.m_line_height),
+			m_tab_width(move.m_tab_width)
+		{
+		}
+
 		Font& Font::operator=(Font &&move)
 		{
 			if(this == &move)
 				return *this;
-			entries = std::move(move.entries);
-			atlas = std::move(move.atlas);
-			defaultEntry = move.defaultEntry;
-			spaceWidth = move.spaceWidth;
-			tabWidth = move.tabWidth;
-			lineHeight = move.lineHeight;
+			m_entries = std::move(move.m_entries);
+			m_atlas = std::move(move.m_atlas);
+			m_default_entry = move.m_default_entry;
+			m_space_width = move.m_space_width;
+			m_tab_width = move.m_tab_width;
+			m_line_height = move.m_line_height;
 			return *this;
 		}
 
-		NotNull<const Entry> Font::getEntry(uint32_t codepoint) const
+		Entry const& Font::entry(
+			uint32_t codepoint) const
 		{
-			auto it = entries.find(codepoint);
-			if(it == entries.end())
-				return entries.find(defaultEntry)->second;
+			RE_DBG_ASSERT(!m_entries.empty());
+
+			auto it = m_entries.find(codepoint);
+			if(it == m_entries.end())
+			{
+				it = m_entries.find(m_default_entry);
+				RE_DBG_ASSERT(it != m_entries.end());
+				return it->second;
+			}
 			else return it->second;
 		}
 
-		weak_handle<graphics::Texture> Font::getTexture() const
+		Shared<graphics::gl::Texture2D> const& Font::texture() const
 		{
-			return atlas;
+			return m_atlas;
 		}
 
-		math::fvec2 Font::size(const string &text, const FontSettings &settings) const
+		math::fvec2_t Font::size(
+			string8_t const& text,
+			FontSettings const& settings) const
 		{
-			return size(toU32(text), settings);
+			return size(to_u32(text), settings);
 		}
-		math::fvec2 Font::size(const u32string &text, const FontSettings &settings) const
+		math::fvec2_t Font::size(
+			string32_t const& text,
+			FontSettings const& settings) const
 		{
 			if(settings.orientation == TextOrientation::Horizontal)
 			{
-				math::fvec2 max(0,-lineHeight*settings.lineHeight);
-				math::fvec2 pen(0,-lineHeight*settings.lineHeight);
+				math::fvec2_t max(0,-m_line_height*settings.lineHeight);
+				math::fvec2_t pen(0,-m_line_height*settings.lineHeight);
+
 				for(size_t i = 0; i<text.length(); i++)
 				{
 					const auto c = text[i];
@@ -62,14 +130,14 @@ namespace re
 					case '\v':case '\n':
 						{
 							pen.x = 0;
-							pen.y+=lineHeight * settings.lineHeight;
+							pen.y+= m_line_height * settings.lineHeight;
 						} break;
 					case '\t':
 						{
-							if(!tabWidth)
+							if(!m_tab_width)
 								break;
 
-							pen.x += tabWidth - fmodf(pen.x, tabWidth);
+							pen.x += m_tab_width - std::fmod(pen.x, m_tab_width);
 						} break;
 					case '\r':
 						{
@@ -77,52 +145,79 @@ namespace re
 						} break;
 					case ' ':
 						{
-							pen.x += spaceWidth;
+							pen.x += m_space_width;
 						} break;
 					default:
 						{
-							auto entry = getEntry(text[i]);
-							uint_t tw = atlas->getWidth(), th = atlas->getHeight();
+							auto entry = this->entry(text[i]);
+							uint_t tw = m_atlas->width(), th = m_atlas->height();
 
-							const math::fvec2 pos_o(pen.x+entry->bearing_h.x, pen.y-entry->bearing_h.y);
-							const math::fvec2 pos_t(pos_o.x+entry->size.x, pos_o.y+entry->size.y);
+							math::fvec2_t const pos_o(
+								pen.x+entry.bearing_h.x,
+								pen.y-entry.bearing_h.y);
+							math::fvec2_t const pos_t(
+								pos_o.x+entry.size.x,
+								pos_o.y+entry.size.y);
 
 							if(max.x<pos_t.x) max.x = pos_t.x;
 							if(max.x<pos_o.x) max.x = pos_o.x;
 							if(max.y>pos_t.y) max.y = pos_t.y;
 							if(max.y>pos_o.y) max.y = pos_o.y;
 
-							pen.x += entry->advance.x + settings.letterSpacing;
+							pen.x += entry.advance.x + settings.letterSpacing;
 						} break;
 					}
 				}
-				return math::fvec2(max.x, -max.y) * settings.size;
+				return math::fvec2_t(max.x, -max.y) * settings.size;
 			}
 			else // Vertical Text.
 			{
-				math::fvec2 max(0,0);
-				math::fvec2 pen(0,0);
+				math::fvec2_t max(0,0);
+				math::fvec2_t pen(0,0);
 
+				RE_LOG("vertical text not yet implemented.");
 
-				return math::fvec2(max.x, -max.y) * settings.size;
+				return math::fvec2_t(max.x, -max.y) * settings.size;
 			}
 		}
 
-		unique_handle<graphics::VertexData> Font::compile(const string &text, const FontSettings &settings, math::fvec2 &pen_position) const
+		void Font::compile(
+			string8_t const& text,
+			FontSettings const& settings,
+			math::fvec2_t &pen_position,
+			VertexArray &out) const
 		{
-			return compile(toU32(text), settings, pen_position);
+			compile(
+				to_u32(text),
+				settings,
+				pen_position,
+				out);
 		}
 
-		unique_handle<graphics::VertexData> Font::compile(const u32string &text, const FontSettings &settings, math::fvec2 &pen_position) const
+		void Font::compile(
+			string32_t const& text,
+			FontSettings const& settings,
+			math::fvec2_t &pen_position,
+			VertexArray &out) const
 		{
-			unique_handle<graphics::VertexData> vdata(alloc<graphics::VertexData>(graphics::RenderMode::RM_TRIANGLES, graphics::AllocationStrategy::AS_STATIC));
-			vdata->alloc();
-			std::vector<graphics::Vertex> vertices;
-			vertices.reserve(renderables(text)*6);
+			if(!out.exists())
+			{
+				VertexArray * const addr = &out;
+				VertexArray::alloc(&addr, 1);
+			}
 
-			const math::fvec2 bounds = size(text, settings);
+			std::vector<Vertex> vertices;
+			std::vector<uint32_t> indices;
+			size_t const renderable_count = renderables(text);
+			vertices.reserve(renderable_count*4);
+			indices.reserve(renderable_count*6);
 
-			pen_position = (settings.orientation == TextOrientation::Horizontal)?math::fvec2(0,-lineHeight*settings.lineHeight) : math::fvec2(0,0);
+
+			const math::fvec2_t bounds = size(text, settings);
+
+			pen_position = (settings.orientation == TextOrientation::Horizontal)
+				? math::fvec2_t(0, -m_line_height * settings.lineHeight)
+				: math::fvec2_t(0,0);
 
 				for(size_t i = 0; i<text.length(); i++)
 				{
@@ -132,14 +227,14 @@ namespace re
 					case '\v':case '\n':
 						{
 							pen_position.x = 0;
-							pen_position.y-=lineHeight*settings.lineHeight;
+							pen_position.y-= m_line_height * settings.lineHeight;
 						} break;
 					case '\t':
 						{
-							if(!tabWidth)
+							if(!m_tab_width)
 								break;
 
-							pen_position.x += tabWidth - fmodf(pen_position.x, tabWidth);
+							pen_position.x += m_tab_width - std::fmod(pen_position.x, m_tab_width);
 						} break;
 					case '\r':
 						{
@@ -147,42 +242,67 @@ namespace re
 						} break;
 					case ' ':
 						{
-							pen_position.x += spaceWidth;
+							pen_position.x += m_space_width;
 						} break;
 					default:
 						{
-							auto entry = getEntry(text[i]);
-							uint_t tw = atlas->getWidth(), th = atlas->getHeight();
-							math::fvec2 tex_o(entry->tex_origin);
-							math::fvec2 tex_t(math::hvec2(entry->tex_origin)+entry->size);
+							auto &entry = this->entry(text[i]);
+							uint_t tw = m_atlas->width(), th = m_atlas->height();
+							math::fvec2_t tex_o(entry.tex_origin);
+							math::fvec2_t tex_t(math::hvec2_t(entry.tex_origin)+entry.size);
 
 							tex_o.x /= tw;
 							tex_o.y = 1.f- tex_o.y / th;
 							tex_t.x /= tw;
 							tex_t.y = 1.f- tex_t.y / th;
 
-							const math::fvec2 pos_o(settings.size * math::fvec2(pen_position.x+entry->bearing_h.x, pen_position.y+entry->bearing_h.y));
-							const math::fvec2 pos_t(settings.size * math::fvec2(pos_o.x+entry->size.x, pos_o.y-entry->size.y));
+							math::fvec2_t const pos_o(settings.size * math::fvec2_t(pen_position.x+entry.bearing_h.x, pen_position.y+entry.bearing_h.y));
+							math::fvec2_t const pos_t(settings.size * math::fvec2_t(pos_o.x+entry.size.x, pos_o.y-entry.size.y));
 
-							vertices.insert(vertices.end(), {
-								graphics::Vertex(math::fvec3(pos_o.x, pos_t.y, 0), math::fvec2(tex_o.x, tex_t.y), settings.color),
-								graphics::Vertex(math::fvec3(pos_t.x, pos_o.y, 0), math::fvec2(tex_t.x, tex_o.y), settings.color),
-								graphics::Vertex(math::fvec3(pos_o.x, pos_o.y, 0), math::fvec2(tex_o.x, tex_o.y), settings.color),
+							vertices.reserve(vertices.size() + 4);
+							size_t const base_index = vertices.size();
+							/* Vertex data is passed as follows:
+							2---1
+							|  /|
+							| / |
+							|/  |
+							0---3. */
+							vertices.emplace_back(
+								math::fvec3_t(pos_o.x, pos_t.y, 0),
+								math::fvec2_t(tex_o.x, tex_t.y),
+								settings.color);
+							vertices.emplace_back(
+								math::fvec3_t(pos_t.x, pos_o.y, 0),
+								math::fvec2_t(tex_t.x, tex_o.y),
+								settings.color);
+							vertices.emplace_back(
+								math::fvec3_t(pos_o.x, pos_o.y, 0),
+								math::fvec2_t(tex_o.x, tex_o.y),
+								settings.color);
+							vertices.emplace_back(
+								math::fvec3_t(pos_t.x, pos_t.y, 0),
+								math::fvec2_t(tex_t.x, tex_t.y),
+								settings.color);
 
-								graphics::Vertex(math::fvec3(pos_o.x, pos_t.y, 0), math::fvec2(tex_o.x, tex_t.y), settings.color),
-								graphics::Vertex(math::fvec3(pos_t.x, pos_t.y, 0), math::fvec2(tex_t.x, tex_t.y), settings.color),
-								graphics::Vertex(math::fvec3(pos_t.x, pos_o.y, 0), math::fvec2(tex_t.x, tex_o.y), settings.color) });
+							indices.push_back(base_index + 0);
+							indices.push_back(base_index + 1);
+							indices.push_back(base_index + 2);
 
-							pen_position.x += entry->advance.x + settings.letterSpacing;
+							indices.push_back(base_index + 0);
+							indices.push_back(base_index + 3);
+							indices.push_back(base_index + 1);
+
+							pen_position.x += entry.advance.x + settings.letterSpacing;
 						} break;
 					}
 				}
-			vdata->setData(vertices.data(), vertices.size());
-
-			return vdata;
+			out.set_data(
+				std::move(vertices),
+				graphics::gl::RenderMode::Triangles,
+				std::move(indices));
 		}
 
-		size_t Font::renderables(const string &text)
+		size_t Font::renderables(string8_t const& text)
 		{
 			size_t count = 0;
 			for(size_t i = text.length(); i-->0;)
@@ -191,7 +311,7 @@ namespace re
 			return text.length()-count;
 		}
 
-		size_t Font::renderables(const u32string &text)
+		size_t Font::renderables(string32_t const& text)
 		{
 			size_t count = 0;
 			for(size_t i = text.length(); i-->0;)
@@ -209,9 +329,10 @@ namespace re
 			}
 		}
 
-		u32string Font::toU32(const std::string &str)
+		string32_t Font::to_u32(string8_t const& str)
 		{
-			u32string data(str.length(), '\0');
+			string32_t data;
+			data.resize(str.length());
 			for(size_t i = 0; i<str.length(); i++)
 				data[i] = str[i];
 

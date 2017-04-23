@@ -43,28 +43,56 @@ namespace re
 				}
 			}
 
-			void Buffer::alloc_handles(handle_t * handles, size_t count)
+			void Buffer::alloc_handles(
+				handle_t * handles,
+				size_t count)
 			{
-				RE_OGL(glGenBuffers(count, handles));
+				if(count)
+				{
+					RE_DBG_ASSERT(handles != nullptr);
+					RE_OGL(glGenBuffers(count, handles));
+				}
 			}
 
-			void Buffer::alloc(Buffer * buffers, size_t count)
+			void Buffer::alloc(
+				Buffer * const * buffers,
+				size_t count)
 			{
+				if(!count)
+					return;
+
+				RE_DBG_ASSERT(buffers != nullptr);
 				handle_t * const handles = allocation_buffer(count);
 
 				alloc_handles(handles, count);
 
 				for(size_t i = count; i--;)
-					buffers[i].set_handle(handles[i]);
+				{
+					RE_DBG_ASSERT(buffers[i] != nullptr);
+					buffers[i]->set_handle(handles[i]);
+				}
 			}
 
-			void Buffer::destroy_handles(handle_t * handles, size_t count)
+			void Buffer::destroy_handles(
+				handle_t * handles,
+				size_t count)
 			{
-				RE_OGL(glDeleteBuffers(count, handles));
+				if(count)
+				{
+					RE_DBG_ASSERT(handles != nullptr);
+					RE_OGL(glDeleteBuffers(count, handles));
+				}
 			}
 
-			void Buffer::destroy(Buffer * buffers, size_t count)
+			void Buffer::destroy(
+				Buffer * buffers,
+				size_t count)
 			{
+				if(!count)
+					return;
+
+				RE_DBG_ASSERT(buffers != nullptr);
+
 				handle_t * const handles = allocation_buffer(count);
 
 				for(size_t i = count; i--;)

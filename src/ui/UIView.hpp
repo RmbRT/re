@@ -48,7 +48,7 @@ namespace re
 			void update_cursor(math::fvec2_t const& cursor);
 
 			/** Searches and returns the UIElement described by the name, if exists. */
-			UINode * findElement(string8_t const& name) const;
+			UINode * find_node(string8_t const& name) const;
 
 		};
 	}

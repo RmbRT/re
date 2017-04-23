@@ -6,8 +6,8 @@ namespace re
 
 		template<class T>
 		RECX Vec2<T>::Vec2():
-			x(0),
-			y(0)
+			x(),
+			y()
 		{
 		}
 		template<class T>

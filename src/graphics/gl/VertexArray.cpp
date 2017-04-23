@@ -59,33 +59,36 @@ namespace re
 			}
 
 			void VertexArrayBase::alloc(
-				VertexArrayBase * arrays,
+				VertexArrayBase ** arrays,
 				size_t count)
 			{
+				RE_DBG_ASSERT(arrays != nullptr);
+
 				handle_t * buffer = allocation_buffer(count);
 
-				alloc_handles(buffer, count);
+				VertexArrayBase::alloc_handles(buffer, count);
 
 				for(size_t i = count; i--;)
 				{
+					RE_DBG_ASSERT(arrays[i] != nullptr);
 					RE_DBG_ASSERT(!arrays[i].exists() &&
 						"Tried to allocate existing vertex array!");
 
-					arrays[i].set_handle(buffer[i]);
+					arrays[i]->set_handle(buffer[i]);
 				}
 				buffer = allocation_buffer(count << 1);
 
 				Buffer::alloc_handles(buffer, count);
 				for(size_t i = count; i--;)
 				{
-					RE_DBG_ASSERT(!arrays[i].m_vertex.exists() &&
+					RE_DBG_ASSERT(!arrays[i]->m_vertex.exists() &&
 						"Tried to allocate existing vertex buffer!");
 
-					RE_DBG_ASSERT(!arrays[i].m_index.exists() &&
+					RE_DBG_ASSERT(!arrays[i]->m_index.exists() &&
 						"Tried to allocate existing index buffer!");
 
-					arrays[i].m_vertex.set_handle(buffer[(i<<1)]);
-					arrays[i].m_vertex.set_handle(buffer[(i<<1)+1]);
+					arrays[i]->m_vertex.set_handle(buffer[(i<<1)]);
+					arrays[i]->m_index.set_handle(buffer[(i<<1)+1]);
 				}
 			}
 
@@ -101,21 +104,22 @@ namespace re
 			}
 
 			void VertexArrayBase::destroy(
-				VertexArrayBase * arrays,
+				VertexArrayBase ** arrays,
 				size_t count)
 			{
 				handle_t * const buffers = allocation_buffer(count << 1);
 				for(size_t i = count; i--;)
 				{
-					RE_DBG_ASSERT(arrays[i].m_vertex.exists() &&
+					RE_DBG_ASSERT(arrays[i] != nullptr);
+					RE_DBG_ASSERT(arrays[i]->m_vertex.exists() &&
 						"Tried to destroy nonexisting vertex buffer!");
-					RE_DBG_ASSERT(arrays[i].m_index.exists() &&
+					RE_DBG_ASSERT(arrays[i]->m_index.exists() &&
 						"Tried to destroy nonexisting index buffer!");
 
-					buffers[(i<<1)] = arrays[i].m_vertex.handle();
-					buffers[(i<<1)+1] = arrays[i].m_index.handle();
-					arrays[i].m_vertex.null_handle();
-					arrays[i].m_index.null_handle();
+					buffers[(i<<1)] = arrays[i]->m_vertex.handle();
+					buffers[(i<<1)+1] = arrays[i]->m_index.handle();
+					arrays[i]->m_vertex.null_handle();
+					arrays[i]->m_index.null_handle();
 				}
 
 				Buffer::destroy_handles(buffers, count << 1);
@@ -127,8 +131,8 @@ namespace re
 					RE_DBG_ASSERT(arrays[i].exists() &&
 						"Tried to destroy nonexisting vertex array!");
 
-					vaos[i] = arrays[i].handle();
-					arrays[i].null_handle();
+					vaos[i] = arrays[i]->handle();
+					arrays[i]->null_handle();
 				}
 
 				destroy_handles(vaos, count);
@@ -168,7 +172,6 @@ namespace re
 			{
 				RE_DBG_ASSERT(exists());
 				m_vertex.data(vertex_data, vertices, type_size);
-				m_index.
 				m_index_used = false;
 				m_render_mode = render_mode;
 			}
@@ -190,7 +193,7 @@ namespace re
 
 			void VertexArrayBase::draw(size_t count, size_t start)
 			{
-				static Lookup<RenderMode, GLenum> const k_rendermode_lookup[] =
+				static Lookup<RenderMode, GLenum> const k_rendermode_lookup =
 				{
 					{ RenderMode::Linestrip, GL_LINE_STRIP },
 					{ RenderMode::Lines, GL_LINES },
@@ -199,8 +202,6 @@ namespace re
 					{ RenderMode::Points, GL_POINTS },
 					{ RenderMode::TriangleFan, GL_TRIANGLE_FAN }
 				};
-
-				RE_DBG_ASSERT(size_t(m_render_mode) < _countof(k_rendermode_lookup));
 
 				GLenum mode = k_rendermode_lookup[size_t(m_render_mode)];
 

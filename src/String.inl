@@ -174,6 +174,22 @@ namespace re
 	}
 
 	template<class C>
+	C &String<C>::operator[](
+		size_t i)
+	{
+		RE_DBG_ASSERT(i < m_size);
+		return m_data[i];
+	}
+
+	template<class C>
+	C const& String<C>::operator[](
+		size_t i) const
+	{
+		RE_DBG_ASSERT(i < m_size);
+		return m_data[i];
+	}
+
+	template<class C>
 	REIL typename String<C>::stdchar_t const * String<C>::c_str() const
 	{
 		return empty()

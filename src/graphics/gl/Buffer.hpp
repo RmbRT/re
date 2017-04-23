@@ -15,6 +15,8 @@ namespace re
 	{
 		namespace gl
 		{
+			typedef unsigned int index_t;
+
 			/** Whether a Buffer stores vertex data or index data. */
 			enum class BufferType
 			{
@@ -72,15 +74,16 @@ namespace re
 				void bind() &;
 				/** Allocates the given Buffers.
 				None of the given Buffers must be allocated yet. */
-				static void alloc(Buffer * buffers, size_t count);
+				static void alloc(Buffer * const * buffers, size_t count);
 				/** Destroys the given Buffers.
 				All of the given Buffers must be allocated.
 				If the currently bound buffer is destroyed, it becomes unbound. */
-				static void destroy(Buffer * buffers, size_t count);
+				static void destroy(Buffer * const * buffers, size_t count);
 
 				using Handle::exists;
 				using Handle::handle;
 
+			protected:
 				/** Sets the data stored on the GPU.
 				@important The Buffer must exist.
 				@param[in] data:
@@ -89,14 +92,57 @@ namespace re
 					the count of elements in data.
 				@param[in] element_size:
 					the type size of the elements in data. */
-				void data(void const* data, size_t elements, size_t element_size) &;
+				void data(
+					void const* data,
+					size_t elements,
+					size_t element_size) &;
 
 			private:
 				/** Allocates the given Handles as Buffers. */
-				static void alloc_handles(handle_t * handles, size_t count);
+				static void alloc_handles(
+					handle_t * handles,
+					size_t count);
 				/** Destroys the given Handles as Buffers.
 				All of the given Handles must represent an existing Buffer. */
-				static void destroy_handles(handle_t * handles, size_t count);
+				static void destroy_handles(
+					handle_t * handles,
+					size_t count);
+			};
+
+			template<class Vertex>
+			class VertexBuffer : public Buffer
+			{
+				std::vector<Vertex> m_data;
+			public:
+				REIL VertexBuffer(
+					BufferAccess access,
+					BufferUsage usage);
+				VertexBuffer(VertexBuffer &&) = default;
+				VertexBuffer &operator=(VertexBuffer &&) & = default;
+
+				REIL void data(
+					Vertex const * data,
+					size_t elements) &;
+
+				REIL void data(
+					std::vector<Vertex> data) &;
+			};
+
+
+			class IndexBuffer : public Buffer
+			{
+				std::vector<index_t> m_data;
+			public:
+				REIL IndexBuffer(
+					BufferAccess access,
+					BufferUsage usage);
+
+				REIL void data(
+					index_t const * data,
+					size_t elements) &;
+
+				REIL void data(
+					std::vector<index_t> data) &;
 			};
 		}
 	}

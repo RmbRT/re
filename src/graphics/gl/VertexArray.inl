@@ -1,3 +1,4 @@
+#include "../../util/AllocationBuffer.hpp"
 namespace re
 {
 	namespace graphics
@@ -62,26 +63,49 @@ namespace re
 			RECX VertexArray<Vertex>::VertexArray(
 				BufferAccess access,
 				BufferUsage usage):
-				VertexArrayBase(access, usage)
+				VertexArrayBase(access, usage),
+				m_aabb(math::empty)
 			{
 			}
 
 			template<class Vertex>
-			void VertexArray<Vertex>::alloc(VertexArray<Vertex> * arrays, size_t count)
+			void VertexArray<Vertex>::alloc(VertexArray<Vertex> * const * arrays, size_t count)
 			{
-				static_assert(sizeof(VertexArray<Vertex>) == sizeof(VertexArrayBase),
-					"Must not add members to VertexArray<T>.");
+				RE_DBG_ASSERT(arrays != nullptr);
 
-				VertexArrayBase::alloc(arrays, count);
+				VertexArrayBase ** buffer = util::allocation_buffer<VertexArrayBase *>(count);
+				for(size_t i = count; i--;)
+				{
+					RE_DBG_ASSERT(arrays[i] != nullptr);
+					buffer[i] = arrays[i];
+				}
+				VertexArrayBase::alloc(buffer, count);
+
+				for(size_t i = count; i--;)
+					arrays[i]->configure(Vertex::type);
 			}
 
 			template<class Vertex>
-			void VertexArray<Vertex>::destroy(VertexArray<Vertex> * arrays, size_t count)
+			void VertexArray<Vertex>::destroy(VertexArray<Vertex> * const * arrays, size_t count)
 			{
-				static_assert(sizeof(VertexArray<Vertex>) == sizeof(VertexArrayBase),
-					"Must not add members to VertexArray<T>.");
+				RE_DBG_ASSERT(arrays != nullptr);
 
-				VertexArrayBase::destroy(arrays, count);
+				VertexArrayBase ** buffer = util::allocation_buffer<VertexArrayBase *>(count);
+				for(size_t i = count; i--;)
+					buffer[i] = arrays[i];
+				VertexArrayBase::destroy(buffer, count);
+			}
+
+			template<class Vertex>
+			void VertexArray<Vertex>::alloc()
+			{
+				alloc(&this, 1);
+			}
+
+			template<class Vertex>
+			void VertexArray<Vertex>::destroy()
+			{
+				destroy(&this, 1);
 			}
 
 			template<class Vertex>

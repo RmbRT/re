@@ -192,6 +192,11 @@ namespace re
 		/** The string data - might be null. */
 		REIL C * data();
 
+		C &operator[](
+			size_t i);
+		C const& operator[](
+			size_t i) const;
+
 		/** The string contents.
 			If the string is null, an empty string is returned.*/
 		REIL C const * content() const;

@@ -73,7 +73,7 @@ namespace re
 				Entry();
 			};
 		private:
-			Shared<graphics::gl::Texture> m_atlas;
+			Shared<graphics::gl::Texture2D> m_atlas;
 			std::unordered_map<utf32_t, Entry> m_entries;
 			utf32_t m_default_entry;
 
@@ -97,7 +97,7 @@ namespace re
 				The line height (in text coordinates). This only applies to horizontal text.
 			@param[in]  */
 			Font(
-				Shared<graphics::gl::Texture> const& atlas,
+				Shared<graphics::gl::Texture2D> const& atlas,
 				std::unordered_map<uint32_t, Entry> && entries,
 				uint32_t default_entry,
 				uint_t line_height,
@@ -108,28 +108,30 @@ namespace re
 
 			Font &operator=(Font &&move);
 
-			NotNull<const Entry> getEntry(
+			Entry const& entry(
 				uint32_t codepoint) const;
 
 			/** Creates a model from */
-			Auto<VertexArray> compile(
+			void compile(
 				string8_t const& text,
 				FontSettings const& settings,
-				math::fvec2_t &pen_position) const;
+				math::fvec2_t &pen_position,
+				VertexArray & out) const;
 
-			Auto<VertexArray> compile(
+			void compile(
 				string32_t const& text,
 				FontSettings const& settings,
-				math::fvec2_t &pen_position) const;
+				math::fvec2_t &pen_position,
+				VertexArray & out) const;
 
 			math::fvec2_t size(
-				string8_t &text,
+				string8_t const& text,
 				FontSettings const& settings) const;
 			math::fvec2_t size(
 				string32_t const& text,
 				FontSettings const& settings) const;
 
-			Shared<graphics::gl::Texture> const& getTexture() const;
+			Shared<graphics::gl::Texture2D> const& texture() const;
 
 			static size_t renderables(
 				string8_t const& text);
@@ -138,7 +140,7 @@ namespace re
 			static bool renderable(
 				uint32_t codepoint);
 
-			static string32_t toU32(string8_t const& text);
+			static string32_t to_u32(string8_t const& text);
 		};
 	}
 }

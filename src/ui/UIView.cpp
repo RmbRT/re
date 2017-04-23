@@ -33,17 +33,17 @@ namespace re
 				nullptr))
 				content->on_cursor_leave();
 			else
-				content->on_cursor_move(math::fvec2_t(local.x, local.y) - content->position());
+				content->on_cursor_move(math::fvec2_t(local.x, local.y) - content->absolute_position());
 		}
 
-		void UIView::updateCursor(const math::fvec2_t &cursor)
+		void UIView::update_cursor(math::fvec2_t const& cursor)
 		{
-			content.onCursorMove(cursor-content.position());
+			content->on_cursor_move(cursor-content->absolute_position());
 		}
 
-		const strong_handle<UIElement> &UIView::findElement(const string &name) const
+		UINode * UIView::find_node(string8_t const& name) const
 		{
-			return content.findChild(name);
+			return content->find_child(name.c_str());
 		}
 	}
 }

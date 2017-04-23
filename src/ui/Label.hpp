@@ -13,7 +13,7 @@ namespace re
 		{
 
 			Shared<Font> m_font;
-			Auto<VertexArray> m_vertex_array;
+			VertexArray m_vertex_array;
 
 			string32_t m_text;
 
@@ -40,7 +40,7 @@ namespace re
 
 			string32_t const& text() const;
 
-			Auto<VertexArray> const& vertex_array() const;
+			VertexArray const& vertex_array() const;
 
 			FontSettings &font_settings();
 			FontSettings const& font_settings() const;
@@ -52,7 +52,7 @@ namespace re
 
 			math::fvec2_t const& pen_position() const;
 
-			void draw() const;
+			void draw();
 		};
 	}
 }

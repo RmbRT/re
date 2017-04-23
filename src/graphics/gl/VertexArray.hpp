@@ -61,6 +61,8 @@ namespace re
 				TriangleFan
 			};
 
+			typedef unsigned int index_t;
+
 			/** The base class used for VertexArrays. */
 			class VertexArrayBase : Handle
 			{
@@ -120,13 +122,13 @@ namespace re
 					handle_t * handles,
 					size_t count);
 				static void alloc(
-					VertexArrayBase * arrays,
+					VertexArrayBase * const * arrays,
 					size_t count);
 				static void destroy_handles(
 					handle_t * handles,
 					size_t count);
 				static void destroy(
-					VertexArrayBase * arrays,
+					VertexArrayBase * const * arrays,
 					size_t count);
 
 				/** Configures the VertexArray for the input type.
@@ -181,11 +183,13 @@ namespace re
 					size_t vertices,
 					size_t type_size,
 					RenderMode render_mode,
-					uint32_t const * index_data,
+					index_t const * index_data,
 					size_t indices);
 
 				/** Draws `count` elements, starting at `start`. */
-				void draw(size_t count, size_t start);
+				void draw(
+					size_t count,
+					size_t start);
 
 				/** Draws the whole array.
 					Equivalent to `draw(element_count(), 0)`. */
@@ -198,6 +202,8 @@ namespace re
 			{
 				std::vector<Vertex> m_data;
 				math::faabb_t m_aabb;
+			protected:
+				void configure(VertexType<Vertex> const& type_description);
 			public:
 				RECX VertexArray(BufferAccess access, BufferUsage usage);
 				VertexArray(VertexArray<Vertex> &&) = default;
@@ -206,10 +212,11 @@ namespace re
 				VertexArray(VertexArray<Vertex> const&) = delete;
 				VertexArray<Vertex> &operator=(VertexArray<Vertex> const&) = delete;
 
-				static void alloc(VertexArray<Vertex> * arrays, size_t count);
-				static void destroy(VertexArray<Vertex> * arrays, size_t count);
+				static void alloc(VertexArray<Vertex> * const * arrays, size_t count);
+				static void destroy(VertexArray<Vertex> * const * arrays, size_t count);
 
-				void configure(VertexType<Vertex> const& type_description);
+				REIL void alloc();
+				REIL void destroy();
 
 				void set_data(
 					Vertex const * vertex_data,
@@ -219,7 +226,7 @@ namespace re
 					Vertex const * vertex_data,
 					size_t vertices,
 					RenderMode render_mode,
-					uint32_t const * index_data,
+					index_t const * index_data,
 					size_t indices);
 
 				void set_data(
@@ -229,7 +236,7 @@ namespace re
 				void set_data(
 					std::vector<Vertex> vertex_data,
 					RenderMode render_mode,
-					std::vector<uint32_t> index_data);
+					std::vector<index_t> index_data);
 
 				using VertexArrayBase::draw;
 
