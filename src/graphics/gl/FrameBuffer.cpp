@@ -7,63 +7,67 @@ namespace re
 	{
 		namespace gl
 		{
-			void FrameBuffer::bind_read()
+			void FrameBuffer::bind_read() &
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting frame buffer!");
 
-				if(s_bound_read != handle())
+				if(!s_bound_read.bound(handle()))
 				{
 					RE_OGL(glBindFramebuffer(GL_READ_FRAMEBUFFER, handle()));
-					s_bound_read = handle();
+					s_bound_read.bind(handle());
 				}
 			}
 
-			void FrameBuffer::bind_write()
+			void FrameBuffer::bind_write() &
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting frame buffer!");
 
-				if(s_bound_write != handle())
+				if(!s_bound_write.bound(handle()))
 				{
 					RE_OGL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, handle()));
-					s_bound_write = handle();
+					s_bound_write.bind(handle());
 				}
 			}
 
-			void FrameBuffer::bind_both()
+			void FrameBuffer::bind_both() &
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting frame buffer!");
 
-				if(s_bound_read != handle() || s_bound_write != handle())
+				if(!s_bound_read.bound(handle()) || !s_bound_write.bound(handle()))
 				{
 					RE_OGL(glBindFramebuffer(GL_FRAMEBUFFER, handle()));
-					s_bound_read = s_bound_write = handle();
+					s_bound_read.bind(handle());
+					s_bound_write.bind(handle());
 				}
 			}
 
 			void FrameBuffer::unbind_read()
 			{
-				if(s_bound_read)
+				if(!s_bound_read.empty())
 				{
 					RE_OGL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
-					s_bound_read = 0;
+					s_bound_read.unbind();
 				}
 			}
 
 			void FrameBuffer::unbind_write()
 			{
-				if(s_bound_write)
+				if(!s_bound_write.empty())
 				{
 					RE_OGL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
-					s_bound_write = 0;
+					s_bound_write.unbind();
 				}
 			}
 
 			void FrameBuffer::unbind_both()
 			{
-				if(s_bound_read || s_bound_write)
+				if(!s_bound_read.empty() || !s_bound_write.empty())
 				{
 					RE_OGL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-					s_bound_read = s_bound_write = 0;
+					if(!s_bound_read.empty())
+						s_bound_read.unbind();
+					if(!s_bound_write.empty())
+						s_bound_write.unbind();
 				}
 			}
 
@@ -113,10 +117,10 @@ namespace re
 			void FrameBuffer::blit(
 					FrameBuffer * source,
 					FrameBuffer * dest,
-					math::uivec2 const& src_origin,
-					math::uivec2 const& src_end,
-					math::uivec2 const& dst_origin,
-					math::uivec2 const& dst_end,
+					math::uivec2_t const& src_origin,
+					math::uivec2_t const& src_end,
+					math::uivec2_t const& dst_origin,
+					math::uivec2_t const& dst_end,
 					bool blit_color,
 					bool blit_depth,
 					bool blit_stencil,
@@ -188,7 +192,7 @@ namespace re
 					dst_end.x,
 					dst_end.y,
 					mask,
-					filter));	
+					filter));
 			}
 
 			void FrameBuffer::attach_color(Texture && color)
@@ -210,7 +214,7 @@ namespace re
 
 				bind_write();
 				RE_OGL(glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0));
-				
+
 				out = std::move(m_color);
 			}
 

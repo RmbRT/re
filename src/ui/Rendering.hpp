@@ -13,13 +13,13 @@ namespace re
 		/** The vertex type used for rendering user interfaces. */
 		struct Vertex
 		{
-			math::fvec3_t position;
+			math::fvec2_t position;
 			math::fvec2_t texture;
 			math::fvec4_t color;
 
 			Vertex() = default;
 			RECX Vertex(
-				math::fvec3_t const& position,
+				math::fvec2_t const& position,
 				math::fvec2_t const& texture,
 				math::fvec4_t const& color);
 

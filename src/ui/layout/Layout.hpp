@@ -57,7 +57,7 @@ namespace re
 				math::fvec2_t m_texture_scale;
 				math::fvec4_t m_color;
 				Shared<graphics::gl::Texture2D> m_texture;
-				math::fvec3_t m_position;
+				math::fvec2_t m_position;
 				math::fvec2_t m_size;
 				mutable VertexArray m_model;
 				mutable bool m_invalid_model;
@@ -94,7 +94,7 @@ namespace re
 					math::fvec4_t const& color);
 
 				void set_position(
-					math::fvec3_t const& position);
+					math::fvec2_t const& position);
 
 				void set_size(
 					math::fvec2_t const& size);
@@ -367,7 +367,7 @@ namespace re
 				@param[in] inner_size:
 					The boxes inner size. */
 				void set_box(
-					math::fvec3_t const& origin,
+					math::fvec2_t const& origin,
 					math::fvec2_t const& inner_size);
 
 				void update_model() const;
@@ -385,6 +385,7 @@ namespace re
 
 			struct ScrollBar
 			{
+				ScrollBar();
 				ScrollBarVisibility visibility;
 				float width;
 				float heightPercent;

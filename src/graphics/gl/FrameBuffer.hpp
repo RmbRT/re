@@ -22,7 +22,7 @@ namespace re
 				static Binding s_bound_read;
 				/** The FrameBuffer currently used for write operations. */
 				static Binding s_bound_write;
-				
+
 				/** @{
 					The bounds of the FrameBuffer. */
 				uint32_t
@@ -37,7 +37,7 @@ namespace re
 				RenderBuffer m_stencil;
 				RenderBuffer m_depth_stencil;
 				/** @. */
-				
+
 			public:
 				/** Creates an empty FrameBuffer Handle. */
 				FrameBuffer() = default;
@@ -78,10 +78,10 @@ namespace re
 				static void blit(
 					FrameBuffer * source,
 					FrameBuffer * dest,
-					math::uivec2 const& src_origin,
-					math::uivec2 const& src_end,
-					math::uivec2 const& dst_origin,
-					math::uivec2 const& dst_end,
+					math::uivec2_t const& src_origin,
+					math::uivec2_t const& src_end,
+					math::uivec2_t const& dst_origin,
+					math::uivec2_t const& dst_end,
 					bool blit_color,
 					bool blit_depth,
 					bool blit_stencil,

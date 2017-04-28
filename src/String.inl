@@ -199,6 +199,20 @@ namespace re
 	}
 
 	template<class C>
+	REIL typename String<C>::stdchar_t * String<C>::c_data()
+	{
+		return reinterpret_cast<
+			typename detail::to_std_char<C>::type *>(m_data.operator->());
+	}
+
+	template<class C>
+	REIL typename String<C>::stdchar_t const * String<C>::c_data() const
+	{
+		return reinterpret_cast<
+			typename detail::to_std_char<C>::type const *>(m_data.operator->());
+	}
+
+	template<class C>
 	C const * String<C>::content() const
 	{
 		return empty()

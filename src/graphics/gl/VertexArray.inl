@@ -99,13 +99,15 @@ namespace re
 			template<class Vertex>
 			void VertexArray<Vertex>::alloc()
 			{
-				alloc(&this, 1);
+				auto * self = this;
+				alloc(&self, 1);
 			}
 
 			template<class Vertex>
 			void VertexArray<Vertex>::destroy()
 			{
-				destroy(&this, 1);
+				auto * self = this;
+				destroy(&self, 1);
 			}
 
 			template<class Vertex>

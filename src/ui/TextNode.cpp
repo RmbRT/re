@@ -4,42 +4,46 @@ namespace re
 {
 	namespace ui
 	{
-		TextNode::TextNode() : UINode(), label() { }
-		TextNode::TextNode(const u32string &text, const strong_handle<Font> &font) : UINode(), label()
+		TextNode::TextNode(
+			string32_t text,
+			Shared<Font> font):
+			UINode(),
+			m_label()
 		{
-			label.setText(text);
-			setFont(font);
-			label.setFont(font);
-			label.update();
-			updateBounds();
+			m_label.set_text(text);
+			UINode::set_font(font);
+			m_label.set_font(font);
+			m_label.update();
+			update_bounds();
 		}
 
-		void TextNode::setText(u32string const& text)
+		void TextNode::set_text(
+			string32_t text)
 		{
-			label.setText(text);
-			label.setFont(getFont());
-			label.update();
-			updateBounds();
+			m_label.set_text(std::move(text));
+			m_label.set_font(UINode::font());
+			m_label.update();
+			update_bounds();
 		}
-		const u32string &TextNode::getText() const
+		string32_t const& TextNode::text() const
 		{
-			return label.getText();
+			return m_label.text();
 		}
 
-		void TextNode::updateBounds()
+		void TextNode::update_bounds()
 		{
-			const math::fvec2 &sz = label.getSize();
-			max_size = min_size = math::vec2<layout::Size>(layout::Absolute(sz.x), layout::Absolute(sz.y));
-			contentChanged();
+			math::fvec2_t const& sz = m_label.size();
+			UINode::set_width(layout::Absolute(sz.x));
+			UINode::set_height(layout::Absolute(sz.y));
 		}
 
 		void TextNode::update()
 		{
-			const strong_handle<Font> &font = getFont();
-			if(label.getFont() != font)
+			Shared<Font> const& temp_font = UINode::font();
+			if(m_label.font() != temp_font)
 			{
-				label.setFont(font);
-				label.update();
+				m_label.set_font(temp_font);
+				m_label.update();
 			}
 
 			UINode::update();

@@ -4,9 +4,9 @@
 namespace re
 {
 
-	math::fmat4x4 SceneNode::getTransformation() const
+	math::fmat4x4_t SceneNode::getTransformation() const
 	{
-		return math::fmat4x4::transformation(position, rotation, scaling);
+		return math::fmat4x4_t::transformation(position, rotation, scaling);
 	}
 
 	SceneNode::~SceneNode() {}
@@ -20,7 +20,7 @@ namespace re
 		for(SceneNode &node: child_nodes)
 			node.parent_node = this;
 	}
-	SceneNode::SceneNode(Scene &scene) : parent_node(nullptr), scene(scene), rotation(), position(), scaling(1,1,1), model(nullptr)  { }
+	SceneNode::SceneNode(Scene &scene) : parent_node(nullptr), scene(&scene), rotation(), position(), scaling(1,1,1), model(nullptr)  { }
 
 
 	SceneNode &SceneNode::operator=(const SceneNode &rhs)
@@ -37,7 +37,7 @@ namespace re
 
 		for(SceneNode &child: child_nodes)
 			child.parent_node = this;
-		
+
 		return *this;
 	}
 
@@ -62,9 +62,9 @@ namespace re
 	void SceneNode::releaseChild(NotNull<SceneNode> node, SceneNode * out_node)
 	{
 		RE_ASSERT(node>= &child_nodes.front() && node<=&child_nodes.back() && node->parent_node == this);
-		
+
 		if(out_node)
-			*out_node = node;
+			*out_node = *node;
 
 		size_t i = node-&child_nodes.front();
 		child_nodes.erase(child_nodes.begin()+i);
@@ -92,7 +92,7 @@ namespace re
 
 		unsigned index = this-&parent_node->child_nodes.front();
 		if(index+1<parent_node->child_nodes.size())
-			return parent_node->child_nodes[index+1];
+			return &parent_node->child_nodes[index+1];
 		else
 			return nullptr;
 	}
@@ -103,7 +103,7 @@ namespace re
 
 		unsigned index = this-&parent_node->child_nodes.front();
 		if(index+1<parent_node->child_nodes.size())
-			return parent_node->child_nodes[index+1];
+			return &parent_node->child_nodes[index+1];
 		else
 			return nullptr;
 	}
@@ -113,7 +113,7 @@ namespace re
 			return nullptr;
 		unsigned index = this-&parent_node->child_nodes.front();
 		if(index>0)
-			return parent_node->child_nodes[index-1];
+			return &parent_node->child_nodes[index-1];
 		else return nullptr;
 	}
 	const SceneNode * SceneNode::prevSibling() const
@@ -122,7 +122,7 @@ namespace re
 			return nullptr;
 		unsigned index = this-&parent_node->child_nodes.front();
 		if(index>0)
-			return parent_node->child_nodes[index-1];
+			return &parent_node->child_nodes[index-1];
 		else return nullptr;
 	}
 	SceneNode * SceneNode::firstChild()
@@ -161,19 +161,19 @@ namespace re
 		SceneNode &handle = child_nodes.back();
 		handle.parent_node = this;
 		handle.scene = scene;
-		return handle;
+		return &handle;
 	}
-	void SceneNode::setModel(strong_handle<Model> model)
+	void SceneNode::setModel(Shared<Model> model)
 	{
-		this->model = model;
+		this->model = std::move(model);
 	}
-	strong_handle<Model> SceneNode::getModel()
+	Shared<Model> SceneNode::getModel()
 	{
 		return model;
 	}
-	strong_handle<const Model> SceneNode::getModel() const
+	Shared<const Model> SceneNode::getModel() const
 	{
-		return reinterpret_cast<const strong_handle<const Model>&>(model);
+		return reinterpret_cast<const Shared<const Model>&>(model);
 	}
 
 	bool SceneNode::isfarchild(NotNull<SceneNode> child) const
@@ -194,7 +194,7 @@ namespace re
 		if(this == &newParent)
 			return child;
 
-		RE_ASSERT(child != newParent && !child->isfarchild(newParent));
+		RE_ASSERT(child != &newParent && !child->isfarchild(&newParent));
 
 		SceneNode temp;
 

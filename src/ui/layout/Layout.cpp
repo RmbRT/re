@@ -38,7 +38,7 @@ namespace re
 				m_texture(nullptr),
 				m_position(0,0),
 				m_size(0,0),
-				m_model(access, BufferUsage::Draw),
+				m_model(access, graphics::gl::BufferUsage::Draw),
 				m_invalid_model(true)
 			{
 			}
@@ -81,7 +81,7 @@ namespace re
 			}
 
 			void Image::set_position(
-				math::fvec3_t const& position)
+				math::fvec2_t const& position)
 			{
 				if(m_position != position)
 				{
@@ -119,7 +119,7 @@ namespace re
 					return;
 				m_invalid_model = false;
 
-				math::fvec3_t end = m_position + math::fvec3_t(m_size.x, m_size.y, 0);
+				math::fvec2_t end = m_position + m_size;
 				math::fvec2_t tex_origin = { 0, 0 };
 
 				math::fvec2_t tex_end;
@@ -139,8 +139,8 @@ namespace re
 
 				std::vector<Vertex> vertices = {
 					Vertex(m_position, tex_origin, m_color),
-					Vertex({m_position.x, end.y, m_position.z}, {tex_origin.x, tex_end.y}, m_color),
-					Vertex({end.x, m_position.y, m_position.z}, {tex_end.x, tex_origin.y}, m_color),
+					Vertex({m_position.x, end.y}, {tex_origin.x, tex_end.y}, m_color),
+					Vertex({end.x, m_position.y}, {tex_end.x, tex_origin.y}, m_color),
 					Vertex(end, tex_end, m_color)
 				};
 				std::vector<graphics::gl::index_t> indices = {
@@ -164,13 +164,13 @@ namespace re
 				if(m_texture)
 					m_texture->bind();
 				else
-					Texture2D::unbind();
+					graphics::gl::Texture2D::unbind();
 
 				m_model.draw();
 			}
 
 			void Borders::set_left_repeat(
-				math::Vec2<Repeat> repeat)
+				math::Vec2<Repeat> const& repeat)
 			{
 				m_borders.left.set_repeat(repeat);
 			}
@@ -244,13 +244,13 @@ namespace re
 				Shared<graphics::gl::Texture2D> texture,
 				math::fvec4_t const& color)
 			{
-				m_borders.right.set_image(std::move(texture)), color);
+				m_borders.right.set_image(std::move(texture), color);
 			}
 			void Borders::set_top_image(
 				Shared<graphics::gl::Texture2D> texture,
 				math::fvec4_t const& color)
 			{
-				m_borders.top.set_image()std::move(texture), color);
+				m_borders.top.set_image(std::move(texture), color);
 			}
 			void Borders::set_bottom_image(
 				Shared<graphics::gl::Texture2D> texture,
@@ -281,7 +281,7 @@ namespace re
 				Shared<graphics::gl::Texture2D> texture,
 				math::fvec4_t const& color)
 			{
-				m_corners.bottom_right.set_image(std::move(textures), color);
+				m_corners.bottom_right.set_image(std::move(texture), color);
 			}
 
 			void Borders::set_left_texture_scale(
@@ -322,7 +322,7 @@ namespace re
 			void Borders::set_top_right_texture_scale(
 				math::fvec2_t const& scale)
 			{
-				m_scorners.top_right.set_texture_scale(scale);
+				m_corners.top_right.set_texture_scale(scale);
 			}
 			void Borders::set_bottom_left_texture_scale(
 				math::fvec2_t const& scale)
@@ -335,7 +335,7 @@ namespace re
 				m_corners.bottom_right.set_texture_scale(scale);
 			}
 
-			void Borders::set_mirrored_corner_exture_scale(
+			void Borders::set_mirrored_corner_texture_scale(
 				math::fvec2_t const& scale)
 			{
 				m_corners.top_left.set_texture_scale(scale);
@@ -345,7 +345,7 @@ namespace re
 			}
 
 			void Borders::set_box(
-				math::fvec3_t const& origin,
+				math::fvec2_t const& origin,
 				math::fvec2_t const& inner_size)
 			{
 				// borders.
@@ -421,18 +421,24 @@ namespace re
 						m_corners.top_right.draw();
 				}
 				if(m_width.left)
-					m_corners.left.draw();
+					m_borders.left.draw();
 				if(m_width.right)
-					m_corners.right.draw();
+					m_borders.right.draw();
 
 				if(m_width.bottom)
 				{
 					if(m_width.left)
 						m_corners.bottom_left.draw();
-					m_boders.bottom.draw();
+					m_borders.bottom.draw();
 					if(m_width.right)
 						m_corners.bottom_right.draw();
 				}
+			}
+
+			ScrollBar::ScrollBar():
+				background(graphics::gl::BufferAccess::Dynamic),
+				knob(graphics::gl::BufferAccess::Dynamic)
+			{
 			}
 		}
 	}

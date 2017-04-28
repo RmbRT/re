@@ -9,16 +9,17 @@ namespace re
 	{
 		class TextNode : public UINode
 		{
-			Label label;
+			Label m_label;
 
-			void updateBounds();
+			void update_bounds();
 		public:
-			TextNode();
-			TextNode(const u32string &text);
-			TextNode(const u32string &text, const strong_handle<Font> &font);
+			TextNode() = default;
+			TextNode(string32_t text);
+			TextNode(string32_t text, Shared<Font> font);
 
-			void setText(const u32string &text);
-			const u32string &getText() const;
+			void set_text(
+				string32_t text);
+			string32_t const& text() const;
 
 			void update() override;
 

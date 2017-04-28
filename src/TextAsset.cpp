@@ -6,14 +6,13 @@ namespace re
 		string8_t const& name,
 		string8_t const& text):
 		AssetBase(
-			name,
-			AssetType::AT_TEXT),
+			name),
 		content(text)
 	{
 	}
 
 	TextAsset::TextAsset():
-		AssetBase(AssetType::AT_TEXT),
+		AssetBase(),
 		content()
 	{
 	}
@@ -27,7 +26,7 @@ namespace re
 		size_t len;
 		file.read((char*)&len, sizeof(len));
 		content.resize(len+1);
-		file.read((char*)&content.front(), len);
+		file.read(content.c_data(), len);
 		content[len] = '\0';
 		return true;
 	}
@@ -37,8 +36,8 @@ namespace re
 		write_asset_file_header(file);
 
 		size_t len = content.length();
-		file.write(_ADDRESSOF(len), sizeof(len));
-		file.write(content.c_str(), len);
+		file.write((char*)&len, sizeof(len));
+		file.write(content.c_data(), len);
 	}
 
 	string8_t const& TextAsset::getText() const
@@ -49,11 +48,11 @@ namespace re
 	void TextAsset::setText(
 		string8_t const& text)
 	{
-		content.assign(text);
+		content = text;
 	}
 
-	AssetType TextAsset::type() const override
+	AssetType TextAsset::type() const
 	{
-		return AssetType::AT_TEXT);
+		return AssetType::AT_TEXT;
 	}
 }

@@ -59,21 +59,8 @@ namespace re
 			layout::Box<layout::Size> m_margin;
 			/** The node's padding within its edges. */
 			layout::Box<layout::Size> m_padding;
-			/** The node's border. */
-			layout::Box<layout::Border> m_border;
-
-			/** The border's corner images. */
-			layout::Image m_border_corner_top_left,
-				m_border_corner_top_right,
-				m_border_corner_bottom_left,
-				m_border_corner_bottom_right;
-
-			/** The border's corner models. */
-			VertexArray
-				m_border_corner_top_left_model,
-				m_border_corner_top_right_model,
-				m_border_corner_bottom_left_model,
-				m_border_corner_bottom_right_model;
+			/** The node's borders. */
+			layout::Borders m_borders;
 
 			/** The node's background image. */
 			layout::Image m_background;
@@ -90,15 +77,8 @@ namespace re
 			/** invalidates the calculated width and height, and the border and background models, and the children. */
 			void content_changed() const;
 
-			/** Called by `update()`.
-				Override this to create custom models. */
-			virtual void update_models() const;
-			/** Called by `update_models()`.
-				Override this to create custom border models. */
-			virtual void update_border_model() const;
-			/** Called by `update_models()`.
-				Override this to create custom background models. */
-			virtual void update_background_model() const;
+			/** Called by `update()`. */
+			void update_models() const;
 		private:
 			/** Used to prevent an infinite recursion when resolving percentage based size values. */
 			mutable float m_temp_last_absolute_content_width;
@@ -173,17 +153,14 @@ namespace re
 
 			/// Box Model
 
-			/** Returns the border of the UINode. */
-			layout::Box<layout::Border> const& border() const;
-			/** Sets the border and invalidates the border model. */
-			void set_border(
-				layout::Box<layout::Border> const& border);
+			/** @return the border of the UINode. */
+			REIL layout::Borders const& borders() const;
+			/** @return the border of the UINode. */
+			REIL layout::Borders &borders();
 
 			/** Returns the background image. */
-			layout::Image const& background() const;
-			/** sets the background image and invalidates the background model. */
-			void set_background(
-				layout::Image const& background);
+			REIL layout::Image const& background() const;
+			REIL layout::Image &background();
 
 			/** resolves the minimal width of this UINode. */
 			float absolute_min_width() const;
@@ -262,15 +239,15 @@ namespace re
 			void set_height(
 				layout::Size const& height);
 
-			void setMargin(
+			void set_margin(
 				layout::Box<layout::Size> const& margin);
-			void setMargin_left(
+			void set_margin_left(
 				layout::Size const& margin);
-			void setMargin_right(
+			void set_margin_right(
 				layout::Size const& margin);
-			void setMargin_top(
+			void set_margin_top(
 				layout::Size const& margin);
-			void setMargin_bottom(
+			void set_margin_bottom(
 				layout::Size const& margin);
 
 			void set_padding(
@@ -283,24 +260,6 @@ namespace re
 				layout::Size const& padding);
 			void set_padding_bottom(
 				layout::Size const& padding);
-
-			void set_border_left(
-				layout::Border const& border);
-			void set_border_top(
-				layout::Border const& border);
-			void set_border_right(
-				layout::Border const& border);
-			void set_border_bottom(
-				layout::Border const& border);
-
-			void set_border_top_left_corner(
-				layout::Image const& corner);
-			void set_border_top_right_corner(
-				layout::Image const& corner);
-			void set_border_bottom_left_corner(
-				layout::Image const& corner);
-			void set_border_bottom_right_corner(
-				layout::Image const& corner);
 
 			void set_left(
 				layout::Size const& left);

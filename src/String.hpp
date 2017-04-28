@@ -203,6 +203,10 @@ namespace re
 
 		/** The string contents, usable by the STL functions. */
 		REIL stdchar_t const * c_str() const;
+		/** The string data usable by the STL functions - might be null. */
+		REIL stdchar_t * c_data();
+		/** The string data usable by the STL functions - might be null. */
+		REIL stdchar_t const * c_data() const;
 		/** The number of elements allocated. */
 		REIL size_t capacity() const;
 
