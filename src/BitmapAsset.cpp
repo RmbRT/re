@@ -53,12 +53,17 @@ namespace re
 		uint32_t width = m_content.width(), height = m_content.height();
 		graphics::Channel channel = m_content.channel();
 		graphics::Component component = m_content.component();
-		
+
 		write_asset_file_header(file);
 
 		file.write((char*)&width, sizeof(width));
 		file.write((char*)&height, sizeof(height));
 		file.write((char*)&channel, sizeof(channel));
 		file.write((char*)m_content.data(), m_content.byte_size());
+	}
+
+	AssetType BitmapAsset::type() const
+	{
+		return AssetType::AT_BITMAP;
 	}
 }

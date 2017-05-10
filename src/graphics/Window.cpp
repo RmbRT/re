@@ -1,13 +1,195 @@
-#include "gl/OpenGL.hpp"
 #include "Window.hpp"
-#include "../LogFile.hpp"
+
+#include "gl/OpenGL.hpp"
 #include "gl/ShaderProgram.hpp"
+
+#include "../LogFile.hpp"
 #include "../util/Error.hpp"
 
 namespace re
 {
 	namespace graphics
 	{
+		using namespace input;
+		class WindowCallbacks
+		{
+			friend class Window;
+
+			static void register_callbacks(
+				Window * window)
+			{
+				glfwSetCharCallback(window->m_handle, &character_callback);
+				glfwSetCursorEnterCallback(window->m_handle, &cursor_enter_callback);
+				glfwSetCursorPosCallback(window->m_handle, &cursor_move_callback);
+				glfwSetKeyCallback(window->m_handle, &key_callback);
+				glfwSetMouseButtonCallback(window->m_handle, &mouse_button_callback);
+				glfwSetFramebufferSizeCallback(window->m_handle, &framebuffer_size_callback);
+				glfwSetWindowFocusCallback(window->m_handle, &focus_callback);
+				glfwSetWindowIconifyCallback(window->m_handle, &iconify_callback);
+				glfwSetWindowPosCallback(window->m_handle, &position_changed_callback);
+				glfwSetWindowRefreshCallback(window->m_handle, &refresh_callback);
+				glfwSetWindowSizeCallback(window->m_handle, &size_changed_callback);
+				glfwSetScrollCallback(window->m_handle, &scroll_callback);
+			}
+
+			static ModifierKeys glfw_constant_to_modifier_keys(
+				int glfw)
+			{
+				return {
+					{ModifierKey::kShift, glfw & GLFW_MOD_SHIFT},
+					{ModifierKey::kControl, glfw & GLFW_MOD_CONTROL},
+					{ModifierKey::kAlt, glfw & GLFW_MOD_ALT},
+					{ModifierKey::kSuper, glfw & GLFW_MOD_SUPER}
+				};
+			}
+
+			static void character_callback(
+				GLFWwindow * handle,
+				uint_t codepoint)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_character(codepoint);
+			}
+
+			static void cursor_enter_callback(
+				GLFWwindow * handle,
+				int entered)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_cursor_enter(entered);
+			}
+
+			static void cursor_move_callback(
+				GLFWwindow * handle,
+				double x,
+				double y)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_cursor_move(x,y);
+			}
+
+			static void key_callback(
+				GLFWwindow * handle,
+				int key,
+				int scancode,
+				int action,
+				int mods)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_key(
+					input::detail::glfw_constant_to_key(key),
+					scancode,
+					action != GLFW_RELEASE,
+					glfw_constant_to_modifier_keys(mods));
+			}
+
+			static void mouse_button_callback(
+				GLFWwindow * handle,
+				int button,
+				int action,
+				int mods)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_mouse_button(
+					input::detail::glfw_constant_to_mouse(button),
+					action != GLFW_RELEASE,
+					glfw_constant_to_modifier_keys(mods));
+			}
+
+			static void framebuffer_size_callback(
+				GLFWwindow * handle,
+				int width,
+				int height)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_framebuffer_size_changed(width, height);
+			}
+
+			static void focus_callback(
+				GLFWwindow * handle,
+				int focused)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_focus_changed(focused);
+			}
+
+			static void iconify_callback(
+				GLFWwindow * handle,
+				int iconified)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_iconify(iconified);
+			}
+
+			static void position_changed_callback(
+				GLFWwindow * handle,
+				int x,
+				int y)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_position_changed(x, y);
+			}
+
+			static void refresh_callback(
+				GLFWwindow * handle)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_refresh();
+			}
+
+			static void size_changed_callback(
+				GLFWwindow * handle,
+				int width,
+				int height)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_size_changed(width, height);
+			}
+
+			static void visibility_changed_callback(
+				GLFWwindow * handle,
+				int shown)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_visibility_changed(shown);
+			}
+
+			static void scroll_callback(
+				GLFWwindow * handle,
+				double xoffset,
+				double yoffset)
+			{
+				Window * window = (Window*) glfwGetWindowUserPointer(handle);
+				RE_DBG_ASSERT(window != nullptr);
+
+				window->on_scroll(xoffset, yoffset);
+			}
+		};
+
 		Window::Window():
 			m_context(nullptr),
 			m_handle(nullptr),
@@ -66,7 +248,7 @@ namespace re
 			RE_DBG_ASSERT(exists() &&
 				"Tried requesting a nonexisting Window to close.");
 
-			if(onCloseRequest())
+			if(on_close_request())
 				destroy();
 		}
 
@@ -154,6 +336,10 @@ namespace re
 					nullptr),
 				"Window creation", false);
 
+			glfwSetWindowUserPointer(m_handle, this);
+
+			WindowCallbacks::register_callbacks(this);
+
 			RE_CRITICAL_DBG_LOG(m_handle != nullptr, "Window creation", false);
 
 			glfwMakeContextCurrent(m_handle);
@@ -217,6 +403,10 @@ namespace re
 					share_context.m_handle),
 				"Window creation", false);
 
+			glfwSetWindowUserPointer(m_handle, this);
+
+			WindowCallbacks::register_callbacks(this);
+
 			m_window_hints = window;
 			m_framebuffer_hints = framebuffer;
 			m_title = std::move(title);
@@ -262,6 +452,10 @@ namespace re
 					m_handle),
 				"Window recreation", false);
 
+			glfwSetWindowUserPointer(m_handle, this);
+
+			WindowCallbacks::register_callbacks(this);
+
 			gl::Context * const shared_context = m_context;
 			// add one reference, because destroy() removes one.
 			reference(*shared_context);
@@ -302,6 +496,30 @@ namespace re
 
 			m_handle = nullptr;
 			m_context = nullptr;
+		}
+
+		void Window::show()
+		{
+			RE_DBG_ASSERT(exists());
+
+			if(!m_visible)
+			{
+				m_visible = true;
+				glfwShowWindow(m_handle);
+				on_visibility_changed(true);
+			}
+		}
+
+		void Window::hide()
+		{
+			RE_DBG_ASSERT(exists());
+
+			if(m_visible)
+			{
+				m_visible = false;
+				glfwHideWindow(m_handle);
+				on_visibility_changed(false);
+			}
 		}
 
 		void Window::set_cursor(math::double2_t const& pos)

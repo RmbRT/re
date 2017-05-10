@@ -9,7 +9,7 @@ namespace re
 	/** A TextAsset contains a string. It can be used for localization and other cases of text loading. */
 	class TextAsset: public AssetBase
 	{	friend class Resource;
-		string8_t content;
+		string8_t m_content;
 
 		bool load_from_file(std::ifstream &file);
 		void write_to_file(std::ofstream &file) const;
@@ -20,12 +20,14 @@ namespace re
 			string8_t const& text);
 		TextAsset();
 
-		string8_t const& getText() const;
-		void setText(
-			string8_t const&text);
+		REIL string8_t const& content() const;
+		REIL void set_content(
+			string8_t const& text);
 
 		AssetType type() const override;
 	};
 }
+
+#include "TextAsset.inl"
 
 #endif

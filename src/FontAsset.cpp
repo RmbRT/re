@@ -1,21 +1,19 @@
 #include "FontAsset.hpp"
 
+using re::graphics::gl::Texture2D;
+
 namespace re
 {
-	NotNull<ui::Font> FontAsset::getFont() const
+	Shared<ui::Font> FontAsset::createFont() const
 	{
-		strong_handle<graphics::Texture> atlasTex = alloc<graphics::Texture>();
-		atlasTex->alloc(2);
-		atlasTex->setData(atlas);
-		{
-			graphics::TextureParameters &params = atlasTex->getParameters();
+		Shared<Texture2D> atlasTex = Shared<Texture2D>::alloc();
+		atlasTex->alloc();
 
-			atlasTex->updateParameters();
-		}
+		atlasTex->set_texels(atlas, 0);
 
-		return alloc<ui::Font>(
+		return Shared<ui::Font>::alloc(
 			std::move(atlasTex),
-			std::move(entries),
+			entries,
 			defaultEntry,
 			lineHeight,
 			tabWidth,

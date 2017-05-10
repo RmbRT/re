@@ -20,38 +20,38 @@ namespace re
 				bool>::type>::type;
 
 		template<class Enum>
-		bool is_error_impl(Enum value);
+		REIL bool is_error_impl(Enum value);
 
 		template<>
-		bool is_error_impl<bool>(bool value)
+		REIL bool is_error_impl<bool>(bool value)
 		{
 			return !value;
 		}
 
 		template<class T>
-		bool is_error(copy_arg_t<T> value)
+		REIL bool is_error(copy_arg_t<T> value)
 		{
 			return is_error_impl<error_t<T>>(error_t<T>(value));
 		}
 
 		template<class Enum>
-		char const * to_string_impl(Enum error);
+		REIL char const * to_string_impl(Enum error);
 
 
 		template<>
-		char const * to_string_impl<bool>(bool error_code)
+		REIL char const * to_string_impl<bool>(bool error_code)
 		{
 			return error_code ? "Success":"Failure";
 		}
 
 		template<>
-		char const * to_string_impl<char const*>(char const * error_msg)
+		REIL char const * to_string_impl<char const*>(char const * error_msg)
 		{
 			return error_msg ? error_msg:"(null)";
 		}
 
 		template<class T>
-		char const * to_string(copy_arg_t<T> error)
+		REIL char const * to_string(copy_arg_t<T> error)
 		{
 			return to_string_impl<error_t<T>>(error_t<T>(error));
 		}

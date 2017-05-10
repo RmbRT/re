@@ -7,7 +7,7 @@ namespace re
 	{
 		namespace gl
 		{
-			string8_t enum_to_string(ShaderType type)
+			string8_t const& enum_to_string(ShaderType type)
 			{
 				static util::Lookup<ShaderType, string8_t> const k_lookup = {
 					{ ShaderType::kVertex, "Vertex" },

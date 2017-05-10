@@ -84,7 +84,7 @@ namespace re
 
 		/** Projects a collection of input vectors into projected space. */
 		std::vector<math::fvec2_t> project(
-			std::vector<const math::fvec3_t> const& position) const;
+			std::vector<math::fvec3_t> const& position) const;
 	};
 }
 

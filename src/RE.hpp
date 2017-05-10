@@ -23,11 +23,27 @@ namespace re
 
 #include "defines.hpp"
 #include "types.hpp"
-#include "LogFile.hpp"
+
 #include "math/Math.hpp"
 #include "graphics/Graphics.hpp"
 #include "input/Input.hpp"
 #include "messaging/Emitter.hpp"
+
+#include "Asset.hpp"
+#include "BitmapAsset.hpp"
+#include "Camera.hpp"
+#include "FontAsset.hpp"
+#include "LogFile.hpp"
+#include "Model.hpp"
+#include "Projection.hpp"
+#include "Renderer.hpp"
+#include "Resource.hpp"
+#include "Scene.hpp"
+#include "SceneNode.hpp"
+#include "Singleton.hpp"
+#include "String.hpp"
+#include "TextAsset.hpp"
+#include "Timer.hpp"
 
 
 #endif

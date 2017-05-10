@@ -41,7 +41,7 @@ namespace re
 				@param[in] count:
 					The number of render buffers. */
 				static void alloc(
-					RenderBuffer * objects,
+					RenderBuffer * const * objects,
 					size_t count);
 				/** Destroys render buffers.
 					Group as many objects as possible into every call to reduce overhead.
@@ -52,7 +52,7 @@ namespace re
 				@param[in] count:
 					The number of render buffers. */
 				static void destroy(
-					RenderBuffer * objects,
+					RenderBuffer * const * objects,
 					size_t count);
 
 				/** Resizes the render buffer.
@@ -77,6 +77,8 @@ namespace re
 
 				using Handle::handle;
 				using Handle::exists;
+
+				REIL bool bound() const;
 
 				/** Binds the render buffer for further calls.
 				@assert

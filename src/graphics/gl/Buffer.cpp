@@ -2,6 +2,7 @@
 #include "OpenGL.hpp"
 
 #include "../../util/Lookup.hpp"
+#include "../../util/AllocationBuffer.hpp"
 
 namespace re
 {
@@ -62,7 +63,7 @@ namespace re
 					return;
 
 				RE_DBG_ASSERT(buffers != nullptr);
-				handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				alloc_handles(handles, count);
 
@@ -85,7 +86,7 @@ namespace re
 			}
 
 			void Buffer::destroy(
-				Buffer * buffers,
+				Buffer * const * buffers,
 				size_t count)
 			{
 				if(!count)
@@ -93,16 +94,18 @@ namespace re
 
 				RE_DBG_ASSERT(buffers != nullptr);
 
-				handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				for(size_t i = count; i--;)
 				{
-					handles[i] = buffers[i].handle();
+					RE_DBG_ASSERT(buffers[i] != nullptr);
+					RE_DBG_ASSERT(buffers[i]->exists()
+						&& "Tried to destroy nonexisting buffer.");
 
-					if(bound == buffers[i].handle())
-						bound = 0;
+					handles[i] = buffers[i]->handle();
 
-					buffers[i].null_handle();
+					bindings[buffers[i]->m_type].on_invalidate(handles[i]);
+					buffers[i]->null_handle();
 				}
 
 				destroy_handles(handles, count);
@@ -115,7 +118,7 @@ namespace re
 					BufferAccess,
 					util::Lookup<
 						BufferUsage,
-						GLenum> const table = {
+						GLenum>> const table = {
 					{
 						BufferAccess::Stream,
 						{

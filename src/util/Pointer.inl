@@ -98,7 +98,7 @@ namespace re
 		template<class ...Args>
 		Shared<T> Shared<T>::alloc(Args && ... args)
 		{
-			return *(new RefCount<T>(std::forward<Args>(args)...));
+			return *(re::alloc<RefCount<T>>(std::forward<Args>(args)...));
 		}
 
 		template<class T>

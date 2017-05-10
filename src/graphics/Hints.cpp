@@ -4,7 +4,8 @@ namespace re
 {
 	namespace graphics
 	{
-		WindowHints::WindowHints(Monitor const& monitor, string title):
+		WindowHints::WindowHints(
+			Monitor const& monitor):
 			resizable(false),
 			visible(true),
 			decorated(false),
@@ -14,13 +15,15 @@ namespace re
 			monitor(&monitor)
 		{
 			VideoMode vm;
-			monitor.current_video_mode(vm);
+			monitor.current_video_mode(&vm);
 
 			width = vm.width;
 			height = vm.height;
 		}
 
-		WindowHints::WindowHints(int width, int height, string title):
+		WindowHints::WindowHints(
+			int width,
+			int height):
 			resizable(true),
 			visible(true),
 			decorated(true),

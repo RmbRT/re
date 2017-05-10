@@ -108,7 +108,7 @@ namespace re
 
 				/** The type of the texture.
 					This is already defined by the deriving type, but was chosen instead of a virtual getter function. */
-				TextureType const m_type;
+				TextureType m_type;
 
 			protected:
 				/** Creates an unallocated texture with of the given type.
@@ -143,8 +143,10 @@ namespace re
 					Allocates the Handle held by each passed Texture.
 				@see `util::allocation_buffer()`. */
 				static void alloc(
-					Texture ** textures,
+					Texture * const * textures,
 					size_t count);
+				/** Shortcut `alloc()`. */
+				void alloc();
 				/** Destroys the given Textures.
 				@param[in] textures:
 					The addresses of the Textures to be destroyed.

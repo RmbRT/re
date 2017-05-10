@@ -11,13 +11,13 @@ namespace re
 		{
 			/** Used for describing the position of point lights.
 			Ignored for directional global lights. */
-			math::fvec3 position;
+			math::fvec3_t position;
 			/** The direction of spot lights and directional global lights. */
-			math::fvec3 direction;
+			math::fvec3_t direction;
 			/** The angle for spot lights. If zero, the light is considered as shining into all directions. */
 			float angle;
 			/** The light color. */
-			math::fvec3 color;
+			math::fvec3_t color;
 		};
 	}
 }

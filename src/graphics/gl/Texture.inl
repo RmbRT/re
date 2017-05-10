@@ -9,7 +9,7 @@ namespace re
 				RE_DBG_ASSERT(exists() &&
 					"Texture must exist.");
 
-				RE_DBG_ASSERT(size_t(m_type) < _countof(s_binding));
+				RE_DBG_ASSERT(size_t(m_type) < s_binding.size());
 
 				return s_binding[m_type].bound(handle());
 			}

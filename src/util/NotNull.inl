@@ -55,7 +55,7 @@ namespace re
 		}
 
 		template<class T>
-		RECXDA NotNull<T> notNull(T * data)
+		RECX NotNull<T> notNull(T * data)
 		{
 			return data;
 		}

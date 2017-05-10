@@ -25,7 +25,7 @@ namespace re
 			bool auto_iconify;
 			bool floating;
 
-			Monitor * monitor;
+			Monitor const * monitor;
 			int width, height;
 
 			util::Maybe<int> refresh_rate;

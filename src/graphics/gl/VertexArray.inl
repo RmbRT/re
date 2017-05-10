@@ -9,10 +9,12 @@ namespace re
 			RECX VertexElement::VertexElement(
 				ElementType type,
 				size_t elements,
-				size_t offset):
+				size_t offset,
+				char const * name):
 				type(type),
 				elements(elements),
-				offset(offset)
+				offset(offset),
+				name(name)
 			{
 			}
 
@@ -35,7 +37,7 @@ namespace re
 
 			REIL size_t VertexArrayBase::vertex_count() const
 			{
-				RE_DBG_ASSERT(exist());
+				RE_DBG_ASSERT(exists());
 				return m_vertex_count;
 			}
 

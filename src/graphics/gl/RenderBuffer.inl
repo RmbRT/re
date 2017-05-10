@@ -13,6 +13,12 @@ namespace re
 			{
 				return m_height;
 			}
+
+			REIL bool RenderBuffer::bound() const
+			{
+				RE_DBG_ASSERT(exists());
+				return s_bound.bound(handle());
+			}
 		}
 	}
 }

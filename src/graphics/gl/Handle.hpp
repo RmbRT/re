@@ -42,7 +42,7 @@ namespace re
 				REIL void null_handle();
 
 				/** Returns whether a Handle exists / was allocated. */
-				RECX bool exists() const;
+				RECXDA bool exists() const;
 
 				/** Returns the handle to this Handle.
 				@assert

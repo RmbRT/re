@@ -3,6 +3,8 @@
 
 #include "Argument.hpp"
 
+#include "../defines.hpp"
+
 namespace re
 {
 	namespace util

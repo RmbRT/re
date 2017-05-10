@@ -8,7 +8,7 @@ namespace re
 				m_bound(0)
 			{
 			}
-			
+
 			REIL Binding::Binding(Binding && move):
 				m_bound(move.m_bound)
 			{
@@ -31,13 +31,13 @@ namespace re
 			}
 #endif
 
-			RECX bool Binding::bound(handle_t handle) const&
+			RECXDA bool Binding::bound(handle_t handle) const&
 			{
 				RE_DBG_ASSERT(handle != 0);
 				return m_bound == handle;
 			}
 
-			RECX bool Binding::empty() const&
+			RECXDA bool Binding::empty() const&
 			{
 				return !m_bound;
 			}
@@ -58,7 +58,7 @@ namespace re
 			{
 				RE_DBG_ASSERT(handle != 0);
 
-				if(!empty() && bound(handle))
+				if(bound(handle))
 					unbind();
 			}
 		}

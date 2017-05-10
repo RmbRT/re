@@ -15,6 +15,11 @@ namespace re
 			{
 			}
 
+			REIL bool Buffer::bound() const&
+			{
+				return bindings[m_type].bound(handle());
+			}
+
 			template<class Vertex>
 			REIL VertexBuffer<Vertex>::VertexBuffer(
 				BufferAccess access,

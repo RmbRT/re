@@ -76,20 +76,22 @@ namespace re
 				m_first->m_heap = this;
 				m_first->m_prev = nullptr;
 
+				m_last = m_first;
+
 				validate_header(m_first);
 
 				// return the address after the header.
 				return m_first+1;
 			}
 
-			if(uintptr_t(m_first) - uintptr_t(m_pool) >= hole_needed)
+			if(uintptr_t(m_first) - uintptr_t(m_pool+1) >= hole_needed)
 			{	// gap at the beginning?
 				validate_header(m_first);
 
 				m_pool->m_next = m_first;
 				m_first->m_prev = m_pool;
-				m_first->m_heap = this;
 				m_first = m_pool;
+				m_first->m_heap = this;
 #ifdef RE_HEAP_DEBUG
 				m_first->m_magic = heap_magic;
 #endif

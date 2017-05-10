@@ -5,15 +5,14 @@ namespace re
 	TextAsset::TextAsset(
 		string8_t const& name,
 		string8_t const& text):
-		AssetBase(
-			name),
-		content(text)
+		AssetBase(name),
+		m_content(text)
 	{
 	}
 
 	TextAsset::TextAsset():
 		AssetBase(),
-		content()
+		m_content()
 	{
 	}
 
@@ -25,9 +24,9 @@ namespace re
 
 		size_t len;
 		file.read((char*)&len, sizeof(len));
-		content.resize(len+1);
-		file.read(content.c_data(), len);
-		content[len] = '\0';
+		m_content.resize(len);
+		file.read(m_content.c_data(), len);
+		m_content[len] = '\0';
 		return true;
 	}
 	void TextAsset::write_to_file(
@@ -35,20 +34,9 @@ namespace re
 	{
 		write_asset_file_header(file);
 
-		size_t len = content.length();
+		size_t len = m_content.length();
 		file.write((char*)&len, sizeof(len));
-		file.write(content.c_data(), len);
-	}
-
-	string8_t const& TextAsset::getText() const
-	{
-		return content;
-	}
-
-	void TextAsset::setText(
-		string8_t const& text)
-	{
-		content = text;
+		file.write(m_content.c_data(), len);
 	}
 
 	AssetType TextAsset::type() const

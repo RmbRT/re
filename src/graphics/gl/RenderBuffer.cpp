@@ -1,60 +1,55 @@
 #include "RenderBuffer.hpp"
 #include "OpenGL.hpp"
 
+#include "../../util/AllocationBuffer.hpp"
+
 namespace re
 {
 	namespace graphics
 	{
 		namespace gl
 		{
-			RenderBuffer::RenderBuffer():
-				Handle(),
-				m_width(0),
-				m_height(0)
+			void RenderBuffer::alloc(
+				RenderBuffer * const * objects,
+				size_t count)
 			{
-			}
+				RE_DBG_ASSERT(objects != nullptr);
 
-			RenderBuffer &RenderBuffer::operator=(RenderBuffer && move)
-			{
-				if(this == &move)
-					return *this;
-
-				static_cast<Handle&>(*this) = std::move(move);
-				m_width = move.m_width;
-				m_height = move.m_height;
-
-				return *this;
-			}
-
-			void RenderBuffer::alloc(RenderBuffer * objects, size_t count)
-			{
-				handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 				RE_OGL(glGenRenderbuffers(count, handles));
 
 				for(size_t i = count; i--;)
 				{
-					RE_DBG_ASSERT(!objects[i].exists() &&
+					RE_DBG_ASSERT(objects[i] != nullptr);
+					RE_DBG_ASSERT(!objects[i]->exists() &&
 						"Tried to allocate existing render buffer!");
 
-					objects[i].set_handle(handles[i]);
+					objects[i]->set_handle(handles[i]);
 				}
 			}
 
-			void RenderBuffer::destroy(RenderBuffer * objects, size_t count)
+			void RenderBuffer::destroy(
+				RenderBuffer * const * objects,
+				size_t count)
 			{
-				handle_t * const handles = allocation_buffer(count);
+				RE_DBG_ASSERT(objects != nullptr);
+
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				for(size_t i = count; i--;)
-					handles[i] = objects[i].handle();
+				{
+					RE_DBG_ASSERT(objects[i] != nullptr);
+					handles[i] = objects[i]->handle();
+				}
 
 				RE_OGL(glDeleteRenderbuffers(count, handles));
 
 				for(size_t i = count; i--;)
 				{
-					RE_DBG_ASSERT(objects[i].exists() &&
+					RE_DBG_ASSERT(objects[i]->exists() &&
 						"Tried to destroy nonexisting render buffer!");
 
-					objects[i].null_handle();
+					objects[i]->null_handle();
 				}
 			}
 
@@ -67,7 +62,7 @@ namespace re
 
 				m_width = width;
 				m_height = height;
-				
+
 				static GLenum const format = GL_DEPTH_COMPONENT;
 
 				bind();
@@ -78,23 +73,21 @@ namespace re
 			{
 				RE_DBG_ASSERT(exists() && "Tried to bind nonexisting render buffer!");
 
-				if(bound != handle())
+				if(!bound())
 				{
 					RE_OGL(glBindRenderbuffer(GL_RENDERBUFFER, handle()));
-					bound = handle();
+					s_bound.bind(handle());
 				}
 			}
 
 			void RenderBuffer::unbind()
 			{
-				if(bound)
+				if(!s_bound.empty())
 				{
 					RE_OGL(glBindRenderbuffer(GL_RENDERBUFFER, 0));
-					bound = 0;
+					s_bound.unbind();
 				}
 			}
-
-
 		}
 	}
 }

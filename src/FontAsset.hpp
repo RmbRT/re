@@ -8,7 +8,7 @@ namespace re
 {
 	class FontAsset : public AssetBase
 	{
-		graphics::Bitmap atlas;
+		graphics::Bitmap2D atlas;
 		std::unordered_map<uint32_t, ui::Font::Entry> entries;
 		uint32_t defaultEntry;
 		uint_t lineHeight, tabWidth, spaceWidth;
@@ -17,7 +17,7 @@ namespace re
 		void writeToFile(std::ofstream &file) const;
 		bool readFromFile(std::ifstream &file);
 
-		unique_handle<ui::Font> createFont() const;
+		Shared<ui::Font> createFont() const;
 		void setFont(ui::Font const& font);
 		void setFont(ui::Font && font);
 

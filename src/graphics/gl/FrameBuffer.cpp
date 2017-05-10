@@ -1,5 +1,6 @@
 #include "FrameBuffer.hpp"
 #include "OpenGL.hpp"
+#include "../../util/AllocationBuffer.hpp"
 
 namespace re
 {
@@ -73,7 +74,7 @@ namespace re
 
 			void FrameBuffer::alloc(FrameBuffer * objects, size_t count)
 			{
-				handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				RE_OGL(glGenFramebuffers(count, handles));
 
@@ -88,7 +89,7 @@ namespace re
 
 			void FrameBuffer::destroy(FrameBuffer * objects, size_t count)
 			{
-				handle_t * const handles = allocation_buffer(count);
+				handle_t * const handles = util::allocation_buffer<handle_t>(count);
 
 				for(size_t i = count; i--;)
 				{
@@ -104,10 +105,10 @@ namespace re
 						"Tried to destroy frame buffer with depth stencil attachment!");
 
 					handles[i] = objects[i].handle();
-					if(s_bound_read == objects[i].handle())
-						s_bound_read = 0;
-					if(s_bound_write == objects[i].handle())
-						s_bound_write = 0;
+					if(s_bound_read.bound(objects[i].handle()))
+						s_bound_read.unbind();
+					if(s_bound_write.bound(objects[i].handle()))
+						s_bound_write.unbind();
 					objects[i].null_handle();
 				}
 
@@ -195,7 +196,7 @@ namespace re
 					filter));
 			}
 
-			void FrameBuffer::attach_color(Texture && color)
+			void FrameBuffer::attach_color(Texture2D && color) &
 			{
 				RE_DBG_ASSERT(!has_color() &&
 					"Frame buffer had a color attachment already!");
@@ -207,7 +208,7 @@ namespace re
 				RE_OGL(glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color.handle(), 0));
 			}
 
-			void FrameBuffer::detach_color(Texture & out)
+			void FrameBuffer::detach_color(Texture2D & out)
 			{
 				RE_DBG_ASSERT(has_color() &&
 					"Frame buffer has no color attachment!");
@@ -218,7 +219,7 @@ namespace re
 				out = std::move(m_color);
 			}
 
-			void FrameBuffer::attach_depth(RenderBuffer && depth)
+			void FrameBuffer::attach_depth(RenderBuffer && depth) &
 			{
 				RE_DBG_ASSERT(!has_depth() &&
 					"Frame buffer had a depth attachment already!");
@@ -240,7 +241,7 @@ namespace re
 				RE_OGL(glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0));
 			}
 
-			void FrameBuffer::attach_stencil(RenderBuffer && stencil)
+			void FrameBuffer::attach_stencil(RenderBuffer && stencil) &
 			{
 				RE_DBG_ASSERT(!has_stencil() &&
 					"Frame buffer had a stencil attachment already!");
@@ -260,7 +261,7 @@ namespace re
 				RE_OGL(glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, 0, 0));
 			}
 
-			void FrameBuffer::attach_depth_stencil(RenderBuffer && depth_stencil)
+			void FrameBuffer::attach_depth_stencil(RenderBuffer && depth_stencil) &
 			{
 				RE_DBG_ASSERT(!has_depth_stencil() &&
 					"Frame buffer had a depth stencil attachment already!");

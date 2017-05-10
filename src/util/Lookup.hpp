@@ -28,7 +28,7 @@ namespace re
 			{
 #ifdef RE_DEBUG
 				for(size_t i = 0; i<RE_COUNT(Enum); i++)
-					RE_DBG_ASSERT((values[i].first == (Enum) i
+					RE_DBG_ASSERT((values[i].first == (Enum) i)
 						&& "Invalid order of lookup table entries.");
 #endif
 
@@ -47,7 +47,7 @@ namespace re
 
 #ifdef RE_DEBUG
 				for(size_t i = 0; i<RE_COUNT(Enum); i++)
-					RE_DBG_ASSERT((values[i].first == (Enum) i
+					RE_DBG_ASSERT((values.begin()[i].first == (Enum) i)
 						&& "Invalid order of lookup table entries.");
 #endif
 
@@ -67,6 +67,25 @@ namespace re
 			{
 				RE_DBG_ASSERT(RE_IN_ENUM(index, Enum));
 				return m_values[(size_t) index];
+			}
+
+			REIL Target & operator[](
+				size_t index)
+			{
+				RE_DBG_ASSERT(RE_IN_ENUM(index, Enum));
+				return m_values[(size_t) index];
+			}
+
+			REIL Target const& operator[](
+				size_t index) const
+			{
+				RE_DBG_ASSERT(RE_IN_ENUM(index, Enum));
+				return m_values[(size_t) index];
+			}
+
+			REIL size_t size() const
+			{
+				return RE_COUNT(Enum);
 			}
 		};
 	}

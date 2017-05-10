@@ -87,8 +87,8 @@ namespace re
 					bool blit_stencil,
 					bool interpolate);
 
-				void attach_color(Texture && color) &;
-				void detach_color(Texture & out);
+				void attach_color(Texture2D && color) &;
+				void detach_color(Texture2D & out);
 				/** Returns whether the FrameBuffer has a color attachment.
 				@assert The FrameBuffer must exist. */
 				REIL bool has_color() const;

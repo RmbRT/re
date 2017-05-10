@@ -50,12 +50,11 @@ namespace re
 
 		AssetBase(AssetBase && move) = default;
 		AssetBase &operator=(AssetBase &&) = default;
-		virtual ~AssetBase() = 0;
 
 		/** @return The name of this Asset. */
-		string8_t const& name() const;
+		REIL string8_t const& name() const;
 		/** @return The name of this Asset. */
-		string8_t & name();
+		REIL string8_t & name();
 		/** Whether this Asset has a name. */
 		bool has_name() const;
 

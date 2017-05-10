@@ -174,7 +174,10 @@ namespace re
 		typename std::enable_if<
 			!std::is_same<C, StdChar>::value,
 			String<C>>::type &operator+=(
-			stdchar_t const * rhs);
+			stdchar_t const * rhs)
+		{
+			return *this += reinterpret_cast<stdchar_t const*>(rhs);
+		}
 		String<C> &operator+=(
 			String<C> const& rhs);
 

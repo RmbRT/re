@@ -25,6 +25,8 @@ namespace re
 			GPU data should be stored in the Context. Create a custom Context by overriding create_context(). */
 		class Window : gl::ContextReferenceCounter
 		{
+			friend class WindowCallbacks;
+
 			/** The Context of the Window.
 			Only the Window that is pointed back to by the Context owns the Context. */
 			gl::Context * m_context;
@@ -211,19 +213,19 @@ namespace re
 			/** Called when the Window receives an unicode character.
 			@param[in] codepoint:
 				the unicode value of the character. */
-			virtual void onCharacter(uint_t codepoint) = 0;
+			virtual void on_character(uint_t codepoint) = 0;
 
 			/** Called when the cursor enters or leaves the window.
 			@param[in] entered:
 				true if the cursor entered, false if it left the window. */
-			virtual void onCursorEnter(bool entered) = 0;
+			virtual void on_cursor_enter(bool entered) = 0;
 
 			/** Called when the cursor moves.
 			@param[in] x:
 				the x coordinate of the cursor, relative to the top left corner of the window (in pixels).
 			@param[in] y:
 				the y coordinate of the cursor, relative to the top left corner of the window (in pixels). */
-			virtual void onCursorMove(double x, double y) = 0;
+			virtual void on_cursor_move(double x, double y) = 0;
 
 			/** Called when a key is pressed, released, or repeated.
 			@param[in] key:
@@ -236,7 +238,11 @@ namespace re
 				modifier key flags.
 			@note:
 				The default implementation calls re::messaging::Emitter<re::input::KeyEvent>::emit(key, pressed). */
-			virtual void onKey(input::Key key, int scancode, bool pressed, int mods) = 0;
+			virtual void on_key(
+				input::Key key,
+				int scancode,
+				bool pressed,
+				input::ModifierKeys mods) = 0;
 
 			/** Called when a mouse button is pressed or released.
 			@param[in] button:
@@ -247,60 +253,63 @@ namespace re
 				modifier key flags.
 			@note:
 				The default implementation calls re::messaging::Emitter<re::input::KeyEvent>::emit(button, pressed). */
-			virtual void onMouseButton(input::Key button, bool pressed, int mods) = 0;
+			virtual void on_mouse_button(
+				input::MouseButton button,
+				bool pressed,
+				input::ModifierKeys mods) = 0;
 
 			/** Called when the size of the framebuffer changed.
 			@param[in] width:
 				the new width (in pixels) of the framebuffer.
 			@param[in] height:
 				the new height (in pixels) of the framebuffer. */
-			virtual void onFramebufferSizeChanged(int width, int height) = 0;
+			virtual void on_framebuffer_size_changed(int width, int height) = 0;
 
 			/** Called when the user attempts to close the Window.
 				Use this function to decide how the Window reacts when the user requests it to close.
 				If the close request is accepted, the Window is destroyed afterwards.
 			@return
 				True, if the close request should be accepted, and false, if denied. */
-			virtual bool onCloseRequest() = 0;
+			virtual bool on_close_request() = 0;
 
 			/** Called when the window gains or looses focus.
 			@param[in] focus:
 				true if the window gained focus, false if it lost focus. */
-			virtual void onFocusChanged(bool focus) = 0;
+			virtual void on_focus_changed(bool focus) = 0;
 
 			/** Called when the window becomes minimized or restored.
 			@param[in] iconified:
 				true if the window was minimized, false if it was restored. */
-			virtual void onIconify(bool iconified) = 0;
+			virtual void on_iconify(bool iconified) = 0;
 
 			/** Called when the window position changes.
 			@param[in] x:
 				the new window x coordinate (in pixels).
 			@param[in] y:
 				the new window y coordinate (in pixels). */
-			virtual void onPositionChanged(int x, int y) = 0;
+			virtual void on_position_changed(int x, int y) = 0;
 
 			/** Called when the window should refresh. */
-			virtual void onRefresh() = 0;
+			virtual void on_refresh() = 0;
 
 			/** Called when the window got resized.
 			@param[in] width:
 				the new width of the window.
 			@param[in] height:
 				the new height of the window. */
-			virtual void onSizeChanged(int width, int height) = 0;
+			virtual void on_size_changed(int width, int height) = 0;
 
 			/** Gets called by Window::show() and Window::hide().
 			@param[in] shown:
 				true if the window became visible, false if it became hidden. */
-			virtual void onVisibilityChanged(bool shown) = 0;
+			virtual void on_visibility_changed(bool shown) = 0;
 
 			/** Gets called upon scrolling.
 			@param[in] xoffset:
 				the amount of pixels scrolled in x axis.
 			@param[in] yoffset:
 				the amount of pixels scrolled in y axis. */
-			virtual void onScroll(double xoffset, double yoffset) = 0;
+			virtual void on_scroll(double xoffset, double yoffset) = 0;
 		};
 	}
 }

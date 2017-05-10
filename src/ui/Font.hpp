@@ -98,7 +98,7 @@ namespace re
 			@param[in]  */
 			Font(
 				Shared<graphics::gl::Texture2D> const& atlas,
-				std::unordered_map<uint32_t, Entry> && entries,
+				std::unordered_map<uint32_t, Entry> entries,
 				uint32_t default_entry,
 				uint_t line_height,
 				uint_t tab_width,

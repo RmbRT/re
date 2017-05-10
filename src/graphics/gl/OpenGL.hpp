@@ -1,6 +1,7 @@
 #ifndef __re_graphics_opengl_hpp_defined
 #define __re_graphics_opengl_hpp_defined
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include "../../LogFile.hpp"
@@ -12,6 +13,7 @@
 #define RE_OGL(X) ((void)(X))
 #endif
 #define _RE_OGL(X) X
+
 
 namespace re
 {

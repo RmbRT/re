@@ -48,7 +48,7 @@ namespace re
 				m_handle = 0;
 			}
 
-			RECX bool Handle::exists() const
+			RECXDA bool Handle::exists() const
 			{
 				return m_handle != 0;
 			}

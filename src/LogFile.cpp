@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstdarg>
+#include <cstring>
 
 namespace re
 {
@@ -9,7 +10,7 @@ namespace re
 	{
 		if(!(logFile = fopen(filename, "wt")))
 		{
-			LogFile::GetInst()->writef("failed to create logfile %s.\n", filename);
+			RE_LOG("failed to create logfile %s.\n", filename);
 			std::abort();
 		}
 
@@ -18,7 +19,7 @@ namespace re
 	{
 		if(!(logFile = fopen(filename, "wt")))
 		{
-			LogFile::GetInst()->writef("failed to create logfile %s.\n", filename);
+			RE_LOG("failed to create logfile %s.\n", filename);
 			std::abort();
 		}
 	}
@@ -58,7 +59,7 @@ namespace re
 		vsprintf(buffer, format, varargs);
 
 		if(logFile)
-			fwrite(buffer, sizeof(char), strlen(buffer), logFile);
+			fwrite(buffer, sizeof(char), std::strlen(buffer), logFile);
 		if(use_cout)
 			((name)?(std::cout << "[" << name << "] "):std::cout) << buffer;
 	}
@@ -73,7 +74,7 @@ namespace re
 		buffer[len+1] = '\0';
 
 		if(logFile)
-			fwrite(buffer, sizeof(char), strlen(buffer), logFile);
+			fwrite(buffer, sizeof(char), std::strlen(buffer), logFile);
 		if(use_cout)
 			((name)?(std::cout << "[" << name << "] "):std::cout) << (char*)buffer;
 	}
@@ -87,7 +88,7 @@ namespace re
 		close();
 		if(!(logFile = fopen(filename, "wt")))
 		{
-			LogFile::GetInst()->writef("couldn't open log file %s.", filename);
+			RE_LOG("couldn't open log file %s.", filename);
 			std::abort();
 		}
 	}

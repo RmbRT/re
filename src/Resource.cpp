@@ -111,7 +111,6 @@ namespace re
 			lock::read_lock(*text)->write_to_file(file);
 		for(auto &bitmap: bitmaps)
 			lock::read_lock(*bitmap)->write_to_file(file);
-
 		file.close();
 	}
 
@@ -127,12 +126,16 @@ namespace re
 
 	Shared<lock::ThreadSafe<TextAsset>> Resource::addText(TextAsset &&asset)
 	{
-		texts.push_back(Shared<lock::ThreadSafe<TextAsset>>::alloc(std::forward<TextAsset>(asset)));
+		texts.push_back(
+			Shared<lock::ThreadSafe<TextAsset>>::alloc(
+				std::move(asset)));
 		return texts.back();
 	}
 	Shared<lock::ThreadSafe<BitmapAsset>> Resource::addBitmap(BitmapAsset &&asset)
 	{
-		bitmaps.push_back(Shared<lock::ThreadSafe<BitmapAsset>>::alloc(std::forward<BitmapAsset>(asset)));
+		bitmaps.push_back(
+			Shared<lock::ThreadSafe<BitmapAsset>>::alloc(
+				std::move(asset)));
 		return bitmaps.back();
 	}
 }

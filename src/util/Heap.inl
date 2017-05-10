@@ -32,11 +32,14 @@ namespace re
 
 	void * realloc(void const * mem, size_t size)
 	{
-		RE_DBG_ASSERT(mem);
-
-		util::Heap::Header * header = util::Heap::get_header(mem);
-		header->m_heap->validate_header(header);
-		return header->realloc(size);
+		if(!mem)
+			return malloc(size);
+		else
+		{
+			util::Heap::Header * header = util::Heap::get_header(mem);
+			header->m_heap->validate_header(header);
+			return header->realloc(size);
+		}
 	}
 
 	template<class T, class ... Args>
@@ -72,7 +75,7 @@ namespace re
 		RE_DBG_ASSERT(header->m_heap);
 		header->m_heap->validate_header(header);
 
-		RE_DBG_ASSERT(header->m_size % m_size == 0
+		RE_DBG_ASSERT(header->m_size % sizeof(T) == 0
 			&& "Could not determine array size.");
 
 		size_t const count = header->m_size / sizeof(T);

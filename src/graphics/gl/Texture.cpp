@@ -74,7 +74,7 @@ namespace re
 			}
 
 			void Texture::alloc(
-				Texture ** textures,
+				Texture * const * textures,
 				size_t count)
 			{
 				RE_DBG_ASSERT(textures);
@@ -89,6 +89,12 @@ namespace re
 					RE_DBG_ASSERT(!textures[i]->exists());
 					textures[i]->set_handle(handles[i]);
 				}
+			}
+
+			void Texture::alloc()
+			{
+				auto temp = this;
+				alloc(&temp, 1);
 			}
 
 			void Texture::destroy(
@@ -151,7 +157,7 @@ namespace re
 				TextureWrap wrap)
 			{
 				RE_DBG_ASSERT(exists());
-				RE_DBG_ASSERT(graphics::Context::require());
+				RE_DBG_ASSERT(Context::require());
 
 				bind();
 				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_WRAP_S, get_wrap(wrap)));
@@ -161,7 +167,7 @@ namespace re
 				TextureWrap wrap)
 			{
 				RE_DBG_ASSERT(exists());
-				RE_DBG_ASSERT(graphics::Context::require());
+				RE_DBG_ASSERT(Context::require());
 
 				bind();
 				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_WRAP_T, get_wrap(wrap)));
@@ -171,7 +177,7 @@ namespace re
 				TextureWrap wrap)
 			{
 				RE_DBG_ASSERT(exists());
-				RE_DBG_ASSERT(graphics::Context::require());
+				RE_DBG_ASSERT(Context::require());
 
 				bind();
 				RE_OGL(glTexParameteri(get_target(m_type), GL_TEXTURE_WRAP_R, get_wrap(wrap)));
@@ -180,7 +186,7 @@ namespace re
 			void Texture::bind()
 			{
 				RE_DBG_ASSERT(exists());
-				RE_DBG_ASSERT(graphics::Context::require());
+				RE_DBG_ASSERT(Context::require());
 
 				if(!bound())
 				{

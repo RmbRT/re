@@ -49,7 +49,7 @@ namespace re
 			Context &Context::operator=(Context && move)
 			{
 				RE_DBG_ASSERT(this != &move);
-				RE_DBG_ASSERT(!valid());
+				RE_DBG_ASSERT(!m_references);
 
 				m_version = move.m_version;
 				move.m_version = Version(0,0);

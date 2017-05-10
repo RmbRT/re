@@ -3,6 +3,8 @@
 
 #include "../util/AllocationBuffer.hpp"
 
+#include <cmath>
+
 namespace re
 {
 	namespace ui
@@ -50,13 +52,13 @@ namespace re
 
 		Font::Font(
 			Shared<graphics::gl::Texture2D> const& atlas,
-			std::unordered_map<uint32_t, Entry> && entries,
+			std::unordered_map<uint32_t, Entry> entries,
 			uint32_t defaultEntry,
 			uint_t lineHeight,
 			uint_t tabWidth,
 			uint_t spaceWidth):
 			m_atlas(atlas),
-			m_entries(entries),
+			m_entries(std::move(entries)),
 			m_default_entry(defaultEntry),
 			m_line_height(lineHeight),
 			m_tab_width(tabWidth),

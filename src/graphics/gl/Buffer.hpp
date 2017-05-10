@@ -45,7 +45,7 @@ namespace re
 			{
 				Stream,
 				Static,
-				Dynamic
+				RE_LAST(Dynamic)
 			};
 
 			/** The intention of a Buffer. */
@@ -53,7 +53,7 @@ namespace re
 			{
 				Draw,
 				Read,
-				Copy
+				RE_LAST(Copy)
 			};
 
 			/** Represents an OpenGL buffer object.
@@ -72,6 +72,9 @@ namespace re
 
 				/** Binds the Buffer. */
 				void bind() &;
+				/** @return Whether the buffer is currently bound. */
+				REIL bool bound() const&;
+
 				/** Allocates the given Buffers.
 				None of the given Buffers must be allocated yet. */
 				static void alloc(Buffer * const * buffers, size_t count);

@@ -31,16 +31,17 @@ namespace re
 		m_size(0),
 		m_capacity(0)
 	{
-		resize(detail::strlen(ptr));
-		for(size_t i = m_size; i--;)
-			m_data[i] = ptr[i];
+		*this = ptr;
 	}
 
 	template<class C>
 	String<C>::String(
 		String<C> const& copy):
-		String(copy.m_data.operator->())
+		m_data(nullptr),
+		m_size(0),
+		m_capacity(0)
 	{
+		*this = copy;
 	}
 
 	template<class C>
@@ -60,7 +61,7 @@ namespace re
 	{
 		resize(detail::strlen(ptr));
 		for(size_t i = m_size; i--;)
-			m_data[i] = ptr[i];
+			(*this)[i] = ptr[i];
 	}
 
 	/*
@@ -77,7 +78,14 @@ namespace re
 	String<C> &String<C>::operator=(
 		String<C> const& copy)
 	{
-		*this = copy.m_data.operator->();
+		if(copy.empty())
+			clear();
+		else
+		{
+			resize(copy.size());
+			for(size_t i = copy.size(); i--;)
+				(*this)[i] = copy[i];
+		}
 	}
 
 	template<class C>
@@ -99,21 +107,18 @@ namespace re
 	{
 		if(rhs.empty())
 			return empty();
-		if(m_size != rhs.m_size)
+		else if(m_size != rhs.m_size)
 			return false;
 
-		return *this == rhs.m_data;
+		return *this == rhs.content();
 	}
 
 	template<class C>
 	bool String<C>::operator==(
 		C const * rhs) const
 	{
-		if(!m_size)
-			return *rhs == (C) '\0';
-
 		for(size_t i = 0; i<m_size; i++)
-			if(rhs[i] != m_data[i])
+			if(rhs[i] != (*this)[i])
 				return false;
 
 		return !rhs[m_size];
@@ -170,7 +175,7 @@ namespace re
 	template<class C>
 	C * String<C>::data()
 	{
-		return m_data;
+		return m_data.operator->();
 	}
 
 	template<class C>
@@ -195,21 +200,21 @@ namespace re
 		return empty()
 			? ""
 			: reinterpret_cast<
-					typename detail::to_std_char<C>::type const *>(m_data.operator->());
+					typename detail::to_std_char<C>::type const *>(data());
 	}
 
 	template<class C>
 	REIL typename String<C>::stdchar_t * String<C>::c_data()
 	{
 		return reinterpret_cast<
-			typename detail::to_std_char<C>::type *>(m_data.operator->());
+			typename detail::to_std_char<C>::type *>(data());
 	}
 
 	template<class C>
 	REIL typename String<C>::stdchar_t const * String<C>::c_data() const
 	{
 		return reinterpret_cast<
-			typename detail::to_std_char<C>::type const *>(m_data.operator->());
+			typename detail::to_std_char<C>::type const *>(data());
 	}
 
 	template<class C>
@@ -217,7 +222,7 @@ namespace re
 	{
 		return empty()
 			? &s_empty
-			: m_data.operator->();
+			: data();
 	}
 
 	template<class C>
@@ -232,10 +237,12 @@ namespace re
 	{
 		if(m_capacity < capacity)
 		{
-			m_data = (C*)realloc(
+			m_data = (C*)re::realloc(
 				m_data.release(),
 				sizeof(C) * (capacity + 1));
 			m_capacity = capacity;
+
+			m_data[m_capacity] = '\0';
 		}
 	}
 
@@ -244,16 +251,10 @@ namespace re
 		size_t size)
 	{
 		if(capacity() < size)
-			reserve(size + 1);
+			reserve(size);
 
-		if(this->size() < size)
-		{	// grow.
-			m_data[m_size] = '\0';
-			m_size = size;
-		} else
-		{	// shrink.
+		if(m_capacity)
 			m_data[m_size = size] = '\0';
-		}
 	}
 
 	template<class C>
@@ -280,6 +281,6 @@ namespace re
 		resize(m_size + length);
 
 		for(size_t i = length; i--;)
-			m_data[end + i] = other[i];
+			(*this)[end + i] = other[i];
 	}
 }

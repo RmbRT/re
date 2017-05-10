@@ -15,6 +15,9 @@ namespace re
 	{
 		namespace gl
 		{
+			// no need to include the VertexArray header just for this.
+			struct VertexElement;
+
 			/** Compilation result of a shader. */
 			struct ShaderCompilationResult
 			{
@@ -51,24 +54,23 @@ namespace re
 				static Binding s_bound;
 
 				/** The handles of the shaders used by the program. */
-				util::Lookup<ShaderType, handle_t> m_shaders;
+				util::Lookup<ShaderType, Handle> m_shaders;
 			public:
 				/** The type representing the offset of the uniform variable in the shader program. */
 				typedef int32_t uniform_t;
 
 				/** Constructs a shader program and sets its handle and shaders to none. */
-				ShaderProgram();
+				ShaderProgram() = default;
 				/** Moves a shader program from one instance to another, invalidating the source instance. */
-				ShaderProgram(ShaderProgram &&move);
-				/** Destroys a shader program and deallocates the memory used by it and the shaders on the GPU. */
-				~ShaderProgram();
+				ShaderProgram(ShaderProgram &&move) = default;
+				ShaderProgram &operator=(ShaderProgram &&) = default;
 
 				/** Binds the shader program to the graphics pipeline.
 					All render calls will be processed by the shader program until another one is used or it is destroyed. */
 				void use();
 
 				/** Returns whether the shader is currently used. */
-				bool is_used();
+				bool used() const;
 
 				/** Unbinds the shader program from the graphics pipeline.
 					The default OpenGL shader program will be used until another one is used. */
@@ -102,19 +104,41 @@ namespace re
 
 				/** Compiles all shaders.
 				@param[out] result:
-					The CompilationResult. Pass nullptr if you do not want to get the results.
+					The detailed compilation result. Pass `nullptr` if you do not want to get the results.
 				@return
 					true on success, false on error. */
-				bool compile_shaders(ShaderCompilationResult* result);
+				bool compile_shaders(ProgramCompilationResult* result);
 				/** Deletes all shader handles and sets them to none, if they exist.
 				Call this to prevent memory leaks. */
 				void delete_shaders();
-				/** Links the program. This must be called after all shaders are compiled.
+
+				/** Links the program.
+					This must be called after all shaders are compiled.
+				@tparam Vertex:
+					The vertex type that is used for the 
+				@param[out] result:
+					The detailed linking result, or `nullptr`.
+				@return
+					`true` on success, `false` on error. */
+				template<class Vertex>
+				bool link_program(
+					ProgramLinkResult* result);
+				/** Links the program.
+					This must be called after all shaders are compiled.
+				@param[out] result:
+					The detailed linking result, or `nullptr`.
+				@return
+					`true` on success, `false` on error. */
+				bool link_program(
+					ProgramLinkResult* result,
+					VertexElement const * elements,
+					size_t element_count);
+
+				/** Validates the ShaderProgram.
+				@param[out] result:
+					The status message, or nullptr.
 				@return
 					true on success, false on error. */
-				bool link_program(ProgramLinkResult* result);
-
-				/** Validates the ShaderProgram. */
 				bool validate(string8_t *result);
 
 				/** Returns the offset of the uniform with the given name within the program.
@@ -163,10 +187,6 @@ namespace re
                 bool set_uniform(char const * uniform, math::fmat4x4_t const& val);
 				/** Sets the given uniform to the given value. */
                 bool set_uniform(uniform_t uniform, math::fmat4x4_t const& rval);
-
-			private:
-				/** Invalidates the program and shader handles. This function does not release any memory. */
-				void invalidate();
 			};
 		}
 	}

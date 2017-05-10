@@ -8,7 +8,7 @@ namespace re
 	{
 		namespace gl
 		{
-			static void gl_error_check(
+			void error_check(
 				const char* file,
 				int line,
 				const char* exp,

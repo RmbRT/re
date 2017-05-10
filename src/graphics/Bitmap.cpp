@@ -76,7 +76,7 @@ namespace re
 
 		Bitmap &Bitmap::operator=(Bitmap && move)
 		{
-			RE_DBG_ASSERT(this != &copy);
+			RE_DBG_ASSERT(this != &move);
 
 			if(exists())
 				free();

@@ -17,7 +17,7 @@ namespace re
 			enum class ElementType
 			{
 				Float,
-				Double
+				RE_LAST(Double)
 			};
 
 			struct VertexElement
@@ -26,11 +26,13 @@ namespace re
 				RECX VertexElement(
 					ElementType type,
 					size_t elements,
-					size_t offset);
+					size_t offset,
+					char const * name);
 
 				ElementType type;
 				size_t elements;
 				size_t offset;
+				char const * name;
 			};
 
 			template<class Vertex>
@@ -58,7 +60,7 @@ namespace re
 				Triangles,
 				TriangleStrip,
 				Points,
-				TriangleFan
+				RE_LAST(TriangleFan)
 			};
 
 			typedef unsigned int index_t;

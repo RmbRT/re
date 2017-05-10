@@ -39,7 +39,7 @@ namespace re
 		{
 #ifdef RE_HEAP_DEBUG
 			/** 0xfeffefee for 32 bit, 0xbabbabaafeffefee for 64 bit. */
-			static size_t const heap_magic = ((size_t(0xbabbabaa) << 32) | size_t(0xfeffefee))
+			static size_t const heap_magic = ((size_t(0xbabbabaa) << 32) | size_t(0xfeffefee));
 #endif
 public:
 			struct Header;
